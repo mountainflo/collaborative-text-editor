@@ -13,3 +13,11 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Goland
+.idea/
+
+dist/
+*_pb.js
+node_modules/
+package-lock.json
