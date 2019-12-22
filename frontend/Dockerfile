@@ -1,23 +1,31 @@
-# compile protoc files
+# compile proto files and run client server
 
-FROM grpcweb/common
+FROM collabtexteditor/common
 
-WORKDIR /github/grpc-web
+WORKDIR /github/collaborative-text-editor/greeterService
 
-COPY /commonjs-example commonjs-example
+COPY /greeterService/*.proto .
 
-RUN protoc -I=. echo.proto \
---js_out=import_style=commonjs:./commonjs-example \
---grpc-web_out=import_style=commonjs,mode=grpcwebtext:./commonjs-example
+WORKDIR /github/collaborative-text-editor/
 
-WORKDIR /github/grpc-web/commonjs-example
+COPY /frontend/src ./frontend/src
+
+COPY /frontend/index.html /frontend/package.json /frontend/webpack.development.config.js frontend/
+
+RUN protoc -I=. ./greeterService/greeter_service.proto \
+--js_out=import_style=commonjs:./frontend/src \
+--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
+
+WORKDIR /github/collaborative-text-editor/frontend
 
 RUN npm install && \
-  npx webpack && \
-  cp echotest.html /var/www/html && \
+  npm run build && \
+  cp index.html /var/www/html && \
   cp dist/main.js /var/www/html/dist
 
-WORKDIR /var/www/html
+# TODO run http-server directly in the folder, to get auto updates of the files
+# WORKDIR /var/www/html
 
+# TODO ports can be passed bei ARG from docker-compose file
 EXPOSE 8081
 CMD ["python", "-m", "SimpleHTTPServer", "8081"]

@@ -1,14 +1,13 @@
 const {HelloRequest} = require('./greeter_service_pb.js');
-const {GreeterServiceClient} = require('./greeter_service_grpc_web_pb.js');
+const {GreeterClient} = require('./greeter_service_grpc_web_pb.js');
 
-var greeterService = new GreeterServiceClient('http://localhost:8080');
-
+let greeterService = new GreeterClient('http://localhost:8080', "", "");
 
 function sendHelloRequest() {
-    var request = new HelloRequest();
+    let request = new HelloRequest();
     request.setName('Hello World!');
 
-    var call = greeterService.sayHello(request, {}, function(err, response) {
+    let call = greeterService.sayHello(request, {}, function(err, response) {
         if (err) {
             console.log(err.code);
             console.log(err.message);

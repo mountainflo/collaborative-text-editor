@@ -3,32 +3,30 @@ services:
   common:
     build:
       context: ./
-      dockerfile: ./docker/common/Dockerfile
-    image: grpcweb/common
-  node-server:
+      dockerfile: ./Dockerfile
+    image: collabtexteditor/common
+  go-server:
     build:
       context: ./
-      dockerfile: ./docker/node_server/Dockerfile
+      dockerfile: ./backend/Dockerfile
     depends_on:
       - common
-    image: grpcweb/node-server
+    image: collabtexteditor/go-server
     ports:
       - "9090:9090"
   envoy:
     build:
       context: ./
-      dockerfile: ./docker/envoy/Dockerfile
-    image: grpcweb/envoy
+      dockerfile: ./envoy/Dockerfile
+    image: collabtexteditor/envoy
     ports:
       - "8080:8080"
-    links:
-      - node-server
-  commonjs-client:
+  frontend-client:
     build:
       context: ./
-      dockerfile: ./docker/commonjs_client/Dockerfile
+      dockerfile: ./frontend/Dockerfile
     depends_on:
       - common
-    image: grpcweb/commonjs-client
+    image: collabtexteditor/frontend-client
     ports:
       - "8081:8081"
