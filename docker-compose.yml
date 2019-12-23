@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   common:
     build:
@@ -23,10 +23,13 @@ services:
       - "8080:8080"
   frontend-client:
     build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile
+      context: ./frontend
+      dockerfile: ./Dockerfile
     depends_on:
       - common
     image: collabtexteditor/frontend-client
     ports:
       - "8081:8081"
+    volumes:
+    - "./frontend:/app"
+    - "./frontend/src:/app/src"

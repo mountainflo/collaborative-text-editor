@@ -1,4 +1,4 @@
-const {HelloRequest} = require('./greeter_service_pb.js');
+const {HelloRequest, HelloReply} = require('./greeter_service_pb.js');
 const {GreeterClient} = require('./greeter_service_grpc_web_pb.js');
 
 let greeterService = new GreeterClient('http://localhost:8080', "", "");
@@ -12,14 +12,15 @@ function sendHelloRequest() {
             console.log(err.code);
             console.log(err.message);
         } else {
-            console.log(response.getName());
+            console.log("HELLO client received response from server");
+            console.log(response.getMessage());
         }
     });
 
-    call.on('status', function(status) {
+    /*call.on('status', function(status) {
         console.log(status.code);
         console.log(status.details);
-    });
+    });*/
 }
 
 

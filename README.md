@@ -5,7 +5,7 @@ Collaborative Text Editor with gRPC
 
 ```sh
 docker-compose rm -f
-docker-compose up --build -d
+docker-compose up --build
 ```
 
 Open a browser tab, and go to: ```http://localhost:8081/index.html``
@@ -33,4 +33,18 @@ protoc -I greeterService greeterService/greeter_service.proto \
 ```sh
 npm install
 npx webpack client.js
+```
+
+### Debugging
+
+To start the console on a specific container run:
+
+```sh
+docker exec -it collaborative-text-editor_frontend-client_1 /bin/bash
+```
+
+The following command gives you a list of status of all containers:
+
+```sh
+docker-compose ps
 ```

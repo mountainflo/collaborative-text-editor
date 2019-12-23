@@ -2,30 +2,21 @@
 
 FROM collabtexteditor/common
 
-WORKDIR /github/collaborative-text-editor/greeterService
+WORKDIR /tmp
 
-COPY /greeterService/*.proto .
+RUN protoc -I=. ./greeter_service.proto \
+--js_out=import_style=commonjs:./ \
+--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./
 
-WORKDIR /github/collaborative-text-editor/
+WORKDIR /app/src
 
-COPY /frontend/src ./frontend/src
+WORKDIR /app
 
-COPY /frontend/index.html /frontend/package.json /frontend/webpack.development.config.js frontend/
+COPY ./package-lock.json ./package.json ./webpack.development.config.js ./
 
-RUN protoc -I=. ./greeterService/greeter_service.proto \
---js_out=import_style=commonjs:./frontend/src \
---grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
-
-WORKDIR /github/collaborative-text-editor/frontend
-
-RUN npm install && \
-  npm run build && \
-  cp index.html /var/www/html && \
-  cp dist/main.js /var/www/html/dist
-
-# TODO run http-server directly in the folder, to get auto updates of the files
-# WORKDIR /var/www/html
-
-# TODO ports can be passed bei ARG from docker-compose file
 EXPOSE 8081
-CMD ["python", "-m", "SimpleHTTPServer", "8081"]
+
+CMD cp /tmp/*pb.js /app/src && \
+    npm install && \
+    npm run build:dev && \
+    npm run start:dev
