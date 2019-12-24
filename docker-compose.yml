@@ -24,12 +24,8 @@ services:
   frontend-client:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
     depends_on:
       - common
     image: collabtexteditor/frontend-client
     ports:
       - "8081:8081"
-    volumes:
-    - "./frontend:/app"
-    - "./frontend/src:/app/src"

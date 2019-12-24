@@ -8,6 +8,12 @@ docker-compose rm -f
 docker-compose up --build
 ```
 
+Using multiple docker compose files:
+
+```sh
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
 Open a browser tab, and go to: ```http://localhost:8081/index.html``
 
 To shutdown: ```docker-compose down```

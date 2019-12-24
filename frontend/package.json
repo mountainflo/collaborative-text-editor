@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "frontend client for collaborative text editor",
   "scripts": {
-    "build": "webpack --config webpack.development.config.js",
+    "build": "webpack --config webpack.production.config.js",
     "build:dev": "webpack --config webpack.development.config.js",
     "start:dev": "webpack-dev-server --config webpack.development.config.js"
   },

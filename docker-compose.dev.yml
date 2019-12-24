@@ -1,0 +1,11 @@
+version: "3"
+services:
+  frontend-client:
+    build:
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    environment:
+      MODE: 'dev'
+    volumes:
+    - "./frontend:/app"
+    - "./frontend/src:/app/src"
