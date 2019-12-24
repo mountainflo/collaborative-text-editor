@@ -1,28 +1,30 @@
-# collaborative-text-editor
+# collaborative-text-editor [![Build Status](https://travis-ci.com/mountainflo/collaborative-text-editor.svg?token=4zw9EzexndWUV9DTxZpz&branch=master)](https://travis-ci.com/mountainflo/collaborative-text-editor)
 Collaborative Text Editor with gRPC
 
-## Running project
+## Running the project
+
+The project is built with docker-compose. Before getting started you have to install ```docker-compose```
 
 ```sh
 docker-compose rm -f
-docker-compose up --build
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build # starting the dev env
 ```
 
-Using multiple docker compose files:
+The dev-configuration uses hot-reloads.
 
-```sh
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
-```
-
-Open a browser tab, and go to: ```http://localhost:8081/index.html``
+Open a browser tab, and go to: ```http://localhost:8081/index.html```
 
 To shutdown: ```docker-compose down```
+
 
 ## Local development
 
 ### Compiling proto files for go
 
 ```sh
+go get -u google.golang.org/grpc
+go get -u github.com/golang/protobuf/protoc-gen-go
+
 protoc -I greeterService/ proto/greeter_service.proto --go_out=plugins=grpc:proto
 ```
 
@@ -38,12 +40,12 @@ protoc -I greeterService greeterService/greeter_service.proto \
 
 ```sh
 npm install
-npx webpack client.js
+npm run build
 ```
 
-### Debugging
+### Debugging with docker
 
-To start the console on a specific container run:
+To open the console of a specific container run:
 
 ```sh
 docker exec -it collaborative-text-editor_frontend-client_1 /bin/bash

@@ -1,3 +1,5 @@
+# go backend
+
 FROM golang:1.13
 
 
@@ -26,7 +28,6 @@ COPY /go.mod /go.sum ./
 
 RUN go mod download
 
-# TODO add protoc-gen-go plugin to go mod file
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 
 # compile proto files

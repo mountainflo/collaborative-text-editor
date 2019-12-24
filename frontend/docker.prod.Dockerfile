@@ -1,4 +1,4 @@
-# compile proto files and run client server
+# frontend client with prod-config
 
 FROM collabtexteditor/common
 
