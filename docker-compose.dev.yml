@@ -1,5 +1,13 @@
 version: "3"
 services:
+  go-server:
+    security_opt:
+      - apparmor:unconfined
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - "9090:9090"
+      - "40000:40000"
   frontend-client:
     build:
       context: ./frontend

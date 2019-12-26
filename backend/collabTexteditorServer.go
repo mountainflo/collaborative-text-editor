@@ -13,10 +13,11 @@ const (
 	port = ":9090"
 )
 
+//TODO if not possible to store subscriberStreams, use a simple blob-store also connected via gRPC
 type server struct {
 	pb.UnimplementedCollabTexteditorServiceServer
-
-	savedText string
+	subscriberStreams []pb.CollabTexteditorService_SubscribeToServerUpdateServer
+	savedText         string
 }
 
 //TODO process TextUpdateRequest and send back a status message
@@ -26,6 +27,8 @@ func (s server) SendTextUpdate(ctx context.Context, request *pb.TextUpdateReques
 
 	log.Println("Server received test update: " + s.savedText)
 
+	s.sendUpdateToSubscribers()
+
 	return &pb.TextUpdateReply{StatusMessage: "Successfully received text update"}, nil
 }
 
@@ -34,13 +37,31 @@ func (s server) SubscribeToServerUpdate(request *pb.ServerUpdateSubscriptionRequ
 
 	log.Println("Client " + strconv.Itoa(int(request.ClientId)) + " subscribes for updates")
 
+	s.subscriberStreams = append(s.subscriberStreams, stream)
+
+	//return nil //end the stream
+	return nil
+}
+
+func (s server) sendUpdateToSubscribers() {
+
+	log.Println("send update to subscribers")
+
 	response := pb.ServerUpdateSubscriptionResponse{LatestServerContent: s.savedText}
 
-	if err := stream.Send(&response); err != nil {
-		return err
+	counter := 0
+
+	for _, stream := range s.subscriberStreams {
+
+		log.Println("send update to subscriber: " + strconv.Itoa(counter))
+
+		if err := stream.Send(&response); err != nil {
+			log.Printf(err.Error())
+		}
+
+		counter++
 	}
 
-	return nil //end the stream
 }
 
 func main() {
@@ -53,4 +74,6 @@ func main() {
 
 	pb.RegisterCollabTexteditorServiceServer(s, &server{})
 	s.Serve(lis)
+
+	//TODO close subscriberStreams before shutdown (using signals)
 }
