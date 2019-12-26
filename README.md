@@ -32,8 +32,8 @@ protoc -I collabTexteditorService/ collabTexteditorService/collabTexteditorServi
 
 ```sh
 protoc -I collabTexteditorService collabTexteditorService/collabTexteditorService.proto \
---js_out=import_style=commonjs:./frontend \
---grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend
+--js_out=import_style=commonjs:./frontend/src \
+--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
 ```
 
 ### Compile js library and create main.js
