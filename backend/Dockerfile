@@ -16,9 +16,9 @@ protoc-3.8.0-linux-x86_64.zip -o protoc.zip && \
 
 
 # get all proto files
-WORKDIR /go/src/app/greeterService
+WORKDIR /go/src/app/collabTexteditorService
 
-COPY /greeterService/*.proto .
+COPY /collabTexteditorService/*.proto .
 
 
 
@@ -31,7 +31,7 @@ RUN go mod download
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 
 # compile proto files
-RUN protoc -I greeterService greeterService/greeter_service.proto --go_out=plugins=grpc:greeterService
+RUN protoc -I collabTexteditorService collabTexteditorService/collabTexteditorService.proto --go_out=plugins=grpc:collabTexteditorService
 
 
 

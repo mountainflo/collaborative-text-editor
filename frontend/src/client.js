@@ -1,5 +1,5 @@
-const {HelloRequest, HelloReply} = require('./greeter_service_pb.js');
-const {GreeterClient} = require('./greeter_service_grpc_web_pb.js');
+const {HelloRequest, HelloReply} = require('./collabTexteditorService_pb.js');
+const {GreeterClient} = require('./collabTexteditorService_grpc_web_pb.js');
 import './styles/styles.css';
 
 let greeterService = new GreeterClient('http://localhost:8080', "", "");

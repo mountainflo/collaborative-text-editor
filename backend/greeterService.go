@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "github.com/mountainflo/collaborative-text-editor/greeterService"
+	pb "github.com/mountainflo/collaborative-text-editor/collabTexteditorService"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
