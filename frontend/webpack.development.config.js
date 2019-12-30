@@ -5,7 +5,7 @@ const APP_DIR = path.resolve(__dirname, "src");
 
 module.exports = {
     mode: 'development',
-    entry: APP_DIR + '/client.js',
+    entry: APP_DIR + '/main.js',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),

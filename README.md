@@ -25,15 +25,15 @@ To shutdown: ```docker-compose down```
 go get -u google.golang.org/grpc
 go get -u github.com/golang/protobuf/protoc-gen-go
 
-protoc -I greeterService/ proto/greeter_service.proto --go_out=plugins=grpc:proto
+protoc -I collabTexteditorService/ collabTexteditorService/collabTexteditorService.proto --go_out=plugins=grpc:collabTexteditorService
 ```
 
 ### Compiling proto files for js
 
 ```sh
-protoc -I greeterService greeterService/greeter_service.proto \
---js_out=import_style=commonjs:./frontend \
---grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend
+protoc -I collabTexteditorService collabTexteditorService/collabTexteditorService.proto \
+--js_out=import_style=commonjs:./frontend/src \
+--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
 ```
 
 ### Compile js library and create main.js

@@ -1,0 +1,25 @@
+syntax = "proto3";
+package collabTexteditorService;
+
+service CollabTexteditorService {
+    rpc SendTextUpdate(TextUpdateRequest) returns (TextUpdateReply);
+
+    rpc SubscribeToServerUpdate(ServerUpdateSubscriptionRequest) returns (stream ServerUpdateSubscriptionResponse);
+}
+
+message TextUpdateRequest {
+    string textUpdate = 1;
+}
+
+message TextUpdateReply {
+    string statusMessage = 1;
+}
+
+message ServerUpdateSubscriptionRequest {
+    int64 clientId = 1;
+    bool subscription = 2;
+}
+
+message ServerUpdateSubscriptionResponse {
+    string latestServerContent = 1;
+}

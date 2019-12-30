@@ -4,7 +4,7 @@ FROM collabtexteditor/common
 
 WORKDIR /tmp
 
-RUN protoc -I=. ./greeter_service.proto \
+RUN protoc -I=. ./collabTexteditorService.proto \
 --js_out=import_style=commonjs:./ \
 --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./
 

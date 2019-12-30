@@ -2,15 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Basic Greeter Service</title>
+    <title>Collaborative Text Editor</title>
     <script src="dist/bundle.js"></script>
     <link rel="stylesheet" type="text/css" href="dist/main.css">
 </head>
 <body>
 <div>
-    <p>Basic Greeter Service</p>
-    <p>NEW ADDED TEXT</p>
-    <button type="button" id="sayHello" name="sayHello">Say Hello</button>
+    <p>Collaborative Text Editor</p>
+
+    <p><textarea id="editorTextArea" cols="50" rows="10"></textarea></p>
+
+    <p><button type="button" id="sendTextUpdate" name="sendTextUpdate">Send Text Update</button></p>
+
+    <p>Updates from the server:</p>
+    <p id="textFromServer"></p>
 </div>
 </body>
 </html>

@@ -18,4 +18,4 @@ protoc-gen-grpc-web-1.0.7-linux-x86_64 -o /usr/local/bin/protoc-gen-grpc-web && 
 
 WORKDIR /tmp
 
-COPY /greeterService/*.proto .
+COPY /collabTexteditorService/*.proto .
