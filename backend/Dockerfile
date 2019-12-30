@@ -31,7 +31,7 @@ RUN go mod download
 RUN go get -u github.com/golang/protobuf/protoc-gen-go
 
 # get delve for debugging
-# RUN go get github.com/go-delve/delve/cmd/dlv
+RUN go get github.com/go-delve/delve/cmd/dlv
 
 # compile proto files
 RUN protoc -I collabTexteditorService collabTexteditorService/collabTexteditorService.proto --go_out=plugins=grpc:collabTexteditorService
