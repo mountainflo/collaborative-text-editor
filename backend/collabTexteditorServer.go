@@ -6,7 +6,10 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 )
 
 const (
@@ -112,7 +115,30 @@ func main() {
 	s := grpc.NewServer()
 
 	pb.RegisterCollabTexteditorServiceServer(s, repository)
-	s.Serve(lis)
 
-	//TODO graceful shutdown. Close SubscriberStreams before shutdown (using signals and defer)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.Fatalf("Failed to serve: %v", err)
+		}
+	}()
+
+	log.Printf("Successfully started go server on port %s\n", port)
+
+	// Create a channel to receive OS signals
+	c := make(chan os.Signal, 1)
+
+	// Relay os.Interrupt to our channel (os.Interrupt = CTRL+C)
+	// Ignore other incoming signals
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+
+	<-c // Block main routine until a signal is received
+
+	log.Println("Gracefully stopping the go server ...")
+
+	// Graceful shutdown. Close SubscriberStreams before by closing open channels
+	for channelId, channel := range repository.repository.Channels {
+
+		log.Println("close channel: " + strconv.Itoa(channelId))
+		close(channel)
+	}
 }
