@@ -25,6 +25,9 @@ class CollabTexteditorClient {
     }
 
     async subscribeForUpdates(){
+
+        console.log("subscribe for updates ...");
+
         let streamRequest = new ServerUpdateSubscriptionRequest();
         streamRequest.setClientid(99);
         streamRequest.setSubscription(true);

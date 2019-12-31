@@ -100,6 +100,8 @@ func (c collabTexteditorService) sendUpdateToSubscribers() {
 
 func main() {
 
+	log.Println("starting go server ...")
+
 	textStorage := &Repository{SavedText: "", Channels: make(map[int]chan *pb.ServerUpdateSubscriptionResponse), NextFreeChannelId: 0}
 	repository := &collabTexteditorService{textStorage}
 
