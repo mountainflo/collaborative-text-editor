@@ -6,7 +6,6 @@ services:
       dockerfile: ./backend/docker/prod/Dockerfile
     depends_on:
       - go-server-common
-    image: collabtexteditor/go-server
     ports:
       - "9090:9090"
   frontend-client:

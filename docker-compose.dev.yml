@@ -6,7 +6,6 @@ services:
       dockerfile: ./backend/docker/dev/Dockerfile
     depends_on:
       - go-server-common
-    image: collabtexteditor/go-server
     security_opt:
       - apparmor:unconfined
     cap_add:
