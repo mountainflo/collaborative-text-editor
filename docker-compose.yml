@@ -10,6 +10,8 @@ services:
       context: ./
       dockerfile: ./backend/docker/common/Dockerfile
     image: collabtexteditor/go-server-common
+  go-server:
+    image: collabtexteditor/go-server
   envoy:
     build:
       context: ./
