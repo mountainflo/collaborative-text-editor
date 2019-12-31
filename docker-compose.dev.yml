@@ -17,7 +17,7 @@ services:
   frontend-client:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/dev/Dockerfile
     environment:
       MODE: 'dev'
     volumes:

@@ -12,6 +12,6 @@ services:
   frontend-client:
     build:
       context: ./frontend
-      dockerfile: ./docker.prod.Dockerfile
+      dockerfile: ./docker/prod/Dockerfile
     environment:
       MODE: 'prod'

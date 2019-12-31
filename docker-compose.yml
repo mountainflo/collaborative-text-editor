@@ -3,7 +3,7 @@ services:
   common:
     build:
       context: ./
-      dockerfile: ./Dockerfile
+      dockerfile: ./frontend/docker/common/Dockerfile
     image: collabtexteditor/common
   go-server-common:
     build:
