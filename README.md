@@ -18,7 +18,7 @@ To shutdown: ```docker-compose down```
 
 ### Remote debugging and hot reloads
 
-The dev-configuration uses hot-reloads (for js and css files) and offers remote debugging for go files with `delv`.
+The dev-configuration uses hot-reloads (for js and css files) and offers remote debugging for go files with `delve`.
 
 Create a "Go Remote Debugging"-Configuration in your IDE and listen to port `40000`.
 
