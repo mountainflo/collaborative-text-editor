@@ -22,7 +22,7 @@ static_resources:
               routes:
               - match: { prefix: "/" }
                 route:
-                  cluster: echo_service
+                  cluster: collab_text_editor_service
                   max_grpc_timeout: 0s
               cors:
                 allow_origin:
@@ -36,7 +36,7 @@ static_resources:
           - name: envoy.cors
           - name: envoy.router
   clusters:
-  - name: echo_service
+  - name: collab_text_editor_service
     connect_timeout: 0.25s
     type: logical_dns
     http2_protocol_options: {}

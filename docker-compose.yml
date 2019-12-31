@@ -3,17 +3,13 @@ services:
   common:
     build:
       context: ./
-      dockerfile: ./Dockerfile
+      dockerfile: ./frontend/docker/common/Dockerfile
     image: collabtexteditor/common
-  go-server:
+  go-server-common:
     build:
       context: ./
-      dockerfile: ./backend/Dockerfile
-    depends_on:
-      - common
-    image: collabtexteditor/go-server
-    ports:
-      - "9090:9090"
+      dockerfile: ./backend/docker/common/Dockerfile
+    image: collabtexteditor/go-server-common
   envoy:
     build:
       context: ./

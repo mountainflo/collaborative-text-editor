@@ -1,6 +1,12 @@
 version: "3"
 services:
   go-server:
+    build:
+      context: ./
+      dockerfile: ./backend/docker/dev/Dockerfile
+    depends_on:
+      - go-server-common
+    image: collabtexteditor/go-server
     security_opt:
       - apparmor:unconfined
     cap_add:
@@ -11,7 +17,7 @@ services:
   frontend-client:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
+      dockerfile: ./docker/dev/Dockerfile
     environment:
       MODE: 'dev'
     volumes:

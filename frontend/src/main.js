@@ -16,6 +16,6 @@ function addButtonListener(){
 }
 
 window.onload=function() {
-    addButtonListener();
     CollabTexteditor.subscribeForUpdates();
+    addButtonListener();
 };

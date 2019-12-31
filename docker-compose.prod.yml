@@ -1,8 +1,17 @@
 version: "3"
 services:
+  go-server:
+    build:
+      context: ./
+      dockerfile: ./backend/docker/prod/Dockerfile
+    depends_on:
+      - go-server-common
+    image: collabtexteditor/go-server
+    ports:
+      - "9090:9090"
   frontend-client:
     build:
       context: ./frontend
-      dockerfile: ./docker.prod.Dockerfile
+      dockerfile: ./docker/prod/Dockerfile
     environment:
       MODE: 'prod'

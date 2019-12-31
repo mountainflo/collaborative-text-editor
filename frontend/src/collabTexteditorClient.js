@@ -24,31 +24,46 @@ class CollabTexteditorClient {
         })
     }
 
-    subscribeForUpdates(){
+    async subscribeForUpdates(){
+
+        console.log("subscribe for updates ...");
+
         let streamRequest = new ServerUpdateSubscriptionRequest();
         streamRequest.setClientid(99);
         streamRequest.setSubscription(true);
 
         let stream = this.collabTextEditorService.subscribeToServerUpdate(streamRequest, null);
 
-        stream.on('data',function (response) {
-            console.log("received stream data");
-            this.replaceTextInParagraph('textFromServer', response);
-        });
-
-        stream.on('error', function(err) {
-            console.error('Error code: '+ err.code + ' \"' + err.message + '\"');
-        });
-
-        stream.on('end', function() {
-            console.log("stream end signal received");
-        });
+        let error = await this.listenForUpdates(stream);
+        console.log(error)
     }
 
-    replaceTextInParagraph(id, data){
-        document.getElementById(id).innerHTML = data;
+    listenForUpdates(stream){
+        return new Promise(
+            resolve => {
+                stream.on('data',function (response) {
+                    console.log("received stream data", response);
+                    replaceTextInParagraph('textFromServer', response);
+                });
+
+                stream.on('error', function(err) {
+                    console.error('Error code: '+ err.code + ' \"' + err.message + '\"');
+                });
+
+                stream.on('end', function() {
+                    //console.log("stream end signal received");
+                    resolve("stream end signal received")
+                });
+            }
+        )
     }
 
+
+
+}
+
+function replaceTextInParagraph(id, data){
+    document.getElementById(id).innerHTML = data;
 }
 
 export { CollabTexteditorClient };
