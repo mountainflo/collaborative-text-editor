@@ -16,6 +16,7 @@ function addButtonListener(){
 }
 
 window.onload=function() {
+    CollabTexteditor.subscribeForUpdates(); //TODO function need to be called async
+    console.log("came back from async function call");
     addButtonListener();
-    CollabTexteditor.subscribeForUpdates();
 };

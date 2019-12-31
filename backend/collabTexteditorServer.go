@@ -19,8 +19,9 @@ type collabTexteditorService struct {
 }
 
 type Repository struct {
-	SavedText string
-	Streams   []*pb.CollabTexteditorService_SubscribeToServerUpdateServer
+	SavedText         string
+	Channels          map[int]chan *pb.ServerUpdateSubscriptionResponse
+	NextFreeChannelId int //TODO use better unique id
 }
 
 //TODO process TextUpdateRequest and send back a status message
@@ -32,7 +33,7 @@ func (c collabTexteditorService) SendTextUpdate(ctx context.Context, request *pb
 
 	c.sendUpdateToSubscribers()
 
-	return &pb.TextUpdateReply{StatusMessage: "Successfully received text update"}, nil
+	return &pb.TextUpdateReply{StatusMessage: "Successfully received text update. New text has been sent to all subscribers"}, nil
 }
 
 //TODO save client id and if collabTexteditorService receives an update by SendTextUpdate, then stream the update
@@ -40,10 +41,46 @@ func (c collabTexteditorService) SubscribeToServerUpdate(request *pb.ServerUpdat
 
 	log.Println("Client " + strconv.Itoa(int(request.ClientId)) + " subscribes for updates")
 
-	c.repository.Streams = append(c.repository.Streams, &stream)
+	channelId := c.createNewChannel()
 
-	//return nil //end the stream
+	c.forwardChannelEventsToStream(channelId, stream)
+
+	delete(c.repository.Channels, channelId)
+
 	return nil
+}
+
+func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, stream pb.CollabTexteditorService_SubscribeToServerUpdateServer) {
+	for {
+		select {
+		case <-stream.Context().Done():
+			log.Println("Context of stream closed")
+			return
+		case updateEvent, ok := <-c.repository.Channels[channelId]: // TODO test if element is present. elem, ok = m[key]
+			if !ok {
+				log.Println("Channel is closed")
+				return
+			}
+			if err := stream.Send(updateEvent); err != nil {
+				log.Printf(err.Error())
+				return
+			}
+		}
+	}
+}
+
+//create new channel and return id
+func (c collabTexteditorService) createNewChannel() int {
+
+	channel := make(chan *pb.ServerUpdateSubscriptionResponse)
+
+	idOfNewChannel := c.repository.NextFreeChannelId
+
+	c.repository.Channels[idOfNewChannel] = channel
+
+	c.repository.NextFreeChannelId++
+
+	return idOfNewChannel
 }
 
 func (c collabTexteditorService) sendUpdateToSubscribers() {
@@ -52,24 +89,18 @@ func (c collabTexteditorService) sendUpdateToSubscribers() {
 
 	response := pb.ServerUpdateSubscriptionResponse{LatestServerContent: c.repository.SavedText}
 
-	counter := 0
+	for channelId, channel := range c.repository.Channels {
 
-	for _, stream := range c.repository.Streams {
+		log.Println("send update to subscriber: " + strconv.Itoa(channelId))
 
-		log.Println("send update to subscriber: " + strconv.Itoa(counter))
-
-		if err := (*stream).Send(&response); err != nil {
-			log.Printf(err.Error())
-		}
-
-		counter++
+		channel <- &response
 	}
 
 }
 
 func main() {
 
-	textStorage := &Repository{}
+	textStorage := &Repository{SavedText: "", Channels: make(map[int]chan *pb.ServerUpdateSubscriptionResponse), NextFreeChannelId: 0}
 	repository := &collabTexteditorService{textStorage}
 
 	lis, err := net.Listen("tcp", port)
