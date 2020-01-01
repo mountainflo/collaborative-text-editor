@@ -24,7 +24,7 @@ class CollabTexteditorClient {
         })
     }
 
-    async subscribeForUpdates(){
+    async subscribeForUpdates(responseParagraphId){
 
         console.log("subscribe for updates ...");
 
@@ -34,16 +34,16 @@ class CollabTexteditorClient {
 
         let stream = this.collabTextEditorService.subscribeToServerUpdate(streamRequest, null);
 
-        let error = await this.listenForUpdates(stream);
+        let error = await this.listenForUpdates(stream, responseParagraphId);
         console.log(error)
     }
 
-    listenForUpdates(stream){
+    listenForUpdates(stream, responseParagraphId){
         return new Promise(
             resolve => {
                 stream.on('data',function (response) {
                     console.log("received stream data", response);
-                    replaceTextInParagraph('textFromServer', response);
+                    replaceTextInParagraph(responseParagraphId, response);
                 });
 
                 stream.on('error', function(err) {
