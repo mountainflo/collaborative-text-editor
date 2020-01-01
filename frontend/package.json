@@ -8,6 +8,7 @@
     "start:dev": "webpack-dev-server --config webpack.development.config.js"
   },
   "dependencies": {
+    "codemirror": "^5.50.0",
     "google-protobuf": "^3.6.1",
     "grpc-web": "^1.0.7"
   },

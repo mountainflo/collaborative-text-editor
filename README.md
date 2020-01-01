@@ -58,6 +58,7 @@ protoc -I collabTexteditorService collabTexteditorService/collabTexteditorServic
 --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
 ```
 
+<!-- TODO rename to bundling js files -->
 ### Compile js library and create main.js
 
 ```sh
