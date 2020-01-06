@@ -46,6 +46,28 @@ class Editor {
         this.cteService.sendTextUpdate(this.getValue());
     }
 
+    /**
+     * Transforms a 2-dimensional-position (line,column) into
+     * a position of linear array/sequence.
+     *
+     * @param text a string, which lines are separated by the newline character
+     * @param line the number of the line where the character is located
+     * @param column the number of the column where the character is located
+     * @returns {*|number} index of the char in a linear sequence
+     */
+    static transformMatrixPositionToSequencePosition(text, line, column){
+        let matrix = text.split('\n');
+        let separatorCharSize = 1;
+
+        let previousChars = 0;
+        for (let i = 0; i < line; i++) {
+            previousChars = matrix[i].length + separatorCharSize;
+        }
+        previousChars = previousChars + column;
+
+        return previousChars;
+    }
+
 
 }
 

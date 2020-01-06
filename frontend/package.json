@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "frontend client for collaborative text editor",
   "scripts": {
-    "build": "webpack --config webpack.production.config.js",
-    "build:dev": "webpack --config webpack.development.config.js",
-    "start:dev": "webpack-dev-server --config webpack.development.config.js"
+    "build": "npm run test && webpack --config webpack.production.config.js",
+    "build:dev": "npm run test && webpack --config webpack.development.config.js",
+    "start:dev": "webpack-dev-server --config webpack.development.config.js",
+    "test": "jasmine"
   },
   "dependencies": {
     "codemirror": "^5.50.0",
@@ -13,9 +14,14 @@
     "grpc-web": "^1.0.7"
   },
   "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/node": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/register": "^7.7.7",
     "browserify": "^16.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.4.0",
+    "jasmine": "^3.5.0",
     "mini-css-extract-plugin": "^0.9.0",
     "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
