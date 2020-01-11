@@ -1,3 +1,5 @@
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 import { CollabTexteditorClient } from "./collabTexteditorClient";
 import { Editor } from "./editor";
 

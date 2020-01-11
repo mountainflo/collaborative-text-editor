@@ -20,6 +20,8 @@ class Editor {
             value: textAreaObj.value
         });
 
+        console.log(LOG_OBJECT + "create codemirror object from text area", this.editor);
+
         this.cteService = cteService;
 
         this.listenToChanges()
