@@ -1,9 +1,16 @@
 version: "3"
 services:
+  chromium:
+    build:
+      context: ./frontend/docker/chromium
+      dockerfile: ./Dockerfile
+    image: collabtexteditor/chromium
   common:
     build:
       context: ./
       dockerfile: ./frontend/docker/common/Dockerfile
+    depends_on:
+      - chromium
     image: collabtexteditor/common
   go-server-common:
     build:

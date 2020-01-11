@@ -1,5 +1,8 @@
 version: "3"
 services:
+  chromium:
+    ports:
+      - "9222:9222"
   go-server:
     build:
       context: ./
