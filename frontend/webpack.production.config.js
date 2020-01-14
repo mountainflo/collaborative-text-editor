@@ -19,13 +19,24 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.m?js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env'],
+                        plugins: ['@babel/plugin-transform-regenerator']
+                    }
+                }
+            },
+            {
                 test: /\.css$/,
                 use: [
                     'style-loader',
                     {
                         loader: 'css-loader',
                         options: {
-                            modules: true,
+                            modules: false,
                         },
                     }
                 ],
