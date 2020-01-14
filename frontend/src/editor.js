@@ -63,7 +63,7 @@ class Editor {
 
         let previousChars = 0;
         for (let i = 0; i < line; i++) {
-            previousChars = matrix[i].length + separatorCharSize;
+            previousChars = previousChars + matrix[i].length + separatorCharSize;
         }
         previousChars = previousChars + column;
 

@@ -33,10 +33,10 @@ describe("Editor position is transformed", function() {
         expect(actual).toBe(10);
     });
 
-    /*it("when input text contains several empty lines", function() {
+    it("when input text contains several empty lines", function() {
 
         let actual = Editor.transformMatrixPositionToSequencePosition("012345\n1\n2\n3\n012\n", 4, 2);
-        expect(actual).toBe(12);
-    });*/
+        expect(actual).toBe(15);
+    });
 });
 

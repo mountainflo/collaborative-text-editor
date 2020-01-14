@@ -4,7 +4,7 @@
   "description": "frontend client for collaborative text editor",
   "scripts": {
     "build": "npm run test && webpack --config webpack.production.config.js",
-    "build:dev": "npm run test && webpack --config webpack.development.config.js",
+    "build:dev": "webpack --config webpack.development.config.js",
     "start:dev": "webpack-dev-server --config webpack.development.config.js",
     "test": "karma start --single-run"
   },

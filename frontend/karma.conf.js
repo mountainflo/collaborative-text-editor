@@ -14,6 +14,11 @@ module.exports = (config) => {
             ChromeHeadlessCustom: {
                 base: 'ChromeHeadless',
                 flags: ['--no-sandbox', '--headless', '--remote-debugging=9222']
+            },
+            ChromeDebugging: {
+                base: 'Chrome',
+                flags: ['--remote-debugging=9222'],
+                debug: true
             }
         },
     });
