@@ -31,11 +31,8 @@ class Editor {
         this.editor.on("change", (_, changeObject) => {
             console.log(LOG_OBJECT + "\"change\" event fired: ", changeObject);
 
-            if (changeObject.origin === "+input") {
-                //changeObject.from;
-                //changeObject.to;
-
-                this.processChanges();
+            if (changeObject.origin === "+input" || changeObject.origin === "+delete") {
+                this.processChanges(changeObject);
             }
         });
     }
@@ -44,8 +41,16 @@ class Editor {
         return this.editor.getValue("<br />"); //TODO replace line separator with "\n" when inserting into textarea
     }
 
-    processChanges(){
-        this.cteService.sendTextUpdate(this.getValue());
+    processChanges(changeObject){
+        //changeObject.from;
+        //changeObject.to;
+        //changeObject.text;
+        //changeObject.removed;
+
+        //TODO lookup the correct naming from the papers
+        //process local changes (update char-/string-store) in separate crdt class
+        //send online changes propagate over crdt class to collabTextedtiorClient
+        this.cteService.sendTextUpdate(this.getValue()); //TODO send changeObject
     }
 
     /**
