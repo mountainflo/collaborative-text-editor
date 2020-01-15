@@ -34,13 +34,24 @@ class CollabTexteditorClient {
         console.log(LOG_OBJECT + "subscribe for updates ...");
 
         let streamRequest = new ServerUpdateSubscriptionRequest();
-        streamRequest.setClientid(99);
+        streamRequest.setClientid(99);  //TODO create unique id
         streamRequest.setSubscription(true);
 
-        let stream = this.collabTextEditorService.subscribeToServerUpdate(streamRequest, null);
+        const RETRY_TIME_INTERVAL_IN_MS = 5000;
+        while(true){
 
-        let error = await this.listenForUpdates(stream, responseParagraphId);
-        console.log(LOG_OBJECT + error)
+            let stream = this.collabTextEditorService.subscribeToServerUpdate(streamRequest, null);
+            console.log(LOG_OBJECT + "opened new stream object", stream);
+
+            await this.listenForUpdates(stream, responseParagraphId).then(
+                function (error) {
+                    console.log(LOG_OBJECT + error);
+                }
+            );
+
+            console.log(LOG_OBJECT + "retry to open stream in " + RETRY_TIME_INTERVAL_IN_MS + "ms ...");
+            await sleep(RETRY_TIME_INTERVAL_IN_MS);
+        }
     }
 
     listenForUpdates(stream, responseParagraphId){
@@ -52,11 +63,11 @@ class CollabTexteditorClient {
                 });
 
                 stream.on('error', function(err) {
-                    console.error(LOG_OBJECT + 'Error code: '+ err.code + ' \"' + err.message + '\"');
+                    resolve("Error code: " + err.code + " \"" + err.message + "\"");
                 });
 
                 stream.on('end', function() {
-                    resolve(LOG_OBJECT, "stream end signal received")
+                    resolve("stream end signal received");
                 });
             }
         )
@@ -65,6 +76,11 @@ class CollabTexteditorClient {
 
 
 }
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 function replaceTextInParagraph(id, data){
     document.getElementById(id).innerHTML = data;
