@@ -23,16 +23,22 @@ class NewLineArray {
             _newLineTimestampsReferences.splice(row,1);
         };
 
-        this.removeNewLineByTimestamp = function (timestamp) {
-            let i = _newLineTimestampsReferences.findIndex(elem => elem === timestamp);
-            _newLineTimestampsReferences.removeNewLineReference(i);
+        this.removeNewLineReferenceByTimestamp = function (timestamp) {
+            let row = this.getNewLineReferenceByTimestamp(timestamp);
+            this.removeNewLineReference(row);
         };
 
         this.getNewLineReference = function (row) {
             return _newLineTimestampsReferences[row];
         };
 
+        this.getNewLineReferenceByTimestamp = function (timestamp) {
+            return _newLineTimestampsReferences.findIndex(elem => elem === timestamp);
+        };
 
+        this.length = function(){
+            return _newLineTimestampsReferences.length;
+        };
 
     }
 

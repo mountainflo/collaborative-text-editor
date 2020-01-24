@@ -69,4 +69,29 @@ describe("NewLineArray", function () {
         expect(newLineArray.getNewLineReference(0)).toBe("11");
     });
 
+    it("can find new line index by timestamp", function () {
+        let newLineArray = new NewLineArray();
+
+        newLineArray.addNewLineReference("00", 0);
+        newLineArray.addNewLineReference("11", 1);
+        newLineArray.addNewLineReference("22", 2);
+
+        expect(newLineArray.getNewLineReferenceByTimestamp("11")).toBe(1);
+        expect(newLineArray.getNewLineReferenceByTimestamp("22")).toBe(2);
+    });
+
+    it("can remove new line index by timestamp", function () {
+        let newLineArray = new NewLineArray();
+
+        newLineArray.addNewLineReference("00", 0);
+        newLineArray.addNewLineReference("11", 1);
+        newLineArray.addNewLineReference("22", 2);
+
+        newLineArray.removeNewLineReferenceByTimestamp("11");
+
+        expect(newLineArray.getNewLineReference(0)).toBe("00");
+        expect(newLineArray.getNewLineReference(1)).toBe("22");
+        expect(newLineArray.length()).toBe(2);
+    });
+
 });

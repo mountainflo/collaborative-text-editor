@@ -18,7 +18,7 @@ class TiTree {
             let timestamp = node.getTimestamp();
 
             if(node.getValue() === "\n"){
-                _newLineArray.removeNewLineByTimestamp(timestamp);
+                _newLineArray.removeNewLineReferenceByTimestamp(timestamp);
             }
 
             _timestampsAndNodesMap.delete(timestamp);
@@ -74,7 +74,13 @@ class TiTree {
             let row = undefined;
 
             if (node.getValue() === "\n"){
-                //TODO traverse the tree until you find a new line => return the row
+                let newLineTimestamp;
+                try {
+                    newLineTimestamp = traverseTreeUntilNewLineReached(this, node.getTimestamp(), 0, undefined);
+                } catch (e) {
+                    newLineTimestamp = _newLineArray.length();
+                }
+                row = _newLineArray.getNewLineReferenceByTimestamp(newLineTimestamp);
             }
 
             this.insertNode(node, row);
@@ -167,6 +173,50 @@ class TiTree {
             }
 
             return findParentNodeTimestampInColumn(object, parentNodeTimestamp, remainingCharsToPass,  nodeTimestamp);
+        };
+
+
+        /**
+         * TODO traverse the tree until you find a new line => return the row
+         *
+         * @param {TiTree} object
+         * @param {string} nodeTimestamp
+         * @param {int} passedNumberOfChars
+         * @param {string} lastVisitedNodeTimestamp
+         * @returns {string}
+         */
+        let traverseTreeUntilNewLineReached = function (object, nodeTimestamp, passedNumberOfChars, lastVisitedNodeTimestamp) {
+            let node = object.getNodeFromTimestamp(nodeTimestamp);
+
+            if(!node.isTombstone()){
+                if (passedNumberOfChars > 0 && node.getValue() === "\n"){
+                    return nodeTimestamp;
+                }
+                ++passedNumberOfChars;
+            }
+
+            let childrenTimestamps = node.getChildrenTimestamps();
+
+            //iterate over all children starting after the lastVisitedNodeTimestamp
+            let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined;
+
+            for (let i = 0; childrenTimestamps < i; i++) {
+
+                if (iteratedOverLastVisitedNode){
+                    let childNode = object.getNodeFromTimestamp(childrenTimestamps[i]);
+                    return traverseTreeUntilNewLineReached(object, childNode, passedNumberOfChars, nodeTimestamp);
+                } else {
+                    iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
+                }
+            }
+
+            let parentNodeTimestamp = node.getParentNodeTimestamp();
+
+            if (parentNodeTimestamp == null) {
+                throw new Error("Tree does not contain a not with the specified timestamp"); //TODO reached the last element => new line is at the end
+            }
+
+            return traverseTreeUntilNewLineReached(object, parentNodeTimestamp, passedNumberOfChars, nodeTimestamp);
         }
     }
 
