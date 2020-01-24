@@ -19,7 +19,7 @@ class Crdt {
         };
     }
 
-    publicFuncOutsideConstructor = function (a) {
+    publicFuncOutsideConstructor(a) {
         return a + this.getPrivateField() + this.publicField;
     };
 
