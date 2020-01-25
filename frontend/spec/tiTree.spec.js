@@ -213,5 +213,41 @@ describe("TiTree", function () {
         expect(sequence).toBe("NEWvalue1value2\nvalue3value4");
     });
 
-    //TODO add insert-tests with tombstones
+    it("inserts node into tree with tombstones", function () {
+        let tiTree = new TiTree();
+        let tiTreeNode1 = new TiTreeNode(1, null, "a");
+        let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "b");
+        let tiTreeNode3 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "\n");
+        let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "c");
+        let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "d");
+        let tiTreeNode6 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "\n");
+        let tiTreeNode7 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "f");
+        let tiTreeNode8 = new TiTreeNode(1, tiTreeNode7.getTimestamp(), "g");
+
+        tiTree.insertNode(tiTreeNode1);
+        tiTree.insertNode(tiTreeNode2);
+        tiTree.insertNode(tiTreeNode3);
+        tiTree.insertNode(tiTreeNode4);
+        tiTree.insertNode(tiTreeNode5);
+
+        let sequence = tiTree.read();
+        expect(sequence).toBe("ab\ncd");
+
+        tiTree.insertNode(tiTreeNode6);
+        sequence = tiTree.read();
+        expect(sequence).toBe("ab\n\ncd");
+
+        tiTree.insertNode(tiTreeNode7);
+        sequence = tiTree.read();
+        expect(sequence).toBe("abf\n\ncd");
+
+        tiTreeNode6.markAsTombstone();
+        tiTreeNode7.markAsTombstone();
+        sequence = tiTree.read();
+        expect(sequence).toBe("ab\ncd");
+
+        tiTree.insertNode(tiTreeNode8);
+        sequence = tiTree.read();
+        expect(sequence).toBe("abg\ncd");
+    });
 });
