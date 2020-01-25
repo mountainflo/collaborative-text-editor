@@ -1,5 +1,5 @@
 import {NewLineArray} from "./newLineArray";
-import {TiTreeNode} from "./tiTreeNode";
+import {TiTreeNode} from "./../model/tiTreeNode";
 
 const LINE_SEPARATOR = "\n";
 
@@ -14,6 +14,7 @@ class TiTree {
          * Mark the node to the corresponding timestamp as tombstone.
          *
          * @param {TiTreeNode} node
+         * @return {TiTreeNode} node marked as tombstone
          */
         this.delete = function (node) {
 
@@ -24,6 +25,8 @@ class TiTree {
             }
 
             node.markAsTombstone();
+
+            return node;
         };
 
         /**
@@ -49,6 +52,7 @@ class TiTree {
          * @param {int} column
          * @param {string} value
          * @param {int} replicaId
+         * @return {TiTreeNode} new created node
          */
         this.insert = function (row, column, value, replicaId) {
 
@@ -60,7 +64,7 @@ class TiTree {
                 //new root node
                 let node = new TiTreeNode(replicaId, null, value);
                 this.insertNode(node,row);
-                return;
+                return node;
             } else {
                 startTimestampForTraversing = _rootNodeTimestamp;
             }
@@ -70,6 +74,8 @@ class TiTree {
 
             let node = new TiTreeNode(replicaId, parentNodeTimestamp, value);
             this.insertNode(node,row);
+
+            return node;
         };
 
 
@@ -77,6 +83,7 @@ class TiTree {
          * Insert of a remote node without a specified row.
          *
          * @param {TiTreeNode} node
+         * @return {ChangeObject} changeObject
          */
         this.insertNode = function (node) {
             let row = undefined;
@@ -90,6 +97,7 @@ class TiTree {
                     newLineTimestamp = _newLineArray.length();
                 }
                 row = _newLineArray.getNewLineReferenceByTimestamp(newLineTimestamp);
+                //TODO start in the previous row and traverse tree until the newline is reached
             }
 
             this.insertNode(node, row);

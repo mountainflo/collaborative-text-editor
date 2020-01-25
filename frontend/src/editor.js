@@ -2,6 +2,7 @@ import CodeMirror from "codemirror";
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/3024-night.css';
 import 'codemirror/mode/markdown/markdown.js';
+import {CHANGE_OBJECT_TYPE, ChangeObject} from "./model/changeObject";
 
 const NIGHT_THEME = "3024-night";
 const MARKDOWN_MODE = "markdown";
@@ -12,70 +13,59 @@ const LOG_OBJECT = "[editor] ";
  */
 class Editor {
 
-    constructor(textAreaObj, cteService) {
-        this.editor = CodeMirror.fromTextArea(textAreaObj, {
+    constructor(textAreaObj) {
+        let _editor = CodeMirror.fromTextArea(textAreaObj, {
             lineNumbers: true,
             theme: NIGHT_THEME,
             mode: MARKDOWN_MODE,
             value: textAreaObj.value
         });
 
-        console.log(LOG_OBJECT + "create codemirror object from text area", this.editor);
+        /**
+         * Subscribe for updates. Callback will be executed if
+         * user inputs or deletes text.
+         *
+         * @param callback
+         */
+        this.subscribeForUpdates = function (callback) {
+            _editor.on("change", (_, obj) => {
+                console.log(LOG_OBJECT + "\"change\" event fired: ", obj);
 
-        this.cteService = cteService;
+                if (obj.origin === "+input" || obj.origin === "+delete") {
+                    let changeObject = new ChangeObject(
+                        obj.from.line,
+                        obj.from.ch,
+                        obj.text,
+                        obj.origin === "+input" ? CHANGE_OBJECT_TYPE.INSERTION : CHANGE_OBJECT_TYPE.DELETION);
 
-        this.listenToChanges()
-    }
+                    callback(changeObject); //TODO call async
+                }
+            });
+        };
 
-    listenToChanges(){
-        this.editor.on("change", (_, changeObject) => {
-            console.log(LOG_OBJECT + "\"change\" event fired: ", changeObject);
+        /**
+         * @param {ChangeObject} changeObject
+         */
+        this.insert = function (changeObject) {
+            let from = {line: changeObject.getRow(), ch: changeObject.getColumn()};
+            _editor.doc.replaceRange(changeObject.getValue(), from, null, "remoteInsert");
+        };
 
-            if (changeObject.origin === "+input" || changeObject.origin === "+delete") {
-                this.processChanges(changeObject);
-            }
-        });
-    }
+        /**
+         * @param {ChangeObject} changeObject
+         */
+        this.delete = function (changeObject) {
+            let from = {line: changeObject.getRow(), ch: changeObject.getColumn()};
+            let to = {line: changeObject.getRow(), ch: changeObject.getColumn() + 1};
+            _editor.doc.replaceRange(changeObject.getValue(), from, to, "remoteDelete");
+        };
 
-    getValue(){
-        return this.editor.getValue("<br />"); //TODO replace line separator with "\n" when inserting into textarea
-    }
-
-    processChanges(changeObject){
-        //changeObject.from;
-        //changeObject.to;
-        //changeObject.text;
-        //changeObject.removed;
-
-        //TODO lookup the correct naming from the papers
-        //process local changes (update char-/string-store) in separate crdt class
-        //send online changes propagate over crdt class to collabTextedtiorClient
-        this.cteService.sendTextUpdate(this.getValue()); //TODO send changeObject
-    }
-
-    /**
-     * Transforms a 2-dimensional-position (line,column) into
-     * a position of linear array/sequence.
-     *
-     * @param text a string, which lines are separated by the newline character
-     * @param line the number of the line where the character is located
-     * @param column the number of the column where the character is located
-     * @returns {*|number} index of the char in a linear sequence
-     */
-    static transformMatrixPositionToSequencePosition(text, line, column){
-        let matrix = text.split('\n');
-        let separatorCharSize = 1;
-
-        let previousChars = 0;
-        for (let i = 0; i < line; i++) {
-            previousChars = previousChars + matrix[i].length + separatorCharSize;
-        }
-        previousChars = previousChars + column;
-
-        return previousChars;
+        this.getValue = function () {
+            return _editor.getValue("<br />"); //TODO replace line separator with "\n" when inserting into textarea
+        };
     }
 
 
 }
 
-export { Editor };
+export {Editor};

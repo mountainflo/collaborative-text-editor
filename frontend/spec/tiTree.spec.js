@@ -1,5 +1,5 @@
 import {TiTree} from "../src/crdt/tiTree";
-import {TiTreeNode} from "../src/crdt/tiTreeNode";
+import {TiTreeNode} from "../src/model/tiTreeNode";
 
 describe("TiTree", function () {
 

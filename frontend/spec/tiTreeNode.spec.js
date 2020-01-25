@@ -1,4 +1,4 @@
-import {TiTreeNode} from "../src/crdt/tiTreeNode";
+import {TiTreeNode} from "../src/model/tiTreeNode";
 
 describe("TiTreeNode", function () {
 
