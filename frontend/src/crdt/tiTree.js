@@ -1,6 +1,8 @@
 import {NewLineArray} from "./newLineArray";
 import {TiTreeNode} from "./tiTreeNode";
 
+const LINE_SEPARATOR = "\n";
+
 class TiTree {
 
     constructor() {
@@ -17,7 +19,7 @@ class TiTree {
 
             let timestamp = node.getTimestamp();
 
-            if(node.getValue() === "\n"){
+            if(node.getValue() === LINE_SEPARATOR){
                 _newLineArray.removeNewLineReferenceByTimestamp(timestamp);
             }
 
@@ -50,16 +52,21 @@ class TiTree {
          */
         this.insert = function (row, column, value, replicaId) {
 
-            let startNodeTimestamp;
+            let startTimestampForTraversing;
 
             if (row > 0) {
-                startNodeTimestamp = _newLineArray.getNewLineReference(row-1);
+                startTimestampForTraversing = _newLineArray.getNewLineReference(row-1);
+            } else if (row === 0 && column === 0) {
+                //new root node
+                let node = new TiTreeNode(replicaId, null, value);
+                this.insertNode(node,row);
+                return;
             } else {
-                startNodeTimestamp = _rootNodeTimestamp;
+                startTimestampForTraversing = _rootNodeTimestamp;
             }
 
             let self = this;
-            let parentNodeTimestamp = findParentNodeTimestampInColumn(self, startNodeTimestamp, column, undefined);
+            let parentNodeTimestamp = passXCharsInTheTree(self, startTimestampForTraversing, column+1, undefined);
 
             let node = new TiTreeNode(replicaId, parentNodeTimestamp, value);
             this.insertNode(node,row);
@@ -74,7 +81,7 @@ class TiTree {
         this.insertNode = function (node) {
             let row = undefined;
 
-            if (node.getValue() === "\n"){
+            if (node.getValue() === LINE_SEPARATOR){
                 let newLineTimestamp;
                 try {
                     let self = this;
@@ -113,7 +120,7 @@ class TiTree {
                 parentNode.addChildTimestamp(nodeTimestamp);
             }
 
-            if(node.getValue() === "\n"){
+            if(node.getValue() === LINE_SEPARATOR){
                 _newLineArray.addNewLineReference(nodeTimestamp, row);
             }
 
@@ -124,6 +131,13 @@ class TiTree {
             return _timestampsAndNodesMap.get(timestamp);
         };
 
+        /**
+         * Create sequence by traversing the complete tree. Ignore all tombstones.
+         *
+         * @param {TiTree} self
+         * @param {string} nodeTimestamp
+         * @returns {string} sequence
+         */
         let traverseTree = function (self, nodeTimestamp) {
             let sequence = "";
             let node =  self.getNodeFromTimestamp(nodeTimestamp);
@@ -141,22 +155,25 @@ class TiTree {
         };
 
         /**
-         * Traverse the tree by a given number of chars to find the parentNode.
+         * Traverse the tree by passing X Chars.
+         *
+         * Tombstones are ignored. Function will return the timestamp reached,
+         * when already passed X chars.
          *
          * @param {TiTree} object
          * @param {string} nodeTimestamp
          * @param {int} remainingCharsToPass
          * @param {string} lastVisitedNodeTimestamp
-         * @returns {string}
+         * @returns {string} timestamp of the node
          */
-        let findParentNodeTimestampInColumn = function (object, nodeTimestamp, remainingCharsToPass, lastVisitedNodeTimestamp) {
+        let passXCharsInTheTree = function (object, nodeTimestamp, remainingCharsToPass, lastVisitedNodeTimestamp) {
             let node = object.getNodeFromTimestamp(nodeTimestamp);
 
             if(!node.isTombstone()) {
                 --remainingCharsToPass; //visiting current node. One char fewer to pass.
             }
 
-            if (remainingCharsToPass === 0) {
+            if (remainingCharsToPass <= 0) {
                 return nodeTimestamp;
             }
 
@@ -165,11 +182,11 @@ class TiTree {
             //iterate over all children starting after the lastVisitedNodeTimestamp
             let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined;
 
-            for (let i = 0; childrenTimestamps < i; i++) {
+            for (let i = 0; i < childrenTimestamps.length; i++) {
 
                 if (iteratedOverLastVisitedNode){
-                    let childNode = object.getNodeFromTimestamp(childrenTimestamps[i]);
-                    return findParentNodeTimestampInColumn(object, childNode, remainingCharsToPass, nodeTimestamp);
+                    // go down in the tree. None of the children has been already visited.
+                    return passXCharsInTheTree(object, childrenTimestamps[i], remainingCharsToPass, undefined);
                 } else {
                     iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
                 }
@@ -178,27 +195,28 @@ class TiTree {
             let parentNodeTimestamp = node.getParentNodeTimestamp();
 
             if (parentNodeTimestamp == null) {
-                throw new Error("Tree does not contain a not with the specified timestamp");
+                throw new Error("Tree does not contain a node with the specified timestamp");
             }
 
-            return findParentNodeTimestampInColumn(object, parentNodeTimestamp, remainingCharsToPass,  nodeTimestamp);
+            return passXCharsInTheTree(object, parentNodeTimestamp, remainingCharsToPass,  nodeTimestamp);
         };
 
 
         /**
-         * TODO traverse the tree until you find a new line => return the row
+         * Traverse the tree until you find a new line.
+         * Returns the timestamp of the new line node.
          *
          * @param {TiTree} object
          * @param {string} nodeTimestamp
          * @param {int} passedNumberOfChars
          * @param {string} lastVisitedNodeTimestamp
-         * @returns {string}
+         * @returns {string} timestamp
          */
         let traverseTreeUntilNewLineReached = function (object, nodeTimestamp, passedNumberOfChars, lastVisitedNodeTimestamp) {
             let node = object.getNodeFromTimestamp(nodeTimestamp);
 
             if(!node.isTombstone()){
-                if (passedNumberOfChars > 0 && node.getValue() === "\n"){
+                if (passedNumberOfChars > 0 && node.getValue() === LINE_SEPARATOR){
                     return nodeTimestamp;
                 }
                 ++passedNumberOfChars;
@@ -209,11 +227,10 @@ class TiTree {
             //iterate over all children starting after the lastVisitedNodeTimestamp
             let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined;
 
-            for (let i = 0; childrenTimestamps < i; i++) {
+            for (let i = 0; i < childrenTimestamps.length; i++) {
 
                 if (iteratedOverLastVisitedNode){
-                    let childNode = object.getNodeFromTimestamp(childrenTimestamps[i]);
-                    return traverseTreeUntilNewLineReached(object, childNode, passedNumberOfChars, nodeTimestamp);
+                    return traverseTreeUntilNewLineReached(object, childrenTimestamps[i], passedNumberOfChars, nodeTimestamp);
                 } else {
                     iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
                 }

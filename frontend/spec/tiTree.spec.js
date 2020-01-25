@@ -134,4 +134,84 @@ describe("TiTree", function () {
         let sequence = tiTree.read();
         expect(sequence).toBe("value1\nvalue2\nvalue3");
     });
+
+    it("inserts newline node at the end when row is unknown", function () {
+        let tiTree = new TiTree();
+        let tiTreeNode1 = new TiTreeNode(1, null, "value1");
+        let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "value2");
+        let tiTreeNode3 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "\n");
+        let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
+        let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "\n");
+
+        tiTree.insertNode(tiTreeNode1);
+        tiTree.insertNode(tiTreeNode2);
+        tiTree.insertNode(tiTreeNode3);
+        tiTree.insertNode(tiTreeNode4);
+        tiTree.insertNode(tiTreeNode5);
+
+        let sequence = tiTree.read();
+        expect(sequence).toBe("value1value2\nvalue3\n");
+    });
+
+    it("inserts newline string with known row", function () {
+        let tiTree = new TiTree();
+        let tiTreeNode1 = new TiTreeNode(1, null, "value1");
+        let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "value2");
+        let tiTreeNode3 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "\n");
+        let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
+        let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "\n");
+
+        tiTree.insertNode(tiTreeNode1);
+        tiTree.insertNode(tiTreeNode2);
+        tiTree.insertNode(tiTreeNode3);
+        tiTree.insertNode(tiTreeNode4);
+        tiTree.insertNode(tiTreeNode5);
+
+        tiTree.insert(1,0,"\n",2);
+
+        let sequence = tiTree.read();
+        expect(sequence).toBe("value1value2\n\nvalue3\n");
+    });
+
+    it("inserts string in the second row", function () {
+        let tiTree = new TiTree();
+        let tiTreeNode1 = new TiTreeNode(1, null, "value1");
+        let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "value2");
+        let tiTreeNode3 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "\n");
+        let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
+        let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "value4");
+
+        tiTree.insertNode(tiTreeNode1);
+        tiTree.insertNode(tiTreeNode2);
+        tiTree.insertNode(tiTreeNode3);
+        tiTree.insertNode(tiTreeNode4);
+        tiTree.insertNode(tiTreeNode5);
+
+        tiTree.insert(1,2,"newValue",2);
+
+        let sequence = tiTree.read();
+        expect(sequence).toBe("value1value2\nvalue3value4newValue");
+    });
+
+    it("inserts string in the first row", function () {
+        let tiTree = new TiTree();
+        let tiTreeNode1 = new TiTreeNode(1, null, "value1");
+        let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "value2");
+        let tiTreeNode3 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "\n");
+        let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
+        let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "value4");
+
+        tiTree.insertNode(tiTreeNode1);
+        tiTree.insertNode(tiTreeNode2);
+        tiTree.insertNode(tiTreeNode3);
+        tiTree.insertNode(tiTreeNode4);
+        tiTree.insertNode(tiTreeNode5);
+
+        tiTree.insert(0,0,"NEW",2);
+
+        let sequence = tiTree.read();
+        expect(sequence).toBe("NEWvalue1value2\nvalue3value4");
+    });
+
+    //TODO add insert-tests with tombstones
 });

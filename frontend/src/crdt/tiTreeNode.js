@@ -1,5 +1,11 @@
 class TiTreeNode {
 
+    static nextFreeId = 0;
+
+    static createUniqueId(){
+        return TiTreeNode.nextFreeId++;
+    }
+
     constructor(replicaId, parentNodeTimestamp, value) {
         let _replicaId = replicaId;
         let _id = TiTreeNode.createUniqueId();
@@ -59,12 +65,6 @@ class TiTreeNode {
             }
 
         };
-    }
-
-    static nextFreeId = 0;
-
-    static createUniqueId(){
-        return TiTreeNode.nextFreeId++;
     }
 
 }
