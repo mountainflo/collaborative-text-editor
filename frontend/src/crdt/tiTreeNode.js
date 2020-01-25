@@ -20,6 +20,10 @@ class TiTreeNode {
             return _parentNodeTimestamp;
         };
 
+        this.setParentNodeTimestamp = function(parentNodeTimestamp){
+            _parentNodeTimestamp = parentNodeTimestamp;
+        };
+
         this.getValue = function(){
             return _value;
         };
@@ -33,7 +37,7 @@ class TiTreeNode {
         };
 
         this.getTimestamp = function () {
-            return _replicaId.toString() + _id.toString();
+            return this.getReplicaId().toString() + this.getId().toString();
         };
 
         this.markAsTombstone = function () {
@@ -48,10 +52,10 @@ class TiTreeNode {
          *
          * @param {string} childTimestamp
          */
-        this.addChild = function (childTimestamp) {
+        this.addChildTimestamp = function (childTimestamp) {
             _childrenTimestamps.push(childTimestamp);
             if (_childrenTimestamps.length > 1) {
-                _childrenTimestamps.sort();
+                _childrenTimestamps.sort((a, b) => {return b-a});
             }
 
         };

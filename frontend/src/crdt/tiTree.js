@@ -21,7 +21,6 @@ class TiTree {
                 _newLineArray.removeNewLineReferenceByTimestamp(timestamp);
             }
 
-            _timestampsAndNodesMap.delete(timestamp);
             node.markAsTombstone();
         };
 
@@ -37,7 +36,8 @@ class TiTree {
                 return "";
             }
 
-            return traverseTree(this, _rootNodeTimestamp);
+            let self = this;
+            return traverseTree(self, _rootNodeTimestamp);
         };
 
         /**
@@ -58,7 +58,8 @@ class TiTree {
                 startNodeTimestamp = _rootNodeTimestamp;
             }
 
-            let parentNodeTimestamp = findParentNodeTimestampInColumn(this, startNodeTimestamp, column, undefined);
+            let self = this;
+            let parentNodeTimestamp = findParentNodeTimestampInColumn(self, startNodeTimestamp, column, undefined);
 
             let node = new TiTreeNode(replicaId, parentNodeTimestamp, value);
             this.insertNode(node,row);
@@ -76,7 +77,8 @@ class TiTree {
             if (node.getValue() === "\n"){
                 let newLineTimestamp;
                 try {
-                    newLineTimestamp = traverseTreeUntilNewLineReached(this, node.getTimestamp(), 0, undefined);
+                    let self = this;
+                    newLineTimestamp = traverseTreeUntilNewLineReached(self, node.getTimestamp(), 0, undefined);
                 } catch (e) {
                     newLineTimestamp = _newLineArray.length();
                 }
@@ -98,10 +100,17 @@ class TiTree {
             let parentNodeTimestamp = node.getParentNodeTimestamp();
 
             if (parentNodeTimestamp == null) {
+                let oldRootNodeTimestamp = _rootNodeTimestamp;
                 _rootNodeTimestamp = nodeTimestamp;
+
+                if(oldRootNodeTimestamp != null) {
+                    node.addChildTimestamp(oldRootNodeTimestamp);
+                    this.getNodeFromTimestamp(oldRootNodeTimestamp).setParentNodeTimestamp(_rootNodeTimestamp);
+                }
+
             } else {
                 let parentNode = _timestampsAndNodesMap.get(parentNodeTimestamp);
-                parentNode.addChild(nodeTimestamp);
+                parentNode.addChildTimestamp(nodeTimestamp);
             }
 
             if(node.getValue() === "\n"){
@@ -115,9 +124,9 @@ class TiTree {
             return _timestampsAndNodesMap.get(timestamp);
         };
 
-        let traverseTree = function (object, nodeTimestamp) {
+        let traverseTree = function (self, nodeTimestamp) {
             let sequence = "";
-            let node =  object.getNodeFromTimestamp(nodeTimestamp);
+            let node =  self.getNodeFromTimestamp(nodeTimestamp);
 
             if (!node.isTombstone()){
                 sequence = node.getValue();
@@ -125,7 +134,7 @@ class TiTree {
 
             node.getChildrenTimestamps().forEach(
                 (childTimestamp) => {
-                    sequence = sequence + traverseTree(childTimestamp)
+                    sequence = sequence + traverseTree(self, childTimestamp)
                 });
 
             return sequence;

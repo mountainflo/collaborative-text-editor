@@ -42,7 +42,7 @@ describe("TiTreeNode", function () {
         let root = new TiTreeNode(1, null, "value11");
         let child = new TiTreeNode(1, root.getTimestamp(), "value12");
 
-        root.addChild(child.getTimestamp());
+        root.addChildTimestamp(child.getTimestamp());
 
         let childrenTimestamps = root.getChildrenTimestamps();
 
@@ -56,22 +56,22 @@ describe("TiTreeNode", function () {
         let child2 = new TiTreeNode(3, root.getTimestamp(), "value12");
         let child3 = new TiTreeNode(2, root.getTimestamp(), "value12");
 
-        root.addChild(child2.getTimestamp());
-        root.addChild(child1.getTimestamp());
+        root.addChildTimestamp(child1.getTimestamp());
+        root.addChildTimestamp(child2.getTimestamp());
 
         let childrenTimestamps = root.getChildrenTimestamps();
 
         expect(childrenTimestamps.length).toBe(2);
-        expect(childrenTimestamps[0]).toBe("21");
-        expect(childrenTimestamps[1]).toBe("32");
+        expect(childrenTimestamps[0]).toBe("32");
+        expect(childrenTimestamps[1]).toBe("21");
 
-        root.addChild(child3.getTimestamp());
+        root.addChildTimestamp(child3.getTimestamp());
 
         childrenTimestamps = root.getChildrenTimestamps();
 
         expect(childrenTimestamps.length).toBe(3);
-        expect(childrenTimestamps[0]).toBe("21");
+        expect(childrenTimestamps[0]).toBe("32");
         expect(childrenTimestamps[1]).toBe("23");
-        expect(childrenTimestamps[2]).toBe("32");
+        expect(childrenTimestamps[2]).toBe("21");
     });
 });
