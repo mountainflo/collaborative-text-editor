@@ -23,6 +23,48 @@ class TiTree {
         };
 
         /**
+         * @param {number} charsToPass
+         * @return {function(TiTree, number, string): boolean} abortionFunction(obj, passedChars, timestamp)
+         */
+        let abortionFunctionCountChars = function(charsToPass){
+            return function(obj, passedChars, timestamp){
+                return passedChars === charsToPass;
+            };
+        };
+
+        /**
+         * Delete value at given position into the tree by marking the node as tombstone.
+         *
+         * @param {int} row
+         * @param {int} column
+         * @return {TiTreeNode} deleted node
+         */
+        this.delete = function (row, column) {
+
+            let startTimestamp;
+
+            if (row > 0) {
+                startTimestamp = _newLineArray.getNewLineReference(row-1);
+            } else {
+                startTimestamp = _rootNodeTimestamp;
+            }
+
+            //goUpTheTree not possible, because the tail/rightest node is unknown
+            let self = this;
+            let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(column));
+
+            let nodeToDelete = this.getNodeFromTimestamp(result.lastNodeTimestamp);
+
+            if (nodeToDelete.getValue() === LINE_SEPARATOR) {
+                _newLineArray.removeNewLineReference(row);
+            }
+
+            nodeToDelete.markAsTombstone();
+
+            return nodeToDelete;
+        };
+
+        /**
          * Mark the node to the corresponding timestamp as tombstone.
          *
          * @param {TiTreeNode} node
@@ -74,10 +116,10 @@ class TiTree {
          */
         this.insert = function (row, column, value, replicaId) {
 
-            let startTimestampForTraversing;
+            let startTimestamp;
 
             if (row > 0) {
-                startTimestampForTraversing = _newLineArray.getNewLineReference(row-1);
+                startTimestamp = _newLineArray.getNewLineReference(row-1);
             } else if (row === 0 && column === 0) {
                 //new root node
                 let node = new TiTreeNode(replicaId, null, value);
@@ -85,13 +127,13 @@ class TiTree {
                 _timestampsAndNodesMap.set(node.getTimestamp(), node);
                 return node;
             } else {
-                startTimestampForTraversing = _rootNodeTimestamp;
+                startTimestamp = _rootNodeTimestamp;
             }
 
             let self = this;
-            let parentNodeTimestamp = passXCharsInTheTree(self, startTimestampForTraversing, column+1, undefined);
+            let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(column));
 
-            let node = new TiTreeNode(replicaId, parentNodeTimestamp, value);
+            let node = new TiTreeNode(replicaId, result.lastNodeTimestamp, value);
             _timestampsAndNodesMap.set(node.getTimestamp(), node);
 
             this.insertNodeIntoRow(node,row);
@@ -179,94 +221,54 @@ class TiTree {
         };
 
         /**
-         * Traverse the tree by passing X Chars.
-         *
-         * Tombstones are ignored. Function will return the timestamp reached,
-         * when already passed X chars.
+         * Go down the tree by starting at a specific timestamp.
+         * While going down the tree until abortion function returns true,
+         * all passed nodes/chars (without tombstones) are counted.
          *
          * @param {TiTree} object
          * @param {string} nodeTimestamp
-         * @param {int} remainingCharsToPass
          * @param {string} lastVisitedNodeTimestamp
-         * @returns {string} timestamp of the node
+         * @param {number} passedChars
+         * @param {function(TiTree, number, string): boolean} abortionFunction(obj, passedChars, timestamp)
+         * @return {{lastNodeTimestamp: string, passedChars: number}}
          */
-        let passXCharsInTheTree = function (object, nodeTimestamp, remainingCharsToPass, lastVisitedNodeTimestamp) {
+        let goDownTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
+
             let node = object.getNodeFromTimestamp(nodeTimestamp);
 
-            if(!node.isTombstone()) {
-                --remainingCharsToPass; //visiting current node. One char fewer to pass.
+            if (!node.isTombstone()) {
+
+                if (abortionFunction(object,passedChars,nodeTimestamp)) {
+                    return {
+                        lastNodeTimestamp:nodeTimestamp,
+                        passedChars:passedChars
+                    };
+                } else {
+                    ++passedChars;
+                }
             }
 
-            if (remainingCharsToPass <= 0) {
-                return nodeTimestamp;
-            }
-
+            let parentNodeTimestamp = node.getParentNodeTimestamp();
             let childrenTimestamps = node.getChildrenTimestamps();
-
-            //iterate over all children starting after the lastVisitedNodeTimestamp
-            let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined;
+            let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined || lastVisitedNodeTimestamp === parentNodeTimestamp;
 
             for (let i = 0; i < childrenTimestamps.length; i++) {
-
                 if (iteratedOverLastVisitedNode){
-                    // go down in the tree. None of the children has been already visited.
-                    return passXCharsInTheTree(object, childrenTimestamps[i], remainingCharsToPass, undefined);
+                    return goDownTheTree(object, childrenTimestamps[i], nodeTimestamp, passedChars, abortionFunction);
                 } else {
                     iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
                 }
             }
 
-            let parentNodeTimestamp = node.getParentNodeTimestamp();
-
-            if (parentNodeTimestamp == null) {
-                throw new Error("Tree does not contain a node with the specified timestamp");
+            let parentNode = object.getNodeFromTimestamp(parentNodeTimestamp);
+            if ((parentNode === undefined)) {
+                return {
+                    lastNodeTimestamp:nodeTimestamp,
+                    passedChars:passedChars
+                };
+            } else {
+                return goDownTheTree(object, parentNodeTimestamp, nodeTimestamp, passedChars, abortionFunction);
             }
-
-            return passXCharsInTheTree(object, parentNodeTimestamp, remainingCharsToPass,  nodeTimestamp);
-        };
-
-
-        /**
-         * Traverse the tree until you find a new line.
-         * Returns the timestamp of the new line node.
-         *
-         * @param {TiTree} object
-         * @param {string} nodeTimestamp
-         * @param {int} passedNumberOfChars
-         * @param {string} lastVisitedNodeTimestamp
-         * @returns {string} timestamp
-         */
-        let traverseTreeUntilNewLineReached = function (object, nodeTimestamp, passedNumberOfChars, lastVisitedNodeTimestamp) {
-            let node = object.getNodeFromTimestamp(nodeTimestamp);
-
-            if(!node.isTombstone()){
-                if (passedNumberOfChars > 0 && node.getValue() === LINE_SEPARATOR){
-                    return nodeTimestamp;
-                }
-                ++passedNumberOfChars;
-            }
-
-            let childrenTimestamps = node.getChildrenTimestamps();
-
-            //iterate over all children starting after the lastVisitedNodeTimestamp
-            let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined;
-
-            for (let i = 0; i < childrenTimestamps.length; i++) {
-
-                if (iteratedOverLastVisitedNode){
-                    return traverseTreeUntilNewLineReached(object, childrenTimestamps[i], passedNumberOfChars, nodeTimestamp);
-                } else {
-                    iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
-                }
-            }
-
-            let parentNodeTimestamp = node.getParentNodeTimestamp();
-
-            if (parentNodeTimestamp == null) {
-                throw new Error("Tree does not contain a not with the specified timestamp"); //TODO reached the last element => new line is at the end
-            }
-
-            return traverseTreeUntilNewLineReached(object, parentNodeTimestamp, passedNumberOfChars, nodeTimestamp);
         };
 
         /**
@@ -278,7 +280,7 @@ class TiTree {
          * @param {string} nodeTimestamp
          * @param {string} lastVisitedNodeTimestamp
          * @param {number} passedChars
-         * @param {function({TiTree}, {number}, {string}): boolean} abortionFunction(obj, passedChars, timestamp)
+         * @param {function(TiTree, number, string): boolean} abortionFunction(obj, passedChars, timestamp)
          * @return {{lastNodeTimestamp: string, passedChars: number}}
          */
         let goUpTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {

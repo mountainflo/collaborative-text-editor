@@ -28,8 +28,7 @@ class Crdt {
          * @return {TiTreeNode} Tombstone Node
          */
         this.localDelete = function(changeObject){
-            //TODO call tiTree with _REPLICA_ID
-            return null;
+            return _tiTree.delete(changeObject.getRow(),changeObject.getColumn());
         };
 
         /**
