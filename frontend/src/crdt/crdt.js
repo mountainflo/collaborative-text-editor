@@ -27,7 +27,7 @@ class Crdt {
          * @param {ChangeObject} changeObject
          * @return {TiTreeNode} Tombstone Node
          */
-        this.localDeletion = function(changeObject){
+        this.localDelete = function(changeObject){
             //TODO call tiTree with _REPLICA_ID
             return null;
         };
@@ -41,21 +41,21 @@ class Crdt {
         };
 
         /**
-         * @param {TiTreeNode} Node
+         * @param {TiTreeNode} node
          * @return {ChangeObject} position and value of the node
          */
-        this.remoteDeletion = function (Node) {
-            //TODO call tiTree and calculate deletion position
-            return new ChangeObject(0,0,"",CHANGE_OBJECT_TYPE.DELETION);
+        this.remoteDelete = function (node) {
+            let position = _tiTree.deleteNode(node);
+            return new ChangeObject(position,"",CHANGE_OBJECT_TYPE.DELETION);
         };
 
         /**
-         * @param {TiTreeNode} Node
+         * @param {TiTreeNode} node
          * @return {ChangeObject} position and value of the node
          */
-        this.remoteInsert = function (Node) {
-            //TODO call tiTree calculate insertion position
-            return new ChangeObject(0,0,"",CHANGE_OBJECT_TYPE.INSERTION);
+        this.remoteInsert = function (node) {
+            let position = _tiTree.insertNode(node);
+            return new ChangeObject(position,node.getValue(),CHANGE_OBJECT_TYPE.INSERTION);
         };
 
     }

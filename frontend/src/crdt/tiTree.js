@@ -1,5 +1,6 @@
 import {NewLineArray} from "./newLineArray";
 import {TiTreeNode} from "./../model/tiTreeNode";
+import {Position} from "../model/position";
 
 const LINE_SEPARATOR = "\n";
 
@@ -11,12 +12,23 @@ class TiTree {
         let _newLineArray = new NewLineArray();
 
         /**
+         * @param {TiTree} obj
+         * @param {number} passedChars
+         * @param {string} timestamp
+         * @return {boolean}
+         */
+        let abortionFunction = function(obj, passedChars, timestamp){
+            let node = obj.getNodeFromTimestamp(timestamp);
+            return passedChars > 0 && node.getValue() === LINE_SEPARATOR;
+        };
+
+        /**
          * Mark the node to the corresponding timestamp as tombstone.
          *
          * @param {TiTreeNode} node
-         * @return {TiTreeNode} node marked as tombstone
+         * @return {Position} position of the changed node
          */
-        this.delete = function (node) {
+        this.deleteNode = function (node) {
 
             let timestamp = node.getTimestamp();
 
@@ -24,9 +36,15 @@ class TiTree {
                 _newLineArray.removeNewLineReferenceByTimestamp(timestamp);
             }
 
+            let self = this;
+            let result = goUpTheTree(self,timestamp,undefined, 0, abortionFunction);
+
+            // getNewLineReferenceByTimestamp returns "-1" if nothing found ==> goUpTheTree reached root node
+            let row = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp) + 1;
+
             node.markAsTombstone();
 
-            return node;
+            return new Position(row, result.passedChars - 1);
         };
 
         /**
@@ -63,7 +81,8 @@ class TiTree {
             } else if (row === 0 && column === 0) {
                 //new root node
                 let node = new TiTreeNode(replicaId, null, value);
-                this.insertNode(node,row);
+                this.insertNodeIntoRow(node,row);
+                _timestampsAndNodesMap.set(node.getTimestamp(), node);
                 return node;
             } else {
                 startTimestampForTraversing = _rootNodeTimestamp;
@@ -73,34 +92,33 @@ class TiTree {
             let parentNodeTimestamp = passXCharsInTheTree(self, startTimestampForTraversing, column+1, undefined);
 
             let node = new TiTreeNode(replicaId, parentNodeTimestamp, value);
-            this.insertNode(node,row);
+            _timestampsAndNodesMap.set(node.getTimestamp(), node);
+
+            this.insertNodeIntoRow(node,row);
 
             return node;
         };
 
 
         /***
-         * Insert of a remote node without a specified row.
+         * Insert of a node without a specified row.
          *
          * @param {TiTreeNode} node
-         * @return {ChangeObject} changeObject
+         * @return {Position} position
          */
         this.insertNode = function (node) {
-            let row = undefined;
 
-            if (node.getValue() === LINE_SEPARATOR){
-                let newLineTimestamp;
-                try {
-                    let self = this;
-                    newLineTimestamp = traverseTreeUntilNewLineReached(self, node.getTimestamp(), 0, undefined);
-                } catch (e) {
-                    newLineTimestamp = _newLineArray.length();
-                }
-                row = _newLineArray.getNewLineReferenceByTimestamp(newLineTimestamp);
-                //TODO start in the previous row and traverse tree until the newline is reached
-            }
+            let timestamp = node.getTimestamp();
+            _timestampsAndNodesMap.set(timestamp, node);
 
-            this.insertNode(node, row);
+            let self = this;
+            let result = goUpTheTree(self,timestamp,undefined, 0, abortionFunction);
+
+            // getNewLineReferenceByTimestamp returns "-1" if nothing found ==> goUpTheTree reached root node
+            let row = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp) + 1;
+            this.insertNodeIntoRow(node,row);
+
+            return new Position(row, result.passedChars - 1);
         };
 
         /**
@@ -109,7 +127,7 @@ class TiTree {
          * @param {TiTreeNode} node
          * @param {int} row
          */
-        this.insertNode = function (node, row) {
+        this.insertNodeIntoRow = function (node, row) {
 
             let nodeTimestamp = node.getTimestamp();
             let parentNodeTimestamp = node.getParentNodeTimestamp();
@@ -131,8 +149,6 @@ class TiTree {
             if(node.getValue() === LINE_SEPARATOR){
                 _newLineArray.addNewLineReference(nodeTimestamp, row);
             }
-
-            _timestampsAndNodesMap.set(nodeTimestamp, node);
         };
 
         this.getNodeFromTimestamp = function (timestamp) {
@@ -251,7 +267,62 @@ class TiTree {
             }
 
             return traverseTreeUntilNewLineReached(object, parentNodeTimestamp, passedNumberOfChars, nodeTimestamp);
-        }
+        };
+
+        /**
+         * Go up the tree by starting at a specific timestamp.
+         * While going up the tree until abortion function returns true,
+         * all passed nodes/chars (without tombstones) are counted.
+         *
+         * @param {TiTree} object
+         * @param {string} nodeTimestamp
+         * @param {string} lastVisitedNodeTimestamp
+         * @param {number} passedChars
+         * @param {function({TiTree}, {number}, {string}): boolean} abortionFunction(obj, passedChars, timestamp)
+         * @return {{lastNodeTimestamp: string, passedChars: number}}
+         */
+        let goUpTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
+
+            let node = object.getNodeFromTimestamp(nodeTimestamp);
+            let parentNodeTimestamp = node.getParentNodeTimestamp();
+            let parentNode = object.getNodeFromTimestamp(parentNodeTimestamp);
+
+            if( (lastVisitedNodeTimestamp !== undefined) && (parentNode !== undefined)) {
+                let childrenTimestamps = parentNode.getChildrenTimestamps();
+
+                let iteratedOverLastVisitedNode = parentNodeTimestamp === lastVisitedNodeTimestamp;
+
+                for (let i = childrenTimestamps.length - 1; i >= 0; i--) {
+
+                    if (iteratedOverLastVisitedNode){
+                        return goUpTheTree(object, childrenTimestamps[i], nodeTimestamp, passedChars, abortionFunction);
+                    } else {
+                        iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
+                    }
+                }
+            }
+
+            if (!node.isTombstone()) {
+
+                if (abortionFunction(object,passedChars,nodeTimestamp)) {
+                    return {
+                        lastNodeTimestamp:nodeTimestamp,
+                        passedChars:passedChars
+                    };
+                } else {
+                    ++passedChars;
+                }
+            }
+
+            if ((parentNode === undefined)) {
+                return {
+                    lastNodeTimestamp:nodeTimestamp,
+                    passedChars:passedChars
+                };
+            } else {
+                return goUpTheTree(object, parentNodeTimestamp, nodeTimestamp, passedChars, abortionFunction);
+            }
+        };
     }
 
 }

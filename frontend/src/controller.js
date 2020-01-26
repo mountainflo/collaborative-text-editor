@@ -37,7 +37,7 @@ class Controller {
          */
         let handleRemoteUpdateCallback = function (node) {
             if (node.isTombstone()) {
-                let changeObject =_crdt.remoteDeletion(node);
+                let changeObject =_crdt.remoteDelete(node);
                 codeMirrorEditor.delete(changeObject);
             } else {
                 let changeObject = _crdt.remoteInsert(node);
@@ -54,7 +54,7 @@ class Controller {
          */
         let handleLocalUpdateCallback = function (changeObject) {
             if (changeObject.getType() === CHANGE_OBJECT_TYPE.DELETION) {
-                let node = _crdt.localDeletion(changeObject);
+                let node = _crdt.localDelete(changeObject);
                 collabTexteditorClient.sendLocalUpdate(node);
             } else {
                 let node = _crdt.localInsert(changeObject);

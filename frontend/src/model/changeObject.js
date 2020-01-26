@@ -4,18 +4,21 @@ const CHANGE_OBJECT_TYPE = Object.freeze({
 });
 
 class ChangeObject {
-    constructor(row, column, value, CHANGE_OBJECT_TYPE) {
-        const _row = row;
-        const _column = column;
+    constructor(position, value, CHANGE_OBJECT_TYPE) {
+        const _position = position;
         const _value = value;
         const _type = CHANGE_OBJECT_TYPE;
 
         this.getRow = function () {
-            return _row;
+            return this.getPosition().getRow();
         };
 
         this.getColumn = function () {
-            return _column;
+            return this.getPosition().getColumn();
+        };
+
+        this.getPosition = function () {
+            return _position;
         };
 
         this.getValue = function () {

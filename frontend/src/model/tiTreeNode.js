@@ -1,7 +1,8 @@
 class TiTreeNode {
 
-    static nextFreeId = 0;
+    static nextFreeId = 0;  //total number of chars limited to the size of the js-number
 
+    //TODO id changes if node from other replica is inserted
     static createUniqueId(){
         return TiTreeNode.nextFreeId++;
     }
@@ -43,6 +44,7 @@ class TiTreeNode {
         };
 
         this.getTimestamp = function () {
+            //TODO first id than replica id
             return this.getReplicaId().toString() + this.getId().toString();
         };
 

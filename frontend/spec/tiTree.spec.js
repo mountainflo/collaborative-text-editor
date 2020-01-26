@@ -1,5 +1,16 @@
 import {TiTree} from "../src/crdt/tiTree";
 import {TiTreeNode} from "../src/model/tiTreeNode";
+import {Position} from "../src/model/position";
+
+/**
+ * @param {Position} pos
+ * @param {number} row
+ * @param {number} ch
+ */
+function checkPosition(pos, row, ch){
+    expect(pos.getRow()).toBe(row);
+    expect(pos.getColumn()).toBe(ch);
+}
 
 describe("TiTree", function () {
 
@@ -18,7 +29,7 @@ describe("TiTree", function () {
         let tiTree = new TiTree();
         let tiTreeNode = new TiTreeNode(1, null, "value");
 
-        tiTree.insertNode(tiTreeNode,0);
+        checkPosition(tiTree.insertNode(tiTreeNode), 0,0);
         let insertedNode = tiTree.getNodeFromTimestamp(tiTreeNode.getTimestamp());
 
         expect(insertedNode).toBe(tiTreeNode);
@@ -32,8 +43,8 @@ describe("TiTree", function () {
         let tiTreeNode1 = new TiTreeNode(1, null, "value1");
         let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "value2");
 
-        tiTree.insertNode(tiTreeNode1,0);
-        tiTree.insertNode(tiTreeNode2,0);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
 
         let insertedNode1 = tiTree.getNodeFromTimestamp(tiTreeNode1.getTimestamp());
         let insertedNode2 = tiTree.getNodeFromTimestamp(tiTreeNode2.getTimestamp());
@@ -50,8 +61,8 @@ describe("TiTree", function () {
         let tiTreeNode1 = new TiTreeNode(1, null, "value1");
         let tiTreeNode2 = new TiTreeNode(1, null, "value2");
 
-        tiTree.insertNode(tiTreeNode1,0);
-        tiTree.insertNode(tiTreeNode2,0);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,0);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value2value1");
@@ -62,8 +73,8 @@ describe("TiTree", function () {
         let tiTreeNode1 = new TiTreeNode(1, null, "value1");
         let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "\n");
 
-        tiTree.insertNode(tiTreeNode1,0);
-        tiTree.insertNode(tiTreeNode2,0);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value1\n");
@@ -73,12 +84,12 @@ describe("TiTree", function () {
         let tiTree = new TiTree();
         let tiTreeNode = new TiTreeNode(1, null, "value");
 
-        tiTree.insertNode(tiTreeNode);
+        checkPosition(tiTree.insertNode(tiTreeNode), 0,0);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value");
 
-        tiTree.delete(tiTreeNode);
+        checkPosition(tiTree.deleteNode(tiTreeNode), 0,0);
         sequence = tiTree.read();
 
         expect(tiTreeNode.isTombstone()).toBe(true);
@@ -91,14 +102,14 @@ describe("TiTree", function () {
         let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "\n");
         let tiTreeNode3 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "value3");
 
-        tiTree.insertNode(tiTreeNode1,0);
-        tiTree.insertNode(tiTreeNode2,0);
-        tiTree.insertNode(tiTreeNode3,1);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 1,0);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value1\nvalue3");
 
-        tiTree.delete(tiTreeNode2);
+        checkPosition(tiTree.deleteNode(tiTreeNode2), 0,1);
         sequence = tiTree.read();
 
         expect(tiTreeNode2.isTombstone()).toBe(true);
@@ -110,8 +121,8 @@ describe("TiTree", function () {
         let tiTreeNode1 = new TiTreeNode(1, null, "value1");
         let tiTreeNode2 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "value2");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value1value2");
@@ -125,11 +136,11 @@ describe("TiTree", function () {
         let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
         let tiTreeNode5 = new TiTreeNode(1, tiTreeNode1.getTimestamp(), "\n");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
-        tiTree.insertNode(tiTreeNode3);
-        tiTree.insertNode(tiTreeNode4);
-        tiTree.insertNode(tiTreeNode5);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 0,2);
+        checkPosition(tiTree.insertNode(tiTreeNode4), 1,0);
+        checkPosition(tiTree.insertNode(tiTreeNode5), 0,1);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value1\nvalue2\nvalue3");
@@ -143,11 +154,11 @@ describe("TiTree", function () {
         let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
         let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "\n");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
-        tiTree.insertNode(tiTreeNode3);
-        tiTree.insertNode(tiTreeNode4);
-        tiTree.insertNode(tiTreeNode5);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 0,2);
+        checkPosition(tiTree.insertNode(tiTreeNode4), 1,0);
+        checkPosition(tiTree.insertNode(tiTreeNode5), 1,1);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("value1value2\nvalue3\n");
@@ -161,11 +172,11 @@ describe("TiTree", function () {
         let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
         let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "\n");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
-        tiTree.insertNode(tiTreeNode3);
-        tiTree.insertNode(tiTreeNode4);
-        tiTree.insertNode(tiTreeNode5);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 0,2);
+        checkPosition(tiTree.insertNode(tiTreeNode4), 1,0);
+        checkPosition(tiTree.insertNode(tiTreeNode5), 1,1);
 
         tiTree.insert(1,0,"\n",2);
 
@@ -181,11 +192,11 @@ describe("TiTree", function () {
         let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
         let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "value4");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
-        tiTree.insertNode(tiTreeNode3);
-        tiTree.insertNode(tiTreeNode4);
-        tiTree.insertNode(tiTreeNode5);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 0,2);
+        checkPosition(tiTree.insertNode(tiTreeNode4), 1,0);
+        checkPosition(tiTree.insertNode(tiTreeNode5), 1,1);
 
         tiTree.insert(1,2,"newValue",2);
 
@@ -201,11 +212,11 @@ describe("TiTree", function () {
         let tiTreeNode4 = new TiTreeNode(1, tiTreeNode3.getTimestamp(), "value3");
         let tiTreeNode5 = new TiTreeNode(1, tiTreeNode4.getTimestamp(), "value4");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
-        tiTree.insertNode(tiTreeNode3);
-        tiTree.insertNode(tiTreeNode4);
-        tiTree.insertNode(tiTreeNode5);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 0,2);
+        checkPosition(tiTree.insertNode(tiTreeNode4), 1,0);
+        checkPosition(tiTree.insertNode(tiTreeNode5), 1,1);
 
         tiTree.insert(0,0,"NEW",2);
 
@@ -224,20 +235,20 @@ describe("TiTree", function () {
         let tiTreeNode7 = new TiTreeNode(1, tiTreeNode2.getTimestamp(), "f");
         let tiTreeNode8 = new TiTreeNode(1, tiTreeNode7.getTimestamp(), "g");
 
-        tiTree.insertNode(tiTreeNode1);
-        tiTree.insertNode(tiTreeNode2);
-        tiTree.insertNode(tiTreeNode3);
-        tiTree.insertNode(tiTreeNode4);
-        tiTree.insertNode(tiTreeNode5);
+        checkPosition(tiTree.insertNode(tiTreeNode1), 0,0);
+        checkPosition(tiTree.insertNode(tiTreeNode2), 0,1);
+        checkPosition(tiTree.insertNode(tiTreeNode3), 0,2);
+        checkPosition(tiTree.insertNode(tiTreeNode4), 1,0);
+        checkPosition(tiTree.insertNode(tiTreeNode5), 1,1);
 
         let sequence = tiTree.read();
         expect(sequence).toBe("ab\ncd");
 
-        tiTree.insertNode(tiTreeNode6);
+        checkPosition(tiTree.insertNode(tiTreeNode6), 0,2);
         sequence = tiTree.read();
         expect(sequence).toBe("ab\n\ncd");
 
-        tiTree.insertNode(tiTreeNode7);
+        checkPosition(tiTree.insertNode(tiTreeNode7), 0,2);
         sequence = tiTree.read();
         expect(sequence).toBe("abf\n\ncd");
 
@@ -246,7 +257,7 @@ describe("TiTree", function () {
         sequence = tiTree.read();
         expect(sequence).toBe("ab\ncd");
 
-        tiTree.insertNode(tiTreeNode8);
+        checkPosition(tiTree.insertNode(tiTreeNode8), 0,2);
         sequence = tiTree.read();
         expect(sequence).toBe("abg\ncd");
     });
