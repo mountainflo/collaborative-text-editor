@@ -1,4 +1,5 @@
 import {TiTreeNode} from "../src/model/tiTreeNode";
+import {Timestamp} from "../src/model/timestamp";
 
 describe("TiTreeNode", function () {
 
@@ -9,7 +10,7 @@ describe("TiTreeNode", function () {
     it("is not a tombstone if the node is new", function () {
         let tiTreeNode = new TiTreeNode(null, null, "value");
 
-        expect(tiTreeNode.isTombstone()).toBe(false);
+        expect(tiTreeNode.isTombstone()).toBeFalse();
     });
 
     it("marked as tombstone has no value", function () {
@@ -17,7 +18,7 @@ describe("TiTreeNode", function () {
 
         tiTreeNode.markAsTombstone();
 
-        expect(tiTreeNode.isTombstone()).toBe(true);
+        expect(tiTreeNode.isTombstone()).toBeTrue();
         expect(tiTreeNode.getValue()).toBe("");
     });
 
@@ -34,8 +35,8 @@ describe("TiTreeNode", function () {
         let rootTimestamp = root.getTimestamp();
         let childTimestamp = child.getTimestamp();
 
-        expect(rootTimestamp).toBe("10");
-        expect(childTimestamp).toBe("11");
+        expect(rootTimestamp.equals(new Timestamp(0,1))).toBeTrue();
+        expect(childTimestamp.equals(new Timestamp(1,1))).toBeTrue();
     });
 
     it("is able to add a child", function () {
@@ -47,7 +48,7 @@ describe("TiTreeNode", function () {
         let childrenTimestamps = root.getChildrenTimestamps();
 
         expect(childrenTimestamps.length).toBe(1);
-        expect(childrenTimestamps[0]).toBe("11");
+        expect(childrenTimestamps[0].equals(new Timestamp(1,1))).toBeTrue();
     });
 
     it("sorts its children in descending order", function () {
@@ -62,16 +63,16 @@ describe("TiTreeNode", function () {
         let childrenTimestamps = root.getChildrenTimestamps();
 
         expect(childrenTimestamps.length).toBe(2);
-        expect(childrenTimestamps[0]).toBe("32");
-        expect(childrenTimestamps[1]).toBe("21");
+        expect(childrenTimestamps[0].equals(new Timestamp(2,3))).toBeTrue();
+        expect(childrenTimestamps[1].equals(new Timestamp(1,2))).toBeTrue();
 
         root.addChildTimestamp(child3.getTimestamp());
 
         childrenTimestamps = root.getChildrenTimestamps();
 
         expect(childrenTimestamps.length).toBe(3);
-        expect(childrenTimestamps[0]).toBe("32");
-        expect(childrenTimestamps[1]).toBe("23");
-        expect(childrenTimestamps[2]).toBe("21");
+        expect(childrenTimestamps[0].equals(new Timestamp(3,2))).toBeTrue();
+        expect(childrenTimestamps[1].equals(new Timestamp(2,3))).toBeTrue();
+        expect(childrenTimestamps[2].equals(new Timestamp(1,2))).toBeTrue();
     });
 });

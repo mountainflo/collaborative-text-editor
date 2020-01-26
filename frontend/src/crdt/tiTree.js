@@ -14,7 +14,7 @@ class TiTree {
         /**
          * @param {TiTree} obj
          * @param {number} passedChars
-         * @param {string} timestamp
+         * @param {Timestamp} timestamp
          * @return {boolean}
          */
         let abortionFunction = function(obj, passedChars, timestamp){
@@ -24,7 +24,7 @@ class TiTree {
 
         /**
          * @param {number} charsToPass
-         * @return {function(TiTree, number, string): boolean} abortionFunction(obj, passedChars, timestamp)
+         * @return {function(TiTree, number, Timestamp): boolean} abortionFunction(obj, passedChars, timestamp)
          */
         let abortionFunctionCountChars = function(charsToPass){
             return function(obj, passedChars, timestamp){
@@ -124,7 +124,7 @@ class TiTree {
                 //new root node
                 let node = new TiTreeNode(replicaId, null, value);
                 this.insertNodeIntoRow(node,row);
-                _timestampsAndNodesMap.set(node.getTimestamp(), node);
+                this.setTimestampForNode(node.getTimestamp(), node);
                 return node;
             } else {
                 startTimestamp = _rootNodeTimestamp;
@@ -134,7 +134,7 @@ class TiTree {
             let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(column));
 
             let node = new TiTreeNode(replicaId, result.lastNodeTimestamp, value);
-            _timestampsAndNodesMap.set(node.getTimestamp(), node);
+            this.setTimestampForNode(node.getTimestamp(), node);
 
             this.insertNodeIntoRow(node,row);
 
@@ -150,8 +150,10 @@ class TiTree {
          */
         this.insertNode = function (node) {
 
+            TiTreeNode.updateUniqueId(node.getId());
+
             let timestamp = node.getTimestamp();
-            _timestampsAndNodesMap.set(timestamp, node);
+            this.setTimestampForNode(timestamp, node);
 
             let self = this;
             let result = goUpTheTree(self,timestamp,undefined, 0, abortionFunction);
@@ -184,7 +186,7 @@ class TiTree {
                 }
 
             } else {
-                let parentNode = _timestampsAndNodesMap.get(parentNodeTimestamp);
+                let parentNode = this.getNodeFromTimestamp(parentNodeTimestamp);
                 parentNode.addChildTimestamp(nodeTimestamp);
             }
 
@@ -193,15 +195,31 @@ class TiTree {
             }
         };
 
+        /**
+         * @param {Timestamp} timestamp
+         * @return {TiTreeNode}
+         */
         this.getNodeFromTimestamp = function (timestamp) {
-            return _timestampsAndNodesMap.get(timestamp);
+
+            if (timestamp === null) {
+                return undefined;
+            }
+            return _timestampsAndNodesMap.get(timestamp.toString());
+        };
+
+        /**
+         * @param {Timestamp} timestamp
+         * @param {TiTreeNode} node
+         */
+        this.setTimestampForNode = function (timestamp,node) {
+            _timestampsAndNodesMap.set(timestamp.toString(),node);
         };
 
         /**
          * Create sequence by traversing the complete tree. Ignore all tombstones.
          *
          * @param {TiTree} self
-         * @param {string} nodeTimestamp
+         * @param {Timestamp} nodeTimestamp
          * @returns {string} sequence
          */
         let traverseTree = function (self, nodeTimestamp) {
@@ -226,11 +244,11 @@ class TiTree {
          * all passed nodes/chars (without tombstones) are counted.
          *
          * @param {TiTree} object
-         * @param {string} nodeTimestamp
-         * @param {string} lastVisitedNodeTimestamp
+         * @param {Timestamp} nodeTimestamp
+         * @param {Timestamp} lastVisitedNodeTimestamp
          * @param {number} passedChars
-         * @param {function(TiTree, number, string): boolean} abortionFunction(obj, passedChars, timestamp)
-         * @return {{lastNodeTimestamp: string, passedChars: number}}
+         * @param {function(TiTree, number, Timestamp): boolean} abortionFunction(obj, passedChars, timestamp)
+         * @return {{lastNodeTimestamp: Timestamp, passedChars: number}}
          */
         let goDownTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
 
@@ -277,11 +295,11 @@ class TiTree {
          * all passed nodes/chars (without tombstones) are counted.
          *
          * @param {TiTree} object
-         * @param {string} nodeTimestamp
-         * @param {string} lastVisitedNodeTimestamp
+         * @param {Timestamp} nodeTimestamp
+         * @param {Timestamp} lastVisitedNodeTimestamp
          * @param {number} passedChars
-         * @param {function(TiTree, number, string): boolean} abortionFunction(obj, passedChars, timestamp)
-         * @return {{lastNodeTimestamp: string, passedChars: number}}
+         * @param {function(TiTree, number, Timestamp): boolean} abortionFunction(obj, passedChars, timestamp)
+         * @return {{lastNodeTimestamp: Timestamp, passedChars: number}}
          */
         let goUpTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
 

@@ -1,15 +1,23 @@
+import {Timestamp} from "./timestamp";
+
 class TiTreeNode {
 
-    static nextFreeId = 0;  //total number of chars limited to the size of the js-number
+    static nextFreeId = 0;  //TODO total number of ids limited to the size of the js-number
 
-    //TODO id changes if node from other replica is inserted
     static createUniqueId(){
         return TiTreeNode.nextFreeId++;
+    }
+
+    static updateUniqueId(id){
+        if( id >= TiTreeNode.nextFreeId) {
+            TiTreeNode.nextFreeId = ++id;
+        }
     }
 
     constructor(replicaId, parentNodeTimestamp, value) {
         let _replicaId = replicaId;
         let _id = TiTreeNode.createUniqueId();
+        let _timestamp = new Timestamp(_id, _replicaId);
         let _parentNodeTimestamp = parentNodeTimestamp;
         let _value = value;
         let _tombstone = false;
@@ -43,9 +51,11 @@ class TiTreeNode {
             return _childrenTimestamps;
         };
 
+        /**
+         * @return {Timestamp}
+         */
         this.getTimestamp = function () {
-            //TODO first id than replica id
-            return this.getReplicaId().toString() + this.getId().toString();
+            return _timestamp;
         };
 
         this.markAsTombstone = function () {
@@ -58,12 +68,13 @@ class TiTreeNode {
          * The children timestamps are sorted in descending order
          * of the timestamps.
          *
-         * @param {string} childTimestamp
+         * @param {Timestamp} childTimestamp
          */
         this.addChildTimestamp = function (childTimestamp) {
+            //TODO is it possible one childTimestamp is inserted two times?
             _childrenTimestamps.push(childTimestamp);
             if (_childrenTimestamps.length > 1) {
-                _childrenTimestamps.sort((a, b) => {return b-a});
+                _childrenTimestamps.sort((a, b) => {return a.compareTo(b)});
             }
 
         };
