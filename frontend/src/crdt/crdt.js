@@ -15,7 +15,6 @@ class Crdt {
 
 
         - localUpdate //needs to executed asap after user input
-        - read (not absolutely necessary)
         - remoteUpdate(Node, delete|insert)
             - can be delayed -> use a buffer with events
             - should return column and row of the char to insert in the editor (asap after position calculation)

@@ -1,46 +1,132 @@
 import {Editor} from "../src/editor";
+import {Position} from "../src/model/position";
+import {ChangeObject, CHANGE_OBJECT_TYPE} from "../src/model/changeObject";
+import {TiTreeNode} from "../src/model/tiTreeNode";
 
 
-describe("Editor position is transformed", function() {
+describe("Editor", function() {
 
-    it("dummy", function () {
-        expect(true).toBe(true);
+    let editor;
+
+    beforeEach(function() {
+        let divObject = document.createElement("DIV");
+        let textAreaObject = document.createElement("TEXTAREA");
+        divObject.appendChild(textAreaObject);
+        editor = new Editor(textAreaObject);
     });
 
-    /*it("when input text is empty", function() {
+    it("inserts first value", function () {
+        let value = "a";
 
-        let actual = Editor.transformMatrixPositionToSequencePosition("", 0, 0);
-        expect(actual).toBe(0);
+        let changeObject = new ChangeObject(new Position(0,0),value, CHANGE_OBJECT_TYPE.INSERTION);
+        editor.insert(changeObject);
+
+        expect(editor.getValue()).toBe(value);
     });
 
-    it("when input text is a single line", function() {
+    it("deletes the only value", function () {
 
-        let actual = Editor.transformMatrixPositionToSequencePosition("012x45\n", 0, 3);
-        expect(actual).toBe(3);
+        let changeObject1 = new ChangeObject(new Position(0,0),"a", CHANGE_OBJECT_TYPE.INSERTION);
+        editor.insert(changeObject1);
+
+        let changeObject2 = new ChangeObject(new Position(0,0),"", CHANGE_OBJECT_TYPE.DELETION);
+        editor.delete(changeObject2);
+
+        expect(editor.getValue()).toBe("");
     });
 
-    it("when new character is a new line sign", function() {
+    it("inserts value between other", function () {
+        let changeObject1 = new ChangeObject(new Position(0,0),"a", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject2 = new ChangeObject(new Position(0,1),"c", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject3 = new ChangeObject(new Position(0,2),"d", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject4 = new ChangeObject(new Position(0,1),"b", CHANGE_OBJECT_TYPE.INSERTION);
+        editor.insert(changeObject1);
+        editor.insert(changeObject2);
+        editor.insert(changeObject3);
+        expect(editor.getValue()).toBe("acd");
 
-        let actual = Editor.transformMatrixPositionToSequencePosition("012345\n", 0, 6);
-        expect(actual).toBe(6);
+        editor.insert(changeObject4);
+        expect(editor.getValue()).toBe("abcd");
     });
 
-    it("when new character is in a new line", function() {
+    it("deletes value between other", function () {
+        let changeObject1 = new ChangeObject(new Position(0,0),"a", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject2 = new ChangeObject(new Position(0,1),"b", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject3 = new ChangeObject(new Position(0,2),"c", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject4 = new ChangeObject(new Position(0,1),"", CHANGE_OBJECT_TYPE.DELETION);
+        editor.insert(changeObject1);
+        editor.insert(changeObject2);
+        editor.insert(changeObject3);
+        expect(editor.getValue()).toBe("abc");
 
-        let actual = Editor.transformMatrixPositionToSequencePosition("012345\nx", 1, 0);
-        expect(actual).toBe(7);
+        editor.delete(changeObject4);
+        expect(editor.getValue()).toBe("ac");
     });
 
-    it("when new character is at the end of the second line", function() {
+    it("inserts and deletes value in second row", function () {
+        let changeObject1 = new ChangeObject(new Position(0,0),"a", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject2 = new ChangeObject(new Position(0,1),"b", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject3 = new ChangeObject(new Position(0,2),"\n", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject4 = new ChangeObject(new Position(1,0),"d", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject5 = new ChangeObject(new Position(1,0),"c", CHANGE_OBJECT_TYPE.INSERTION);
 
-        let actual = Editor.transformMatrixPositionToSequencePosition("012345\n789\n", 1, 3);
-        expect(actual).toBe(10);
+        editor.insert(changeObject1);
+        editor.insert(changeObject2);
+        editor.insert(changeObject3);
+        console.debug(editor.getValue());
+        expect(editor.getValue()).toBe("ab\n");
+
+        editor.insert(changeObject4);
+        console.debug(editor.getValue());
+        expect(editor.getValue()).toBe("ab\nd");
+
+        editor.insert(changeObject5);
+        expect(editor.getValue()).toBe("ab\ncd");
+        console.debug(editor.getValue());
+
+        let changeObject6 = new ChangeObject(new Position(0,2),"", CHANGE_OBJECT_TYPE.DELETION);
+        editor.delete(changeObject6);
+        console.debug(editor.getValue());
+        expect(editor.getValue()).toBe("abcd");
     });
 
-    it("when input text contains several empty lines", function() {
+    it("inserts and deletes several new lines", function () {
+        let changeObject1 = new ChangeObject(new Position(0,0),"a", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject2 = new ChangeObject(new Position(0,1),"\n", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject3 = new ChangeObject(new Position(1,0),"\n", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject4 = new ChangeObject(new Position(2,0),"\n", CHANGE_OBJECT_TYPE.INSERTION);
 
-        let actual = Editor.transformMatrixPositionToSequencePosition("012345\n1\n2\n3\n012\n", 4, 2);
-        expect(actual).toBe(15);
-    });*/
+        editor.insert(changeObject1);
+        editor.insert(changeObject2);
+        editor.insert(changeObject3);
+        editor.insert(changeObject4);
+        expect(editor.getValue()).toBe("a\n\n\n");
+
+        let changeObject5 = new ChangeObject(new Position(2,0),"", CHANGE_OBJECT_TYPE.DELETION);
+        editor.delete(changeObject5);
+        expect(editor.getValue()).toBe("a\n\n");
+
+        let changeObject6 = new ChangeObject(new Position(1,0),"b", CHANGE_OBJECT_TYPE.INSERTION);
+        editor.insert(changeObject6);
+        expect(editor.getValue()).toBe("a\nb\n");
+    });
+
+    it('adds new line in the middle of a line', function () {
+        let changeObject1 = new ChangeObject(new Position(0,0),"a", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject2 = new ChangeObject(new Position(0,1),"c", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject3 = new ChangeObject(new Position(0,1),"\n", CHANGE_OBJECT_TYPE.INSERTION);
+        let changeObject4 = new ChangeObject(new Position(1,0),"b", CHANGE_OBJECT_TYPE.INSERTION);
+
+        editor.insert(changeObject1);
+        editor.insert(changeObject2);
+        expect(editor.getValue()).toBe("ac");
+
+
+        editor.insert(changeObject3);
+        expect(editor.getValue()).toBe("a\nc");
+
+        editor.insert(changeObject4);
+        expect(editor.getValue()).toBe("a\nbc");
+    });
 });
 

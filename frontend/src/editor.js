@@ -7,6 +7,9 @@ import {CHANGE_OBJECT_TYPE, ChangeObject} from "./model/changeObject";
 const NIGHT_THEME = "3024-night";
 const MARKDOWN_MODE = "markdown";
 const LOG_OBJECT = "[editor] ";
+const LINE_SEPARATOR = "\n";
+const ORIGIN_REMOTE_DELETE = "remoteDelete";
+const ORIGIN_REMOTE_INSERT = "remoteInsert";
 
 /**
  * Class for accessing CodeMirror Editor
@@ -38,7 +41,7 @@ class Editor {
                         obj.text,
                         obj.origin === "+input" ? CHANGE_OBJECT_TYPE.INSERTION : CHANGE_OBJECT_TYPE.DELETION);
 
-                    callback(changeObject); //TODO call async
+                    callback(changeObject); //async call (remote updates can be delayed)
                 }
             });
         };
@@ -48,21 +51,57 @@ class Editor {
          */
         this.insert = function (changeObject) {
             let from = {line: changeObject.getRow(), ch: changeObject.getColumn()};
-            _editor.doc.replaceRange(changeObject.getValue(), from, null, "remoteInsert");
+            _editor.doc.replaceRange(changeObject.getValue(), from, null, ORIGIN_REMOTE_INSERT);
         };
 
         /**
          * @param {ChangeObject} changeObject
          */
         this.delete = function (changeObject) {
-            let from = {line: changeObject.getRow(), ch: changeObject.getColumn()};
-            let to = {line: changeObject.getRow(), ch: changeObject.getColumn() + 1};
-            _editor.doc.replaceRange(changeObject.getValue(), from, to, "remoteDelete");
+
+            if(isNewLineSignBetweenTwoLines(_editor, changeObject))  {
+                mergeTwoLines(_editor, changeObject.getRow(), changeObject.getRow() + 1);
+            } else {
+                let from = {line: changeObject.getRow(), ch: changeObject.getColumn()};
+                let to = {line: changeObject.getRow(), ch: changeObject.getColumn() + 1};
+                _editor.doc.replaceRange("", from, to, ORIGIN_REMOTE_DELETE);
+            }
         };
 
         this.getValue = function () {
-            return _editor.getValue("<br />"); //TODO replace line separator with "\n" when inserting into textarea
+            return _editor.getValue(LINE_SEPARATOR);
         };
+
+        /**
+         * @param {_editor} editorObject
+         * @param {ChangeObject} changeObject
+         * @return {boolean}
+         */
+        let isNewLineSignBetweenTwoLines = function(editorObject, changeObject){
+            let lineContent = _editor.doc.getLine(changeObject.getRow());
+
+            return changeObject.getColumn() === lineContent.length
+                && _editor.doc.lineCount() - 1 !== changeObject.getRow;
+        };
+
+        /**
+         * @param {_editor} obj
+         * @param {number} firstRowNumber
+         * @param {number} secondRowNumber
+         */
+        let mergeTwoLines = function (obj, firstRowNumber, secondRowNumber) {
+
+            let firstRow = _editor.doc.getLine(firstRowNumber);
+            let secondRow = _editor.doc.getLine(secondRowNumber);
+
+            let from = {line: firstRowNumber, ch: firstRow.length};
+            let to = {line: secondRowNumber, ch: secondRow.length};
+
+            console.log(from);
+            console.log(to);
+
+            _editor.doc.replaceRange(secondRow,from,to,ORIGIN_REMOTE_DELETE);
+        }
     }
 
 

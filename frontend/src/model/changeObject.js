@@ -6,7 +6,7 @@ const CHANGE_OBJECT_TYPE = Object.freeze({
 class ChangeObject {
     constructor(position, value, CHANGE_OBJECT_TYPE) {
         const _position = position;
-        const _value = value;
+        const _value = value; //TODO editor only deletes chars. Adjust value to chars
         const _type = CHANGE_OBJECT_TYPE;
 
         this.getRow = function () {

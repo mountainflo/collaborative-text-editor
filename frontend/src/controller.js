@@ -52,12 +52,12 @@ class Controller {
         /**
          * @param {ChangeObject} changeObject
          */
-        let handleLocalUpdateCallback = function (changeObject) {
-            if (changeObject.getType() === CHANGE_OBJECT_TYPE.DELETION) {
-                let node = _crdt.localDelete(changeObject);
+        let handleLocalUpdateCallback = async function (changeObject) {
+            if (changeObject.getType() === CHANGE_OBJECT_TYPE.INSERTION) {
+                let node = _crdt.localInsert(changeObject);
                 collabTexteditorClient.sendLocalUpdate(node);
             } else {
-                let node = _crdt.localInsert(changeObject);
+                let node = _crdt.localDelete(changeObject);
                 collabTexteditorClient.sendLocalUpdate(node);
             }
         };
