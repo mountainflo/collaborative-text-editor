@@ -73,20 +73,16 @@ describe("Editor", function() {
         editor.insert(changeObject1);
         editor.insert(changeObject2);
         editor.insert(changeObject3);
-        console.debug(editor.getValue());
         expect(editor.getValue()).toBe("ab\n");
 
         editor.insert(changeObject4);
-        console.debug(editor.getValue());
         expect(editor.getValue()).toBe("ab\nd");
 
         editor.insert(changeObject5);
         expect(editor.getValue()).toBe("ab\ncd");
-        console.debug(editor.getValue());
 
         let changeObject6 = new ChangeObject(new Position(0,2),"", CHANGE_OBJECT_TYPE.DELETION);
         editor.delete(changeObject6);
-        console.debug(editor.getValue());
         expect(editor.getValue()).toBe("abcd");
     });
 

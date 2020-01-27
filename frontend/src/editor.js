@@ -97,9 +97,6 @@ class Editor {
             let from = {line: firstRowNumber, ch: firstRow.length};
             let to = {line: secondRowNumber, ch: secondRow.length};
 
-            console.log(from);
-            console.log(to);
-
             _editor.doc.replaceRange(secondRow,from,to,ORIGIN_REMOTE_DELETE);
         }
     }
