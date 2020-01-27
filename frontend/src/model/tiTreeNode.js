@@ -14,13 +14,21 @@ class TiTreeNode {
         }
     }
 
-    constructor(replicaId, parentNodeTimestamp, value) {
+    constructor(replicaId, parentNodeTimestamp, value, ...args) {
+        let _id;
+        let _tombstone = false;
+
+        if (args.length === 2) {
+            _id = args[0];
+            _tombstone = args[1];
+        } else {
+            _id = TiTreeNode.createUniqueId();
+        }
+
         let _replicaId = replicaId;
-        let _id = TiTreeNode.createUniqueId();
         let _timestamp = new Timestamp(_id, _replicaId);
         let _parentNodeTimestamp = parentNodeTimestamp;
         let _value = value;
-        let _tombstone = false;
         let _childrenTimestamps = [];
 
         this.getReplicaId = function(){

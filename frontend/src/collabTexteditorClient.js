@@ -1,5 +1,7 @@
-const {TextUpdateRequest, TextUpdateReply, ServerUpdateSubscriptionRequest, ServerUpdateSubscriptionResponse} = require('./collabTexteditorService_pb.js');
+const {Empty, ReplicaResponse, LocalUpdateRequest, LocalUpdateReply, RemoteUpdateRequest, RemoteUpdateResponse} = require('./collabTexteditorService_pb.js');
 const {CollabTexteditorServiceClient} = require('./collabTexteditorService_grpc_web_pb.js');
+import {TiTreeNode} from "./model/tiTreeNode";
+import {protobufNodeToTiTreeNode, tiTreeNodeToProtobufNode} from "./collabTexteditorModelTransformer";
 
 const LOG_OBJECT = "[cte service] ";
 
@@ -11,27 +13,41 @@ class CollabTexteditorClient {
     constructor(host) {
         this.collabTextEditorService = new CollabTexteditorServiceClient(host, '', '');
 
-        //let _replicaId = this.collabTextEditorService.createReplicaId();
-        let _replicaId = 0;
+        let _replicaId = this.createReplicaId();
+
+
+        this.createReplicaId = function(){
+            let request = new Empty();
+            return this.collabTextEditorService.createReplicaId(request, {}, function (err, response) {
+                    if (err) {
+                        console.log(LOG_OBJECT + err.code);
+                        console.log(LOG_OBJECT + err.message);
+                    } else {
+                        console.log(LOG_OBJECT + "createReplicaId response message: " + response);
+                    }
+
+                    return response.getReplicaId();
+                }
+            );
+        };
 
         /**
-         *
          * @param {TiTreeNode} node
          */
         this.sendLocalUpdate = function(node) {
-            let request = new TextUpdateRequest();
-            request.setTextupdate(text);
+            let request = new LocalUpdateRequest();
+            request.setNode(tiTreeNodeToProtobufNode(node));
 
-            console.log(LOG_OBJECT + "client sends: " + request.getTextupdate());
+            console.log(LOG_OBJECT + "client sends: " + request.getNode());
 
-            this.collabTextEditorService.sendTextUpdate(request, {}, function(err, response) {
+            this.collabTextEditorService.sendLocalUpdate(request, {}, function(err, response) {
                 if (err) {
                     console.log(LOG_OBJECT + err.code);
                     console.log(LOG_OBJECT + err.message);
                 } else {
-                    console.log(LOG_OBJECT + "Client receives server response after sending text update: " + response);
+                    console.log(LOG_OBJECT + "sendLocalUpdate response message: " + response);
                 }
-            })
+            });
         };
 
         this.getReplicaId = function () {
@@ -42,14 +58,13 @@ class CollabTexteditorClient {
 
             console.log(LOG_OBJECT + "subscribe for updates ...");
 
-            let streamRequest = new ServerUpdateSubscriptionRequest();
-            streamRequest.setClientid(99);  //TODO create unique id
-            streamRequest.setSubscription(true);
+            let streamRequest = new RemoteUpdateRequest();
+            streamRequest.setReplicaid(_replicaId);
 
             const RETRY_TIME_INTERVAL_IN_MS = 5000;
             while(true){
 
-                let stream = this.collabTextEditorService.subscribeToServerUpdate(streamRequest, null);
+                let stream = this.collabTextEditorService.subscribeForRemoteUpdates(streamRequest, null);
                 console.log(LOG_OBJECT + "opened new stream object", stream);
 
                 await listenForUpdates(stream, callback).then(
@@ -68,7 +83,9 @@ class CollabTexteditorClient {
                 resolve => {
                     stream.on('data',function (response) {
                         console.log(LOG_OBJECT + "received stream data", response);
-                        callback(response);
+
+                        let tiTreeNode = protobufNodeToTiTreeNode(response.getNode());
+                        callback(tiTreeNode);
                     });
 
                     stream.on('error', function(err) {

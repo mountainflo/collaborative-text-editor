@@ -44,6 +44,8 @@ func (c collabTexteditorService) SubscribeToServerUpdate(request *pb.ServerUpdat
 
 	log.Println("Client " + strconv.Itoa(int(request.ClientId)) + " subscribes for updates")
 
+	//TODO new client gets transferred all change events. Go server has to store the event history
+
 	channelId := c.createNewChannel()
 
 	c.forwardChannelEventsToStream(channelId, stream) // func returns only if stream/channel is closed or an error occurs

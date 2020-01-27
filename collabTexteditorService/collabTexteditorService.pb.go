@@ -24,199 +24,391 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type TextUpdateRequest struct {
-	TextUpdate           string   `protobuf:"bytes,1,opt,name=textUpdate,proto3" json:"textUpdate,omitempty"`
+type Empty struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *TextUpdateRequest) Reset()         { *m = TextUpdateRequest{} }
-func (m *TextUpdateRequest) String() string { return proto.CompactTextString(m) }
-func (*TextUpdateRequest) ProtoMessage()    {}
-func (*TextUpdateRequest) Descriptor() ([]byte, []int) {
+func (m *Empty) Reset()         { *m = Empty{} }
+func (m *Empty) String() string { return proto.CompactTextString(m) }
+func (*Empty) ProtoMessage()    {}
+func (*Empty) Descriptor() ([]byte, []int) {
 	return fileDescriptor_1d586bc6f59f1daa, []int{0}
 }
 
-func (m *TextUpdateRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TextUpdateRequest.Unmarshal(m, b)
+func (m *Empty) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Empty.Unmarshal(m, b)
 }
-func (m *TextUpdateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TextUpdateRequest.Marshal(b, m, deterministic)
+func (m *Empty) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Empty.Marshal(b, m, deterministic)
 }
-func (m *TextUpdateRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TextUpdateRequest.Merge(m, src)
+func (m *Empty) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Empty.Merge(m, src)
 }
-func (m *TextUpdateRequest) XXX_Size() int {
-	return xxx_messageInfo_TextUpdateRequest.Size(m)
+func (m *Empty) XXX_Size() int {
+	return xxx_messageInfo_Empty.Size(m)
 }
-func (m *TextUpdateRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_TextUpdateRequest.DiscardUnknown(m)
+func (m *Empty) XXX_DiscardUnknown() {
+	xxx_messageInfo_Empty.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_TextUpdateRequest proto.InternalMessageInfo
+var xxx_messageInfo_Empty proto.InternalMessageInfo
 
-func (m *TextUpdateRequest) GetTextUpdate() string {
+type ReplicaResponse struct {
+	ReplicaId            int64    `protobuf:"varint,1,opt,name=replicaId,proto3" json:"replicaId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReplicaResponse) Reset()         { *m = ReplicaResponse{} }
+func (m *ReplicaResponse) String() string { return proto.CompactTextString(m) }
+func (*ReplicaResponse) ProtoMessage()    {}
+func (*ReplicaResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{1}
+}
+
+func (m *ReplicaResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReplicaResponse.Unmarshal(m, b)
+}
+func (m *ReplicaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReplicaResponse.Marshal(b, m, deterministic)
+}
+func (m *ReplicaResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReplicaResponse.Merge(m, src)
+}
+func (m *ReplicaResponse) XXX_Size() int {
+	return xxx_messageInfo_ReplicaResponse.Size(m)
+}
+func (m *ReplicaResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReplicaResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReplicaResponse proto.InternalMessageInfo
+
+func (m *ReplicaResponse) GetReplicaId() int64 {
 	if m != nil {
-		return m.TextUpdate
+		return m.ReplicaId
 	}
-	return ""
+	return 0
 }
 
-type TextUpdateReply struct {
+type LocalUpdateRequest struct {
+	Node                 *TiTreeNode `protobuf:"bytes,1,opt,name=node,proto3" json:"node,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *LocalUpdateRequest) Reset()         { *m = LocalUpdateRequest{} }
+func (m *LocalUpdateRequest) String() string { return proto.CompactTextString(m) }
+func (*LocalUpdateRequest) ProtoMessage()    {}
+func (*LocalUpdateRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{2}
+}
+
+func (m *LocalUpdateRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LocalUpdateRequest.Unmarshal(m, b)
+}
+func (m *LocalUpdateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LocalUpdateRequest.Marshal(b, m, deterministic)
+}
+func (m *LocalUpdateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LocalUpdateRequest.Merge(m, src)
+}
+func (m *LocalUpdateRequest) XXX_Size() int {
+	return xxx_messageInfo_LocalUpdateRequest.Size(m)
+}
+func (m *LocalUpdateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_LocalUpdateRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LocalUpdateRequest proto.InternalMessageInfo
+
+func (m *LocalUpdateRequest) GetNode() *TiTreeNode {
+	if m != nil {
+		return m.Node
+	}
+	return nil
+}
+
+type LocalUpdateReply struct {
 	StatusMessage        string   `protobuf:"bytes,1,opt,name=statusMessage,proto3" json:"statusMessage,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *TextUpdateReply) Reset()         { *m = TextUpdateReply{} }
-func (m *TextUpdateReply) String() string { return proto.CompactTextString(m) }
-func (*TextUpdateReply) ProtoMessage()    {}
-func (*TextUpdateReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{1}
+func (m *LocalUpdateReply) Reset()         { *m = LocalUpdateReply{} }
+func (m *LocalUpdateReply) String() string { return proto.CompactTextString(m) }
+func (*LocalUpdateReply) ProtoMessage()    {}
+func (*LocalUpdateReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{3}
 }
 
-func (m *TextUpdateReply) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_TextUpdateReply.Unmarshal(m, b)
+func (m *LocalUpdateReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LocalUpdateReply.Unmarshal(m, b)
 }
-func (m *TextUpdateReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_TextUpdateReply.Marshal(b, m, deterministic)
+func (m *LocalUpdateReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LocalUpdateReply.Marshal(b, m, deterministic)
 }
-func (m *TextUpdateReply) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_TextUpdateReply.Merge(m, src)
+func (m *LocalUpdateReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LocalUpdateReply.Merge(m, src)
 }
-func (m *TextUpdateReply) XXX_Size() int {
-	return xxx_messageInfo_TextUpdateReply.Size(m)
+func (m *LocalUpdateReply) XXX_Size() int {
+	return xxx_messageInfo_LocalUpdateReply.Size(m)
 }
-func (m *TextUpdateReply) XXX_DiscardUnknown() {
-	xxx_messageInfo_TextUpdateReply.DiscardUnknown(m)
+func (m *LocalUpdateReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_LocalUpdateReply.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_TextUpdateReply proto.InternalMessageInfo
+var xxx_messageInfo_LocalUpdateReply proto.InternalMessageInfo
 
-func (m *TextUpdateReply) GetStatusMessage() string {
+func (m *LocalUpdateReply) GetStatusMessage() string {
 	if m != nil {
 		return m.StatusMessage
 	}
 	return ""
 }
 
-type ServerUpdateSubscriptionRequest struct {
-	ClientId             int64    `protobuf:"varint,1,opt,name=clientId,proto3" json:"clientId,omitempty"`
-	Subscription         bool     `protobuf:"varint,2,opt,name=subscription,proto3" json:"subscription,omitempty"`
+type RemoteUpdateRequest struct {
+	ReplicaId            int64    `protobuf:"varint,1,opt,name=replicaId,proto3" json:"replicaId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ServerUpdateSubscriptionRequest) Reset()         { *m = ServerUpdateSubscriptionRequest{} }
-func (m *ServerUpdateSubscriptionRequest) String() string { return proto.CompactTextString(m) }
-func (*ServerUpdateSubscriptionRequest) ProtoMessage()    {}
-func (*ServerUpdateSubscriptionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{2}
+func (m *RemoteUpdateRequest) Reset()         { *m = RemoteUpdateRequest{} }
+func (m *RemoteUpdateRequest) String() string { return proto.CompactTextString(m) }
+func (*RemoteUpdateRequest) ProtoMessage()    {}
+func (*RemoteUpdateRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{4}
 }
 
-func (m *ServerUpdateSubscriptionRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ServerUpdateSubscriptionRequest.Unmarshal(m, b)
+func (m *RemoteUpdateRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RemoteUpdateRequest.Unmarshal(m, b)
 }
-func (m *ServerUpdateSubscriptionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ServerUpdateSubscriptionRequest.Marshal(b, m, deterministic)
+func (m *RemoteUpdateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RemoteUpdateRequest.Marshal(b, m, deterministic)
 }
-func (m *ServerUpdateSubscriptionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ServerUpdateSubscriptionRequest.Merge(m, src)
+func (m *RemoteUpdateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoteUpdateRequest.Merge(m, src)
 }
-func (m *ServerUpdateSubscriptionRequest) XXX_Size() int {
-	return xxx_messageInfo_ServerUpdateSubscriptionRequest.Size(m)
+func (m *RemoteUpdateRequest) XXX_Size() int {
+	return xxx_messageInfo_RemoteUpdateRequest.Size(m)
 }
-func (m *ServerUpdateSubscriptionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ServerUpdateSubscriptionRequest.DiscardUnknown(m)
+func (m *RemoteUpdateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoteUpdateRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ServerUpdateSubscriptionRequest proto.InternalMessageInfo
+var xxx_messageInfo_RemoteUpdateRequest proto.InternalMessageInfo
 
-func (m *ServerUpdateSubscriptionRequest) GetClientId() int64 {
+func (m *RemoteUpdateRequest) GetReplicaId() int64 {
 	if m != nil {
-		return m.ClientId
+		return m.ReplicaId
 	}
 	return 0
 }
 
-func (m *ServerUpdateSubscriptionRequest) GetSubscription() bool {
+type RemoteUpdateResponse struct {
+	Node                 *TiTreeNode `protobuf:"bytes,1,opt,name=node,proto3" json:"node,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
+	XXX_unrecognized     []byte      `json:"-"`
+	XXX_sizecache        int32       `json:"-"`
+}
+
+func (m *RemoteUpdateResponse) Reset()         { *m = RemoteUpdateResponse{} }
+func (m *RemoteUpdateResponse) String() string { return proto.CompactTextString(m) }
+func (*RemoteUpdateResponse) ProtoMessage()    {}
+func (*RemoteUpdateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{5}
+}
+
+func (m *RemoteUpdateResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RemoteUpdateResponse.Unmarshal(m, b)
+}
+func (m *RemoteUpdateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RemoteUpdateResponse.Marshal(b, m, deterministic)
+}
+func (m *RemoteUpdateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RemoteUpdateResponse.Merge(m, src)
+}
+func (m *RemoteUpdateResponse) XXX_Size() int {
+	return xxx_messageInfo_RemoteUpdateResponse.Size(m)
+}
+func (m *RemoteUpdateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RemoteUpdateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_RemoteUpdateResponse proto.InternalMessageInfo
+
+func (m *RemoteUpdateResponse) GetNode() *TiTreeNode {
 	if m != nil {
-		return m.Subscription
+		return m.Node
+	}
+	return nil
+}
+
+type TiTreeNode struct {
+	Timestamp            *TiTreeNode_Timestamp   `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	ParentTimestamp      *TiTreeNode_Timestamp   `protobuf:"bytes,2,opt,name=parentTimestamp,proto3" json:"parentTimestamp,omitempty"`
+	Value                string                  `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Tombstone            bool                    `protobuf:"varint,4,opt,name=tombstone,proto3" json:"tombstone,omitempty"`
+	ChildrenTimestamps   []*TiTreeNode_Timestamp `protobuf:"bytes,5,rep,name=childrenTimestamps,proto3" json:"childrenTimestamps,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
+	XXX_unrecognized     []byte                  `json:"-"`
+	XXX_sizecache        int32                   `json:"-"`
+}
+
+func (m *TiTreeNode) Reset()         { *m = TiTreeNode{} }
+func (m *TiTreeNode) String() string { return proto.CompactTextString(m) }
+func (*TiTreeNode) ProtoMessage()    {}
+func (*TiTreeNode) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{6}
+}
+
+func (m *TiTreeNode) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TiTreeNode.Unmarshal(m, b)
+}
+func (m *TiTreeNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TiTreeNode.Marshal(b, m, deterministic)
+}
+func (m *TiTreeNode) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TiTreeNode.Merge(m, src)
+}
+func (m *TiTreeNode) XXX_Size() int {
+	return xxx_messageInfo_TiTreeNode.Size(m)
+}
+func (m *TiTreeNode) XXX_DiscardUnknown() {
+	xxx_messageInfo_TiTreeNode.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_TiTreeNode proto.InternalMessageInfo
+
+func (m *TiTreeNode) GetTimestamp() *TiTreeNode_Timestamp {
+	if m != nil {
+		return m.Timestamp
+	}
+	return nil
+}
+
+func (m *TiTreeNode) GetParentTimestamp() *TiTreeNode_Timestamp {
+	if m != nil {
+		return m.ParentTimestamp
+	}
+	return nil
+}
+
+func (m *TiTreeNode) GetValue() string {
+	if m != nil {
+		return m.Value
+	}
+	return ""
+}
+
+func (m *TiTreeNode) GetTombstone() bool {
+	if m != nil {
+		return m.Tombstone
 	}
 	return false
 }
 
-type ServerUpdateSubscriptionResponse struct {
-	LatestServerContent  string   `protobuf:"bytes,1,opt,name=latestServerContent,proto3" json:"latestServerContent,omitempty"`
+func (m *TiTreeNode) GetChildrenTimestamps() []*TiTreeNode_Timestamp {
+	if m != nil {
+		return m.ChildrenTimestamps
+	}
+	return nil
+}
+
+type TiTreeNode_Timestamp struct {
+	ReplicaId            int64    `protobuf:"varint,1,opt,name=replicaId,proto3" json:"replicaId,omitempty"`
+	Id                   int64    `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ServerUpdateSubscriptionResponse) Reset()         { *m = ServerUpdateSubscriptionResponse{} }
-func (m *ServerUpdateSubscriptionResponse) String() string { return proto.CompactTextString(m) }
-func (*ServerUpdateSubscriptionResponse) ProtoMessage()    {}
-func (*ServerUpdateSubscriptionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{3}
+func (m *TiTreeNode_Timestamp) Reset()         { *m = TiTreeNode_Timestamp{} }
+func (m *TiTreeNode_Timestamp) String() string { return proto.CompactTextString(m) }
+func (*TiTreeNode_Timestamp) ProtoMessage()    {}
+func (*TiTreeNode_Timestamp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{6, 0}
 }
 
-func (m *ServerUpdateSubscriptionResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ServerUpdateSubscriptionResponse.Unmarshal(m, b)
+func (m *TiTreeNode_Timestamp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_TiTreeNode_Timestamp.Unmarshal(m, b)
 }
-func (m *ServerUpdateSubscriptionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ServerUpdateSubscriptionResponse.Marshal(b, m, deterministic)
+func (m *TiTreeNode_Timestamp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_TiTreeNode_Timestamp.Marshal(b, m, deterministic)
 }
-func (m *ServerUpdateSubscriptionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ServerUpdateSubscriptionResponse.Merge(m, src)
+func (m *TiTreeNode_Timestamp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_TiTreeNode_Timestamp.Merge(m, src)
 }
-func (m *ServerUpdateSubscriptionResponse) XXX_Size() int {
-	return xxx_messageInfo_ServerUpdateSubscriptionResponse.Size(m)
+func (m *TiTreeNode_Timestamp) XXX_Size() int {
+	return xxx_messageInfo_TiTreeNode_Timestamp.Size(m)
 }
-func (m *ServerUpdateSubscriptionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ServerUpdateSubscriptionResponse.DiscardUnknown(m)
+func (m *TiTreeNode_Timestamp) XXX_DiscardUnknown() {
+	xxx_messageInfo_TiTreeNode_Timestamp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ServerUpdateSubscriptionResponse proto.InternalMessageInfo
+var xxx_messageInfo_TiTreeNode_Timestamp proto.InternalMessageInfo
 
-func (m *ServerUpdateSubscriptionResponse) GetLatestServerContent() string {
+func (m *TiTreeNode_Timestamp) GetReplicaId() int64 {
 	if m != nil {
-		return m.LatestServerContent
+		return m.ReplicaId
 	}
-	return ""
+	return 0
+}
+
+func (m *TiTreeNode_Timestamp) GetId() int64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
 }
 
 func init() {
-	proto.RegisterType((*TextUpdateRequest)(nil), "collabTexteditorService.TextUpdateRequest")
-	proto.RegisterType((*TextUpdateReply)(nil), "collabTexteditorService.TextUpdateReply")
-	proto.RegisterType((*ServerUpdateSubscriptionRequest)(nil), "collabTexteditorService.ServerUpdateSubscriptionRequest")
-	proto.RegisterType((*ServerUpdateSubscriptionResponse)(nil), "collabTexteditorService.ServerUpdateSubscriptionResponse")
+	proto.RegisterType((*Empty)(nil), "collabTexteditorService.Empty")
+	proto.RegisterType((*ReplicaResponse)(nil), "collabTexteditorService.ReplicaResponse")
+	proto.RegisterType((*LocalUpdateRequest)(nil), "collabTexteditorService.LocalUpdateRequest")
+	proto.RegisterType((*LocalUpdateReply)(nil), "collabTexteditorService.LocalUpdateReply")
+	proto.RegisterType((*RemoteUpdateRequest)(nil), "collabTexteditorService.RemoteUpdateRequest")
+	proto.RegisterType((*RemoteUpdateResponse)(nil), "collabTexteditorService.RemoteUpdateResponse")
+	proto.RegisterType((*TiTreeNode)(nil), "collabTexteditorService.TiTreeNode")
+	proto.RegisterType((*TiTreeNode_Timestamp)(nil), "collabTexteditorService.TiTreeNode.Timestamp")
 }
 
 func init() { proto.RegisterFile("collabTexteditorService.proto", fileDescriptor_1d586bc6f59f1daa) }
 
 var fileDescriptor_1d586bc6f59f1daa = []byte{
-	// 280 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x4f, 0x4b, 0xf3, 0x40,
-	0x10, 0xc6, 0x49, 0x5f, 0x78, 0xa9, 0x83, 0x7f, 0x70, 0x3d, 0xa4, 0x04, 0xd4, 0x10, 0x3c, 0x04,
-	0x0f, 0xa5, 0xd8, 0x83, 0x7a, 0xee, 0xc9, 0x83, 0x97, 0x24, 0x7e, 0x80, 0x4d, 0x32, 0xca, 0xc2,
-	0xb2, 0xbb, 0xee, 0x4c, 0x44, 0xbf, 0x85, 0x07, 0x3f, 0xb0, 0xa4, 0x69, 0x6b, 0x8a, 0x0d, 0x8a,
-	0xc7, 0x7d, 0x66, 0x9e, 0x79, 0x76, 0x7e, 0xbb, 0x70, 0x5a, 0x59, 0xad, 0x65, 0x59, 0xe0, 0x2b,
-	0x63, 0xad, 0xd8, 0xfa, 0x1c, 0xfd, 0x8b, 0xaa, 0x70, 0xea, 0xbc, 0x65, 0x2b, 0xc2, 0x81, 0x72,
-	0x32, 0x87, 0xe3, 0x56, 0x7c, 0x70, 0xb5, 0x64, 0xcc, 0xf0, 0xb9, 0x41, 0x62, 0x71, 0x06, 0xc0,
-	0x1b, 0x71, 0x12, 0xc4, 0x41, 0xba, 0x97, 0xf5, 0x94, 0xe4, 0x1a, 0x8e, 0xfa, 0x26, 0xa7, 0xdf,
-	0xc4, 0x05, 0x1c, 0x10, 0x4b, 0x6e, 0xe8, 0x1e, 0x89, 0xe4, 0xd3, 0xda, 0xb5, 0x2d, 0x26, 0x12,
-	0xce, 0xdb, 0x60, 0xf4, 0x9d, 0x35, 0x6f, 0x4a, 0xaa, 0xbc, 0x72, 0xac, 0xac, 0x59, 0x67, 0x47,
-	0x30, 0xae, 0xb4, 0x42, 0xc3, 0x77, 0xf5, 0x72, 0xc6, 0xbf, 0x6c, 0x73, 0x16, 0x09, 0xec, 0x53,
-	0xcf, 0x32, 0x19, 0xc5, 0x41, 0x3a, 0xce, 0xb6, 0xb4, 0xa4, 0x80, 0x78, 0x38, 0x82, 0x9c, 0x35,
-	0x84, 0x62, 0x06, 0x27, 0x5a, 0x32, 0x12, 0x77, 0x9d, 0x0b, 0x6b, 0x18, 0x0d, 0xaf, 0xae, 0xbc,
-	0xab, 0x74, 0xf5, 0x31, 0x82, 0x70, 0xb1, 0x1b, 0xa1, 0x78, 0x84, 0xc3, 0x1c, 0x4d, 0xfd, 0x45,
-	0x44, 0x5c, 0x4e, 0x87, 0x5e, 0xe3, 0x1b, 0xeb, 0x28, 0xfd, 0x55, 0x6f, 0x8b, 0xf8, 0x3d, 0x80,
-	0x70, 0xb5, 0x4e, 0x89, 0x85, 0xed, 0x6f, 0x29, 0x6e, 0x06, 0xa7, 0xfc, 0xc0, 0x3b, 0xba, 0xfd,
-	0x83, 0xb3, 0xc3, 0x38, 0x0b, 0xca, 0xff, 0xcb, 0xdf, 0x35, 0xff, 0x0c, 0x00, 0x00, 0xff, 0xff,
-	0x2d, 0x86, 0x69, 0x91, 0x7e, 0x02, 0x00, 0x00,
+	// 412 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0x41, 0x8b, 0xd3, 0x40,
+	0x14, 0x26, 0xc9, 0x56, 0xcd, 0x13, 0x8d, 0x8c, 0x0b, 0x1b, 0x83, 0x4a, 0x89, 0x1e, 0x2a, 0xb8,
+	0x55, 0x76, 0x0f, 0xea, 0xb9, 0x28, 0x88, 0x56, 0x61, 0x1a, 0xf1, 0x20, 0x1e, 0x26, 0x99, 0x87,
+	0x0e, 0x24, 0x99, 0x71, 0x66, 0x52, 0xac, 0x27, 0xff, 0xa4, 0xff, 0x47, 0x4c, 0x6a, 0xd3, 0xb4,
+	0x4d, 0xe9, 0xf6, 0x98, 0xef, 0xbd, 0xef, 0xcb, 0xf7, 0x5e, 0xde, 0x17, 0x78, 0x90, 0xc9, 0x3c,
+	0x67, 0x69, 0x82, 0x3f, 0x2d, 0x72, 0x61, 0xa5, 0x9e, 0xa1, 0x9e, 0x8b, 0x0c, 0xc7, 0x4a, 0x4b,
+	0x2b, 0xc9, 0x59, 0x4f, 0x39, 0xbe, 0x0e, 0x83, 0xd7, 0x85, 0xb2, 0x8b, 0xf8, 0x19, 0x04, 0x14,
+	0x55, 0x2e, 0x32, 0x46, 0xd1, 0x28, 0x59, 0x1a, 0x24, 0xf7, 0xc1, 0xd7, 0x0d, 0xf4, 0x96, 0x87,
+	0xce, 0xd0, 0x19, 0x79, 0xb4, 0x05, 0xe2, 0x29, 0x90, 0xf7, 0x32, 0x63, 0xf9, 0x27, 0xc5, 0x99,
+	0x45, 0x8a, 0x3f, 0x2a, 0x34, 0x96, 0xbc, 0x80, 0x93, 0x52, 0x72, 0xac, 0xdb, 0x6f, 0x5e, 0x3c,
+	0x1a, 0xf7, 0xd9, 0x4a, 0x44, 0xa2, 0x11, 0x3f, 0x48, 0x8e, 0xb4, 0x26, 0xc4, 0x2f, 0xe1, 0x4e,
+	0x47, 0x4e, 0xe5, 0x0b, 0xf2, 0x18, 0x6e, 0x19, 0xcb, 0x6c, 0x65, 0xa6, 0x68, 0x0c, 0xfb, 0xd6,
+	0xa8, 0xfa, 0xb4, 0x0b, 0xc6, 0x97, 0x70, 0x97, 0x62, 0x21, 0x2d, 0x76, 0x9d, 0xec, 0x77, 0xff,
+	0x11, 0x4e, 0xbb, 0xa4, 0xe5, 0xcc, 0x47, 0xfb, 0xff, 0xed, 0x01, 0xb4, 0x20, 0x79, 0x07, 0xbe,
+	0x15, 0x05, 0x1a, 0xcb, 0x0a, 0xb5, 0x14, 0x3b, 0x3f, 0x40, 0x6c, 0x9c, 0xfc, 0x27, 0xd1, 0x96,
+	0x4f, 0x3e, 0x43, 0xa0, 0x98, 0xc6, 0xd2, 0xae, 0xaa, 0xa1, 0x7b, 0x8c, 0xe4, 0xa6, 0x0a, 0x39,
+	0x85, 0xc1, 0x9c, 0xe5, 0x15, 0x86, 0x5e, 0xbd, 0xd8, 0xe6, 0xe1, 0xdf, 0xe6, 0xac, 0x2c, 0x52,
+	0x63, 0x65, 0x89, 0xe1, 0xc9, 0xd0, 0x19, 0xdd, 0xa0, 0x2d, 0x40, 0xbe, 0x02, 0xc9, 0xbe, 0x8b,
+	0x9c, 0x6b, 0x2c, 0x57, 0x42, 0x26, 0x1c, 0x0c, 0xbd, 0xab, 0xfb, 0xd9, 0x21, 0x14, 0xbd, 0x02,
+	0xbf, 0xf5, 0xb7, 0xf7, 0x1b, 0x92, 0xdb, 0xe0, 0x0a, 0x5e, 0x6f, 0xc2, 0xa3, 0xae, 0xe0, 0x17,
+	0x7f, 0x5c, 0x38, 0x9b, 0xec, 0x7e, 0x3f, 0xf9, 0x02, 0xc1, 0x44, 0xe3, 0xf2, 0xb2, 0x1a, 0xfa,
+	0xc3, 0x5e, 0xb3, 0x75, 0x22, 0xa2, 0x51, 0x6f, 0x7d, 0x33, 0x28, 0x0c, 0x82, 0x19, 0x96, 0x7c,
+	0xed, 0x7e, 0xc9, 0x21, 0x97, 0x13, 0x3d, 0xe9, 0x6d, 0xda, 0x8a, 0xc2, 0x2f, 0xb8, 0x37, 0xab,
+	0x52, 0x93, 0x69, 0x91, 0xe2, 0x1b, 0xa9, 0xd7, 0x6f, 0xd7, 0x90, 0xa7, 0x7b, 0x9c, 0x6e, 0x05,
+	0x23, 0x3a, 0x3f, 0xb0, 0xbb, 0x19, 0xee, 0xb9, 0x93, 0x5e, 0xab, 0xff, 0x21, 0x97, 0x7f, 0x03,
+	0x00, 0x00, 0xff, 0xff, 0x06, 0x13, 0xdb, 0x33, 0x64, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -231,8 +423,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CollabTexteditorServiceClient interface {
-	SendTextUpdate(ctx context.Context, in *TextUpdateRequest, opts ...grpc.CallOption) (*TextUpdateReply, error)
-	SubscribeToServerUpdate(ctx context.Context, in *ServerUpdateSubscriptionRequest, opts ...grpc.CallOption) (CollabTexteditorService_SubscribeToServerUpdateClient, error)
+	CreateReplicaId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ReplicaResponse, error)
+	SendLocalUpdate(ctx context.Context, in *TiTreeNode, opts ...grpc.CallOption) (*LocalUpdateReply, error)
+	SubscribeForRemoteUpdates(ctx context.Context, in *RemoteUpdateRequest, opts ...grpc.CallOption) (CollabTexteditorService_SubscribeForRemoteUpdatesClient, error)
 }
 
 type collabTexteditorServiceClient struct {
@@ -243,21 +436,30 @@ func NewCollabTexteditorServiceClient(cc *grpc.ClientConn) CollabTexteditorServi
 	return &collabTexteditorServiceClient{cc}
 }
 
-func (c *collabTexteditorServiceClient) SendTextUpdate(ctx context.Context, in *TextUpdateRequest, opts ...grpc.CallOption) (*TextUpdateReply, error) {
-	out := new(TextUpdateReply)
-	err := c.cc.Invoke(ctx, "/collabTexteditorService.CollabTexteditorService/SendTextUpdate", in, out, opts...)
+func (c *collabTexteditorServiceClient) CreateReplicaId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ReplicaResponse, error) {
+	out := new(ReplicaResponse)
+	err := c.cc.Invoke(ctx, "/collabTexteditorService.CollabTexteditorService/CreateReplicaId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *collabTexteditorServiceClient) SubscribeToServerUpdate(ctx context.Context, in *ServerUpdateSubscriptionRequest, opts ...grpc.CallOption) (CollabTexteditorService_SubscribeToServerUpdateClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_CollabTexteditorService_serviceDesc.Streams[0], "/collabTexteditorService.CollabTexteditorService/SubscribeToServerUpdate", opts...)
+func (c *collabTexteditorServiceClient) SendLocalUpdate(ctx context.Context, in *TiTreeNode, opts ...grpc.CallOption) (*LocalUpdateReply, error) {
+	out := new(LocalUpdateReply)
+	err := c.cc.Invoke(ctx, "/collabTexteditorService.CollabTexteditorService/SendLocalUpdate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &collabTexteditorServiceSubscribeToServerUpdateClient{stream}
+	return out, nil
+}
+
+func (c *collabTexteditorServiceClient) SubscribeForRemoteUpdates(ctx context.Context, in *RemoteUpdateRequest, opts ...grpc.CallOption) (CollabTexteditorService_SubscribeForRemoteUpdatesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_CollabTexteditorService_serviceDesc.Streams[0], "/collabTexteditorService.CollabTexteditorService/SubscribeForRemoteUpdates", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &collabTexteditorServiceSubscribeForRemoteUpdatesClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -267,17 +469,17 @@ func (c *collabTexteditorServiceClient) SubscribeToServerUpdate(ctx context.Cont
 	return x, nil
 }
 
-type CollabTexteditorService_SubscribeToServerUpdateClient interface {
-	Recv() (*ServerUpdateSubscriptionResponse, error)
+type CollabTexteditorService_SubscribeForRemoteUpdatesClient interface {
+	Recv() (*RemoteUpdateResponse, error)
 	grpc.ClientStream
 }
 
-type collabTexteditorServiceSubscribeToServerUpdateClient struct {
+type collabTexteditorServiceSubscribeForRemoteUpdatesClient struct {
 	grpc.ClientStream
 }
 
-func (x *collabTexteditorServiceSubscribeToServerUpdateClient) Recv() (*ServerUpdateSubscriptionResponse, error) {
-	m := new(ServerUpdateSubscriptionResponse)
+func (x *collabTexteditorServiceSubscribeForRemoteUpdatesClient) Recv() (*RemoteUpdateResponse, error) {
+	m := new(RemoteUpdateResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -286,61 +488,83 @@ func (x *collabTexteditorServiceSubscribeToServerUpdateClient) Recv() (*ServerUp
 
 // CollabTexteditorServiceServer is the server API for CollabTexteditorService service.
 type CollabTexteditorServiceServer interface {
-	SendTextUpdate(context.Context, *TextUpdateRequest) (*TextUpdateReply, error)
-	SubscribeToServerUpdate(*ServerUpdateSubscriptionRequest, CollabTexteditorService_SubscribeToServerUpdateServer) error
+	CreateReplicaId(context.Context, *Empty) (*ReplicaResponse, error)
+	SendLocalUpdate(context.Context, *TiTreeNode) (*LocalUpdateReply, error)
+	SubscribeForRemoteUpdates(*RemoteUpdateRequest, CollabTexteditorService_SubscribeForRemoteUpdatesServer) error
 }
 
 // UnimplementedCollabTexteditorServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedCollabTexteditorServiceServer struct {
 }
 
-func (*UnimplementedCollabTexteditorServiceServer) SendTextUpdate(ctx context.Context, req *TextUpdateRequest) (*TextUpdateReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendTextUpdate not implemented")
+func (*UnimplementedCollabTexteditorServiceServer) CreateReplicaId(ctx context.Context, req *Empty) (*ReplicaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateReplicaId not implemented")
 }
-func (*UnimplementedCollabTexteditorServiceServer) SubscribeToServerUpdate(req *ServerUpdateSubscriptionRequest, srv CollabTexteditorService_SubscribeToServerUpdateServer) error {
-	return status.Errorf(codes.Unimplemented, "method SubscribeToServerUpdate not implemented")
+func (*UnimplementedCollabTexteditorServiceServer) SendLocalUpdate(ctx context.Context, req *TiTreeNode) (*LocalUpdateReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendLocalUpdate not implemented")
+}
+func (*UnimplementedCollabTexteditorServiceServer) SubscribeForRemoteUpdates(req *RemoteUpdateRequest, srv CollabTexteditorService_SubscribeForRemoteUpdatesServer) error {
+	return status.Errorf(codes.Unimplemented, "method SubscribeForRemoteUpdates not implemented")
 }
 
 func RegisterCollabTexteditorServiceServer(s *grpc.Server, srv CollabTexteditorServiceServer) {
 	s.RegisterService(&_CollabTexteditorService_serviceDesc, srv)
 }
 
-func _CollabTexteditorService_SendTextUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TextUpdateRequest)
+func _CollabTexteditorService_CreateReplicaId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CollabTexteditorServiceServer).SendTextUpdate(ctx, in)
+		return srv.(CollabTexteditorServiceServer).CreateReplicaId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/collabTexteditorService.CollabTexteditorService/SendTextUpdate",
+		FullMethod: "/collabTexteditorService.CollabTexteditorService/CreateReplicaId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CollabTexteditorServiceServer).SendTextUpdate(ctx, req.(*TextUpdateRequest))
+		return srv.(CollabTexteditorServiceServer).CreateReplicaId(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CollabTexteditorService_SubscribeToServerUpdate_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ServerUpdateSubscriptionRequest)
+func _CollabTexteditorService_SendLocalUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TiTreeNode)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CollabTexteditorServiceServer).SendLocalUpdate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/collabTexteditorService.CollabTexteditorService/SendLocalUpdate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CollabTexteditorServiceServer).SendLocalUpdate(ctx, req.(*TiTreeNode))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CollabTexteditorService_SubscribeForRemoteUpdates_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(RemoteUpdateRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(CollabTexteditorServiceServer).SubscribeToServerUpdate(m, &collabTexteditorServiceSubscribeToServerUpdateServer{stream})
+	return srv.(CollabTexteditorServiceServer).SubscribeForRemoteUpdates(m, &collabTexteditorServiceSubscribeForRemoteUpdatesServer{stream})
 }
 
-type CollabTexteditorService_SubscribeToServerUpdateServer interface {
-	Send(*ServerUpdateSubscriptionResponse) error
+type CollabTexteditorService_SubscribeForRemoteUpdatesServer interface {
+	Send(*RemoteUpdateResponse) error
 	grpc.ServerStream
 }
 
-type collabTexteditorServiceSubscribeToServerUpdateServer struct {
+type collabTexteditorServiceSubscribeForRemoteUpdatesServer struct {
 	grpc.ServerStream
 }
 
-func (x *collabTexteditorServiceSubscribeToServerUpdateServer) Send(m *ServerUpdateSubscriptionResponse) error {
+func (x *collabTexteditorServiceSubscribeForRemoteUpdatesServer) Send(m *RemoteUpdateResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -349,14 +573,18 @@ var _CollabTexteditorService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*CollabTexteditorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SendTextUpdate",
-			Handler:    _CollabTexteditorService_SendTextUpdate_Handler,
+			MethodName: "CreateReplicaId",
+			Handler:    _CollabTexteditorService_CreateReplicaId_Handler,
+		},
+		{
+			MethodName: "SendLocalUpdate",
+			Handler:    _CollabTexteditorService_SendLocalUpdate_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "SubscribeToServerUpdate",
-			Handler:       _CollabTexteditorService_SubscribeToServerUpdate_Handler,
+			StreamName:    "SubscribeForRemoteUpdates",
+			Handler:       _CollabTexteditorService_SubscribeForRemoteUpdates_Handler,
 			ServerStreams: true,
 		},
 	},
