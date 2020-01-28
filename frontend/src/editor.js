@@ -3,6 +3,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/3024-night.css';
 import 'codemirror/mode/markdown/markdown.js';
 import {CHANGE_OBJECT_TYPE, ChangeObject} from "./model/changeObject";
+import {Position} from "./model/position";
 
 const NIGHT_THEME = "3024-night";
 const MARKDOWN_MODE = "markdown";
@@ -36,8 +37,7 @@ class Editor {
 
                 if (obj.origin === "+input" || obj.origin === "+delete") {
                     let changeObject = new ChangeObject(
-                        obj.from.line,
-                        obj.from.ch,
+                        new Position(obj.from.line,obj.from.ch),
                         obj.text,
                         obj.origin === "+input" ? CHANGE_OBJECT_TYPE.INSERTION : CHANGE_OBJECT_TYPE.DELETION);
 

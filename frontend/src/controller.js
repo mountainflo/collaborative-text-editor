@@ -55,9 +55,11 @@ class Controller {
         let handleLocalUpdateCallback = async function (changeObject) {
             if (changeObject.getType() === CHANGE_OBJECT_TYPE.INSERTION) {
                 let node = _crdt.localInsert(changeObject);
+                console.debug(LOG_OBJECT + "call sendLocalUpdate()", node);
                 collabTexteditorClient.sendLocalUpdate(node);
             } else {
                 let node = _crdt.localDelete(changeObject);
+                console.debug(LOG_OBJECT + "call sendLocalUpdate()", node);
                 collabTexteditorClient.sendLocalUpdate(node);
             }
         };

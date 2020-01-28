@@ -3,6 +3,7 @@ import {TiTreeNode} from "./../model/tiTreeNode";
 import {Position} from "../model/position";
 
 const LINE_SEPARATOR = "\n";
+const LOG_OBJECT = "[TiTree] ";
 
 class TiTree {
 
