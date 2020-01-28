@@ -15,8 +15,11 @@ window.onload=function() {
 
 function initializeController(textAreaObj) {
     let collabTexteditorClient = new CollabTexteditorClient('http://localhost:8080');
-    let codeMirrorEditor = new Editor(textAreaObj);
+    //let codeMirrorEditor = new Editor(textAreaObj);
 
-    let controller = new Controller(collabTexteditorClient, codeMirrorEditor);
-    controller.startService();
+   collabTexteditorClient.requestReplicaId().then(r => {
+       console.log(LOG_OBJECT + "successfully requested replica id", r);
+       //let controller = new Controller(collabTexteditorClient, codeMirrorEditor);
+       //controller.startService();
+   });
 }

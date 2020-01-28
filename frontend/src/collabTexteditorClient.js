@@ -11,22 +11,29 @@ const LOG_OBJECT = "[cte service] ";
 class CollabTexteditorClient {
 
     constructor(host) {
-        this.collabTextEditorService = new CollabTexteditorServiceClient(host, '', '');
+        let _collabTextEditorService = new CollabTexteditorServiceClient(host, '', '');
+        let _replicaId;
 
-        let _replicaId = this.createReplicaId();
-
-
-        this.createReplicaId = function(){
-            let request = new Empty();
-            return this.collabTextEditorService.createReplicaId(request, {}, function (err, response) {
-                    if (err) {
-                        console.log(LOG_OBJECT + err.code);
-                        console.log(LOG_OBJECT + err.message);
-                    } else {
-                        console.log(LOG_OBJECT + "createReplicaId response message: " + response);
-                    }
-
-                    return response.getReplicaId();
+        /**
+         * Initialize collabTextEditorService by requesting a replica id from the server.
+         * @return {Promise<number>}
+         */
+        this.requestReplicaId = async function(){
+            return new Promise(
+                resolve => {
+                    _collabTextEditorService.createReplicaId(new Empty(), {}, function (err, response) {
+                            if (err) {
+                                console.log(LOG_OBJECT + err.code);
+                                console.log(LOG_OBJECT + err.message);
+                                //reject if error occurs
+                            } else {
+                                let replicaId = response.getReplicaid();
+                                console.log(LOG_OBJECT + "new received replicaId:", replicaId);
+                                _replicaId = replicaId;
+                                resolve(replicaId);
+                            }
+                        }
+                    );
                 }
             );
         };
@@ -37,10 +44,11 @@ class CollabTexteditorClient {
         this.sendLocalUpdate = function(node) {
             let request = new LocalUpdateRequest();
             request.setNode(tiTreeNodeToProtobufNode(node));
+            request.setReplicaid(node.getReplicaId());
 
             console.log(LOG_OBJECT + "client sends: " + request.getNode());
 
-            this.collabTextEditorService.sendLocalUpdate(request, {}, function(err, response) {
+            _collabTextEditorService.sendLocalUpdate(request, {}, function(err, response) {
                 if (err) {
                     console.log(LOG_OBJECT + err.code);
                     console.log(LOG_OBJECT + err.message);
@@ -51,6 +59,9 @@ class CollabTexteditorClient {
         };
 
         this.getReplicaId = function () {
+            if (_replicaId === undefined) {
+                throw new Error("_replicaId is undefined. You have to request a replica id from the server");
+            }
             return _replicaId;
         };
 
@@ -64,7 +75,7 @@ class CollabTexteditorClient {
             const RETRY_TIME_INTERVAL_IN_MS = 5000;
             while(true){
 
-                let stream = this.collabTextEditorService.subscribeForRemoteUpdates(streamRequest, null);
+                let stream = _collabTextEditorService.subscribeForRemoteUpdates(streamRequest, null);
                 console.log(LOG_OBJECT + "opened new stream object", stream);
 
                 await listenForUpdates(stream, callback).then(

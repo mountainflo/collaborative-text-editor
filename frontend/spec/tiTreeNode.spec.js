@@ -75,4 +75,10 @@ describe("TiTreeNode", function () {
         expect(childrenTimestamps[1].equals(new Timestamp(2,3))).toBeTrue();
         expect(childrenTimestamps[2].equals(new Timestamp(1,2))).toBeTrue();
     });
+
+    it('handles args in the constructor', function () {
+        let node = new TiTreeNode(1,null,"a", 42,true);
+        expect(node.isTombstone()).toBeTrue();
+        expect(node.getId()).toBe(42);
+    });
 });

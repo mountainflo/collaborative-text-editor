@@ -3,7 +3,7 @@ package collabTexteditorService;
 
 service CollabTexteditorService {
     rpc CreateReplicaId(Empty) returns (ReplicaResponse);
-    rpc SendLocalUpdate(TiTreeNode) returns (LocalUpdateReply);
+    rpc SendLocalUpdate(LocalUpdateRequest) returns (LocalUpdateReply);
     rpc SubscribeForRemoteUpdates(RemoteUpdateRequest) returns (stream RemoteUpdateResponse);
 }
 
@@ -16,6 +16,7 @@ message ReplicaResponse {
 
 message LocalUpdateRequest {
     TiTreeNode node = 1;
+    int64 replicaId = 2;
 }
 
 message LocalUpdateReply {

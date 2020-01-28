@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	pb "github.com/mountainflo/collaborative-text-editor/collabTexteditorService"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -21,32 +22,39 @@ type collabTexteditorService struct {
 }
 
 type Repository struct {
-	SavedText         string
-	Channels          map[int]chan *pb.ServerUpdateSubscriptionResponse
-	NextFreeChannelId int //TODO use better unique id
+	NextFreeReplicaId int64
+	Channels          map[int]chan *pb.RemoteUpdateResponse
 }
 
 // Process unary calls with TextUpdateRequest.
 // Each subscriber gets the new text.
-func (c collabTexteditorService) SendTextUpdate(ctx context.Context, request *pb.TextUpdateRequest) (*pb.TextUpdateReply, error) {
+func (c collabTexteditorService) CreateReplicaId(ctx context.Context, request *pb.Empty) (*pb.ReplicaResponse, error) {
 
-	c.repository.SavedText = request.TextUpdate
+	newReplicaId := c.repository.NextFreeReplicaId
+	c.repository.NextFreeReplicaId += 1
 
-	log.Println("Server received test update: " + c.repository.SavedText)
+	log.Println("Created new replica Id: " + strconv.Itoa(int(newReplicaId)))
 
-	c.sendUpdateToSubscribers()
+	return &pb.ReplicaResponse{ReplicaId: newReplicaId}, nil
+}
 
-	return &pb.TextUpdateReply{StatusMessage: "Successfully received text update. New text has been sent to all subscribers"}, nil
+func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *pb.LocalUpdateRequest) (*pb.LocalUpdateReply, error) {
+
+	fmt.Printf("received local update: %#v from r=%v", request.Node, request.ReplicaId)
+
+	c.sendUpdateToSubscribers(request.Node, int(request.ReplicaId))
+
+	return &pb.LocalUpdateReply{StatusMessage: "Successfully received local update"}, nil
 }
 
 // Clients subscribe to updates by opening a server-side-stream
-func (c collabTexteditorService) SubscribeToServerUpdate(request *pb.ServerUpdateSubscriptionRequest, stream pb.CollabTexteditorService_SubscribeToServerUpdateServer) error {
+func (c collabTexteditorService) SubscribeForRemoteUpdates(request *pb.RemoteUpdateRequest, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) error {
 
-	log.Println("Client " + strconv.Itoa(int(request.ClientId)) + " subscribes for updates")
+	log.Println("Client " + strconv.Itoa(int(request.ReplicaId)) + " subscribes for updates")
 
 	//TODO new client gets transferred all change events. Go server has to store the event history
 
-	channelId := c.createNewChannel()
+	channelId := c.createNewChannel(int(request.ReplicaId))
 
 	c.forwardChannelEventsToStream(channelId, stream) // func returns only if stream/channel is closed or an error occurs
 
@@ -55,18 +63,18 @@ func (c collabTexteditorService) SubscribeToServerUpdate(request *pb.ServerUpdat
 	return nil
 }
 
-func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, stream pb.CollabTexteditorService_SubscribeToServerUpdateServer) {
+func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) {
 	for {
 		select {
 		case <-stream.Context().Done():
 			log.Println("Context of stream closed")
 			return
-		case updateEvent, ok := <-c.repository.Channels[channelId]: // TODO test if element is present. elem, ok = m[key]
+		case remoteUpdateResponse, ok := <-c.repository.Channels[channelId]: // TODO test if element is present. elem, ok = m[key]
 			if !ok {
 				log.Println("Channel is closed")
 				return
 			}
-			if err := stream.Send(updateEvent); err != nil {
+			if err := stream.Send(remoteUpdateResponse); err != nil {
 				log.Printf(err.Error())
 				return
 			}
@@ -74,30 +82,28 @@ func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, str
 	}
 }
 
-func (c collabTexteditorService) createNewChannel() int {
+func (c collabTexteditorService) createNewChannel(replicaId int) int {
 
-	channel := make(chan *pb.ServerUpdateSubscriptionResponse)
+	channel := make(chan *pb.RemoteUpdateResponse)
 
-	idOfNewChannel := c.repository.NextFreeChannelId
+	c.repository.Channels[replicaId] = channel
 
-	c.repository.Channels[idOfNewChannel] = channel
-
-	c.repository.NextFreeChannelId++
-
-	return idOfNewChannel
+	return replicaId
 }
 
-func (c collabTexteditorService) sendUpdateToSubscribers() {
+func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, replicaId int) {
 
 	log.Println("send update to subscribers")
 
-	response := pb.ServerUpdateSubscriptionResponse{LatestServerContent: c.repository.SavedText}
+	response := pb.RemoteUpdateResponse{Node: node}
 
 	for channelId, channel := range c.repository.Channels {
 
-		log.Println("send update to subscriber: " + strconv.Itoa(channelId))
-
-		channel <- &response
+		//skip replica, which sends update
+		if channelId != replicaId {
+			log.Println("send update to subscriber: " + strconv.Itoa(channelId))
+			channel <- &response
+		}
 	}
 
 }
@@ -106,7 +112,7 @@ func main() {
 
 	log.Println("starting go server ...")
 
-	textStorage := &Repository{SavedText: "", Channels: make(map[int]chan *pb.ServerUpdateSubscriptionResponse), NextFreeChannelId: 0}
+	textStorage := &Repository{NextFreeReplicaId: 0, Channels: make(map[int]chan *pb.RemoteUpdateResponse)}
 	repository := &collabTexteditorService{textStorage}
 
 	lis, err := net.Listen("tcp", port)
