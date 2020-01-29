@@ -46,7 +46,7 @@ class CollabTexteditorClient {
 
             let request = new LocalUpdateRequest();
             request.setNode(tiTreeNodeToProtobufNode(node));
-            request.setReplicaid(node.getReplicaId());
+            request.setReplicaid(_replicaId);
 
             _collabTextEditorService.sendLocalUpdate(request, {}, function(err, response) {
                 if (err) {
