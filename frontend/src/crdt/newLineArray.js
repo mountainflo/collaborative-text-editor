@@ -1,9 +1,13 @@
+const LOG_OBJECT = "[NewLineArray] ";
+
 class NewLineArray {
 
     constructor() {
         let _newLineTimestampsReferences = [];
 
         this.addNewLineReference = function(timestamp, row){
+
+            console.debug(LOG_OBJECT + "addNewLineReference()", timestamp.toString(), row);
 
             if (row > _newLineTimestampsReferences.length) {
                 throw new Error("row number is to high!");
@@ -17,6 +21,8 @@ class NewLineArray {
                 _newLineTimestampsReferences.push(timestamp);
                 _newLineTimestampsReferences = _newLineTimestampsReferences.concat(tail);
             }
+
+            console.debug(LOG_OBJECT + "addNewLineReference(): array changed to: ", _newLineTimestampsReferences.toString());
         };
 
         this.removeNewLineReference = function (row) {
@@ -33,7 +39,7 @@ class NewLineArray {
         };
 
         this.getNewLineReferenceByTimestamp = function (timestamp) {
-            return _newLineTimestampsReferences.findIndex(elem => elem === timestamp);
+            return _newLineTimestampsReferences.findIndex(elem => elem.equals(timestamp));
         };
 
         this.length = function(){

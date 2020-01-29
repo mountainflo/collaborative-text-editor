@@ -88,6 +88,8 @@ class TiTree {
             let self = this;
             let result = goUpTheTree(self,timestamp,undefined, 0, abortionFunction);
 
+            console.debug(LOG_OBJECT + "goUpTheTree(): {lastNodeTimestamp:" + result.lastNodeTimestamp.toString() + ", passedChars:" + result.passedChars + "}");
+
             // getNewLineReferenceByTimestamp returns "-1" if nothing found ==> goUpTheTree reached root node
             let row = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp) + 1;
 
@@ -182,7 +184,10 @@ class TiTree {
             console.debug(LOG_OBJECT + "goUpTheTree(): {lastNodeTimestamp:" + result.lastNodeTimestamp.toString() + ", passedChars:" + result.passedChars + "}");
 
             // getNewLineReferenceByTimestamp returns "-1" if nothing found ==> goUpTheTree reached root node
-            let row = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp) + 1;
+            let previousNewLineSign = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp);
+            console.debug(LOG_OBJECT + "getNewLineReferenceByTimestamp("+ result.lastNodeTimestamp +"): " + previousNewLineSign);
+
+            let row = previousNewLineSign + 1;
             this.insertNodeIntoRow(node,row);
 
             let position = new Position(row, result.passedChars - 1);
