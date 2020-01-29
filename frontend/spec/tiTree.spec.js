@@ -299,4 +299,77 @@ describe("TiTree", function () {
         expect(tiTreeNode2.isTombstone()).toBe(true);
         expect(sequence).toBe("value1value3");
     });
+
+    it("inserts local update 3 times in a row", function () {
+        let tiTree = new TiTree();
+        let node1 = tiTree.insert(0,0,"a",2);
+        let node2 = tiTree.insert(0,1,"b",2);
+
+        expect(node1.getParentNodeTimestamp()).toBe(null);
+        expect(node2.getParentNodeTimestamp()).toBe(node1.getTimestamp());
+        expect(tiTree.read()).toBe("ab");
+
+        let node3 =tiTree.insert(0,2,"c",2);
+        expect(node3.getParentNodeTimestamp()).toBe(node2.getTimestamp());
+        expect(tiTree.read()).toBe("abc");
+    });
+
+    it("inserts local update when newlines included", function () {
+        let tiTree = new TiTree();
+        let node1 = tiTree.insert(0,0,"a",2);
+        let node2 = tiTree.insert(0,1,"b",2);
+        let node3 = tiTree.insert(0,2,"\n",2);
+
+        expect(node1.getParentNodeTimestamp()).toBe(null);
+        expect(node2.getParentNodeTimestamp()).toBe(node1.getTimestamp());
+        expect(node3.getParentNodeTimestamp()).toBe(node2.getTimestamp());
+        expect(tiTree.read()).toBe("ab\n");
+
+        let node4 = tiTree.insert(1,0,"c",2);
+        expect(node4.getParentNodeTimestamp()).toBe(node3.getTimestamp());
+        expect(tiTree.read()).toBe("ab\nc");
+
+        let node5 = tiTree.insert(1,1,"d",2);
+        expect(node5.getParentNodeTimestamp()).toBe(node4.getTimestamp());
+        expect(tiTree.read()).toBe("ab\ncd");
+    });
+
+    it("delete to following chars", function () {
+        let tiTree = new TiTree();
+        let tiTreeReplica = new TiTree();
+
+        let node1 = tiTree.insert(0,0,"a",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node1));
+        expect(tiTreeReplica.read()).toBe("a");
+
+        let node2 = tiTree.insert(0,1,"b",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node2));
+        expect(tiTree.read()).toBe("ab");
+        expect(tiTreeReplica.read()).toBe("ab");
+
+        let node3 = tiTree.insert(0,2,"c",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node3));
+        let node4 = tiTree.insert(0,3,"d",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node4));
+        expect(tiTreeReplica.read()).toBe("abcd");
+        expect(tiTree.read()).toBe("abcd");
+
+        let deletedNodeB = tiTree.delete(0,1);
+        expect(deletedNodeB.isTombstone()).toBeTrue();
+        expect(deletedNodeB.getParentNodeTimestamp().getId()).toBe(node1.getTimestamp().getId());
+        expect(deletedNodeB.getTimestamp().getId()).toBe(node2.getTimestamp().getId());
+        expect(tiTree.read()).toBe("acd");
+
+        let deletedNodeC = tiTree.delete(0,1);
+        expect(deletedNodeC.isTombstone()).toBeTrue();
+        expect(deletedNodeC.getParentNodeTimestamp().getId()).toBe(node2.getTimestamp().getId());
+        expect(deletedNodeC.getTimestamp().getId()).toBe(node3.getTimestamp().getId());
+        expect(tiTree.read()).toBe("ad");
+
+        tiTreeReplica.deleteNode(deletedNodeB);
+        expect(tiTreeReplica.read()).toBe("acd");
+
+        tiTreeReplica.deleteNode(deletedNodeC);
+        expect(tiTreeReplica.read()).toBe("ad")
+    });
 });

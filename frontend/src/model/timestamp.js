@@ -47,7 +47,10 @@ class Timestamp {
         };
 
         this.toString = function () {
-            return "{id=" + this.getId() + ";r=" + this.getReplicaId() + "}";
+            this.toString = function () {
+                return "{" + "\"id\":" + this.getId() + ","
+                    + "\"replicaId\":" + this.getReplicaId() + "}";
+            }
         };
     }
 

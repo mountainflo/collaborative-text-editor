@@ -1,6 +1,5 @@
-const {Empty, ReplicaResponse, LocalUpdateRequest, LocalUpdateReply, RemoteUpdateRequest, RemoteUpdateResponse} = require('./collabTexteditorService_pb.js');
+const {Empty, ReplicaResponse, LocalUpdateRequest, LocalUpdateReply, RemoteUpdateRequest, RemoteUpdateResponse, TiTreeNode, Timestamp} = require('./collabTexteditorService_pb.js');
 const {CollabTexteditorServiceClient} = require('./collabTexteditorService_grpc_web_pb.js');
-import {TiTreeNode} from "./model/tiTreeNode";
 import {protobufNodeToTiTreeNode, tiTreeNodeToProtobufNode} from "./collabTexteditorModelTransformer";
 
 const LOG_OBJECT = "[cte service] ";
@@ -42,11 +41,12 @@ class CollabTexteditorClient {
          * @param {TiTreeNode} node
          */
         this.sendLocalUpdate = function(node) {
+
+            console.debug(LOG_OBJECT + "sendLocalUpdate()", node.toString());
+
             let request = new LocalUpdateRequest();
             request.setNode(tiTreeNodeToProtobufNode(node));
             request.setReplicaid(node.getReplicaId());
-
-            console.log(LOG_OBJECT + "client sends: " + request.getNode());
 
             _collabTextEditorService.sendLocalUpdate(request, {}, function(err, response) {
                 if (err) {
@@ -93,8 +93,6 @@ class CollabTexteditorClient {
             return new Promise(
                 resolve => {
                     stream.on('data',function (response) {
-                        console.log(LOG_OBJECT + "received stream data", response);
-
                         let tiTreeNode = protobufNodeToTiTreeNode(response.getNode());
                         callback(tiTreeNode);
                     });

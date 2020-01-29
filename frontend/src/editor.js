@@ -35,12 +35,24 @@ class Editor {
             _editor.on("change", (_, obj) => {
                 console.log(LOG_OBJECT + "\"change\" event fired: ", obj);
 
+                //TODO inserting newline is obj.text=["", ""]
+                //TODO deleting newline is different to
+
                 if (obj.origin === "+input" || obj.origin === "+delete") {
+
+                    let text;
+                    if ((obj.text).length === 2) {
+                        text = "\n"; //inserting newline is obj.text=["", ""]
+                    } else {
+                        text = (obj.text).toString();
+                    }
+
                     let changeObject = new ChangeObject(
                         new Position(obj.from.line,obj.from.ch),
-                        obj.text,
+                        text,
                         obj.origin === "+input" ? CHANGE_OBJECT_TYPE.INSERTION : CHANGE_OBJECT_TYPE.DELETION);
 
+                    //TODO if string contains several chars. Create several changeObjects
                     callback(changeObject); //async call (remote updates can be delayed)
                 }
             });

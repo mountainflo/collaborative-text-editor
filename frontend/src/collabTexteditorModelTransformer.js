@@ -18,11 +18,17 @@ function protobufNodeToTiTreeNode(protobufNode) {
     let protoNodeTombstone = protobufNode.getTombstone();
     let protoNodeChildrenTimestamps = protobufNode.getChildrentimestampsList();
 
+    let nodeParentTimestamp = null;
+
+    if (protoNodeParentTimestamp !== undefined){
+        nodeParentTimestamp = new localTimestamp.Timestamp(
+            protoNodeParentTimestamp.getId(),
+            protoNodeParentTimestamp.getReplicaid())
+    }
+
     let node = new localNode.TiTreeNode(
         protoNodeTimestamp.getReplicaid(),
-        new localTimestamp.Timestamp(
-            protoNodeParentTimestamp.getId(),
-            protoNodeParentTimestamp.getReplicaid()),
+        nodeParentTimestamp,
         protoNodeValue,
         protoNodeTimestamp.getId(),
         protoNodeTombstone);
@@ -50,10 +56,13 @@ function tiTreeNodeToProtobufNode(node) {
     timestamp.setId(node.getId());
     protobufNode.setTimestamp(timestamp);
 
-    let parentTimestamp = new TiTreeNode.Timestamp();
-    parentTimestamp.setReplicaid(node.getParentNodeTimestamp().getReplicaId());
-    parentTimestamp.setId(node.getParentNodeTimestamp().getId());
-    protobufNode.setParenttimestamp(parentTimestamp);
+    let nodeParentNodeTimestamp = node.getParentNodeTimestamp();
+    if (nodeParentNodeTimestamp !== null) {
+        let parentTimestamp = new TiTreeNode.Timestamp();
+        parentTimestamp.setReplicaid(node.getParentNodeTimestamp().getReplicaId());
+        parentTimestamp.setId(node.getParentNodeTimestamp().getId());
+        protobufNode.setParenttimestamp(parentTimestamp);
+    }
 
     protobufNode.setValue(node.getValue());
     protobufNode.setTombstone(node.isTombstone());

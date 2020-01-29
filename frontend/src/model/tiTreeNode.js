@@ -86,6 +86,46 @@ class TiTreeNode {
             }
 
         };
+
+        this.toString = function () {
+            let parentTimestamp = "null";
+            if (_parentNodeTimestamp !== null) {
+                parentTimestamp = _parentNodeTimestamp.toString()
+            }
+
+            let value = _value === "\n" ? "\\n" : _value;
+
+            let reducer = (accum, t) => accum + ", " + t.toString();
+
+            return "{" + "\"timestamp\":" + _timestamp.toString() + ","
+                + "\"parentTimestamp\":" + parentTimestamp + ","
+                + "\"value\":\"" + value + "\","
+                + "\"tombstone\":" + _tombstone + ","
+                + "\"childrenTimestamps\":[" + _childrenTimestamps.reduce(reducer, "") + "]}";
+        }
+    }
+
+    /**
+     * Deep copy of a TiTreeNode
+     *
+     * @param {TiTreeNode} node
+     * @return {TiTreeNode}
+     */
+    static copyNode = function (node) {
+        let parent = node.getParentNodeTimestamp();
+
+        let deepCopy = new TiTreeNode(
+            node.getReplicaId(),
+            parent===null ? null : new Timestamp(parent.getId(), parent.getReplicaId()),
+            node.getValue(),
+            node.getId(),
+            node.isTombstone());
+
+        node.getChildrenTimestamps().forEach(
+            t => deepCopy.addChildTimestamp(new Timestamp(t.getId(), t.getReplicaId()))
+        );
+
+        return deepCopy;
     }
 
 }

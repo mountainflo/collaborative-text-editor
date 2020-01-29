@@ -42,6 +42,8 @@ class TiTree {
          */
         this.delete = function (row, column) {
 
+            console.debug(LOG_OBJECT + "delete(row:" + row + ", column: " + column + ")");
+
             let startTimestamp;
 
             if (row > 0) {
@@ -62,6 +64,8 @@ class TiTree {
 
             nodeToDelete.markAsTombstone();
 
+            console.debug(LOG_OBJECT + "delete(row, column): returning node ", nodeToDelete.toString());
+
             return nodeToDelete;
         };
 
@@ -72,6 +76,8 @@ class TiTree {
          * @return {Position} position of the changed node
          */
         this.deleteNode = function (node) {
+
+            console.debug(LOG_OBJECT + "deleteNode(node): ", node.toString());
 
             let timestamp = node.getTimestamp();
 
@@ -85,9 +91,13 @@ class TiTree {
             // getNewLineReferenceByTimestamp returns "-1" if nothing found ==> goUpTheTree reached root node
             let row = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp) + 1;
 
-            node.markAsTombstone();
+            let nodeToBeDeleted = this.getNodeFromTimestamp(timestamp);
+            nodeToBeDeleted.markAsTombstone();
 
-            return new Position(row, result.passedChars - 1);
+            let position = new Position(row, result.passedChars - 1);
+            console.debug(LOG_OBJECT + "deleteNode(node) returning Position: {row:" + position.getRow() + ", column:" + position.getColumn() + "}");
+
+            return position;
         };
 
         /**
@@ -117,7 +127,10 @@ class TiTree {
          */
         this.insert = function (row, column, value, replicaId) {
 
+            console.debug(LOG_OBJECT + "insert(row:" + row + ", column: " + column + ", value:" + value + ", replicaId:" + replicaId + ")");
+
             let startTimestamp;
+            let charsToPass = column;
 
             if (row > 0) {
                 startTimestamp = _newLineArray.getNewLineReference(row-1);
@@ -129,15 +142,20 @@ class TiTree {
                 return node;
             } else {
                 startTimestamp = _rootNodeTimestamp;
+                charsToPass = column - 1;
             }
 
             let self = this;
-            let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(column));
+            let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(charsToPass));
+
+            console.debug(LOG_OBJECT + "goDownTheTree(): {lastNodeTimestamp:" + result.lastNodeTimestamp.toString() + ", passedChars:" + result.passedChars + "}");
 
             let node = new TiTreeNode(replicaId, result.lastNodeTimestamp, value);
             this.setTimestampForNode(node.getTimestamp(), node);
 
             this.insertNodeIntoRow(node,row);
+
+            console.debug(LOG_OBJECT + "insert(row, column, value, replicaId): returning node ", node.toString());
 
             return node;
         };
@@ -151,6 +169,8 @@ class TiTree {
          */
         this.insertNode = function (node) {
 
+            console.debug(LOG_OBJECT + "insertNode(node): ", node.toString());
+
             TiTreeNode.updateUniqueId(node.getId());
 
             let timestamp = node.getTimestamp();
@@ -159,11 +179,16 @@ class TiTree {
             let self = this;
             let result = goUpTheTree(self,timestamp,undefined, 0, abortionFunction);
 
+            console.debug(LOG_OBJECT + "goUpTheTree(): {lastNodeTimestamp:" + result.lastNodeTimestamp.toString() + ", passedChars:" + result.passedChars + "}");
+
             // getNewLineReferenceByTimestamp returns "-1" if nothing found ==> goUpTheTree reached root node
             let row = _newLineArray.getNewLineReferenceByTimestamp(result.lastNodeTimestamp) + 1;
             this.insertNodeIntoRow(node,row);
 
-            return new Position(row, result.passedChars - 1);
+            let position = new Position(row, result.passedChars - 1);
+            console.debug(LOG_OBJECT + "insertNode(node) returning Position: {row:" + position.getRow() + ", column:" + position.getColumn() + "}");
+
+            return position;
         };
 
         /**
@@ -203,6 +228,7 @@ class TiTree {
         this.getNodeFromTimestamp = function (timestamp) {
 
             if (timestamp === null) {
+                console.warn(LOG_OBJECT + "Map does not include this timestamp:", timestamp);
                 return undefined;
             }
             return _timestampsAndNodesMap.get(timestamp.toString());
@@ -213,6 +239,7 @@ class TiTree {
          * @param {TiTreeNode} node
          */
         this.setTimestampForNode = function (timestamp,node) {
+            console.debug(LOG_OBJECT + "setTimestampForNode(): ", timestamp.toString());
             _timestampsAndNodesMap.set(timestamp.toString(),node);
         };
 
@@ -286,6 +313,7 @@ class TiTree {
                     passedChars:passedChars
                 };
             } else {
+                //TODO ERROR why parentNodeTimestamp
                 return goDownTheTree(object, parentNodeTimestamp, nodeTimestamp, passedChars, abortionFunction);
             }
         };

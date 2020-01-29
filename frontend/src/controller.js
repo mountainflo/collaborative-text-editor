@@ -1,5 +1,6 @@
 import {Editor} from "./editor";
 import {Crdt} from "./crdt/crdt";
+import {TiTreeNode} from "./model/tiTreeNode";
 import {CHANGE_OBJECT_TYPE} from "./model/changeObject";
 
 const LOG_OBJECT = "[controller] ";
@@ -36,6 +37,9 @@ class Controller {
          * @param {TiTreeNode} node
          */
         let handleRemoteUpdateCallback = function (node) {
+
+            console.debug(LOG_OBJECT + "handleRemoteUpdateCallback()", node.toString());
+
             if (node.isTombstone()) {
                 let changeObject =_crdt.remoteDelete(node);
                 codeMirrorEditor.delete(changeObject);
@@ -55,11 +59,11 @@ class Controller {
         let handleLocalUpdateCallback = async function (changeObject) {
             if (changeObject.getType() === CHANGE_OBJECT_TYPE.INSERTION) {
                 let node = _crdt.localInsert(changeObject);
-                console.debug(LOG_OBJECT + "call sendLocalUpdate()", node);
+                console.debug(LOG_OBJECT + "call sendLocalUpdate()", node.toString());
                 collabTexteditorClient.sendLocalUpdate(node);
             } else {
                 let node = _crdt.localDelete(changeObject);
-                console.debug(LOG_OBJECT + "call sendLocalUpdate()", node);
+                console.debug(LOG_OBJECT + "call sendLocalUpdate()", node.toString());
                 collabTexteditorClient.sendLocalUpdate(node);
             }
         };
