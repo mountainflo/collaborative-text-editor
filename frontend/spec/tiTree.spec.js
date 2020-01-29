@@ -372,4 +372,77 @@ describe("TiTree", function () {
         tiTreeReplica.deleteNode(deletedNodeC);
         expect(tiTreeReplica.read()).toBe("ad")
     });
+
+    it("remote delete of line end", function () {
+        let tiTree = new TiTree();
+        let node1 = tiTree.insert(0,0,"a",2);
+        let node2 = tiTree.insert(0,1,"\n",2);
+        let node3 = tiTree.insert(1,0,"b",2);
+        let node4 = tiTree.insert(1,1,"\n",2);
+        let node5 = tiTree.insert(2,0,"c",2);
+        let node6 = tiTree.insert(2,1,"\n",2);
+        let node7 = tiTree.insert(3,0,"d",2);
+
+        expect(tiTree.delete(1,1).getValue()).toBe(node4.getValue());
+
+    });
+
+    it("local deletion of remote inserted values", function () {
+        let tiTree = new TiTree();
+        let tiTreeReplica = new TiTree();
+        let node1 = tiTree.insert(0,0,"a",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node1));
+        let node2 = tiTree.insert(0,1,"\n",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node2));
+        let node3 = tiTree.insert(1,0,"b",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node3));
+        let node4 = tiTree.insert(1,1,"\n",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node4));
+        let node5 = tiTree.insert(2,0,"c",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node5));
+        let node6 = tiTree.insert(2,1,"\n",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node6));
+        let node7 = tiTree.insert(3,0,"d",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node7));
+
+        let node8 = tiTree.insert(2,1,"1",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node8));
+        let node9 = tiTree.insert(2,2,"2",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node9));
+        let node10 = tiTree.insert(2,3,"3",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node10));
+        let node11 = tiTree.insert(2,4,"4",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node11));
+        let node12 = tiTree.insert(2,5,"5",2);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node12));
+
+        expect(tiTree.read()).toBe("a\nb\nc12345\nd");
+        expect(tiTreeReplica.read()).toBe("a\nb\nc12345\nd");
+
+        let deletedNode1 = tiTree.delete(2,2);
+        expect(deletedNode1.getId()).toBe(node9.getId());
+        let position1 = tiTreeReplica.deleteNode(deletedNode1);
+        expect(position1.getRow()).toBe(2);
+        expect(position1.getColumn()).toBe(2);
+
+
+        let deletedNode2 = tiTree.delete(2,3);
+        expect(deletedNode2.getId()).toBe(node11.getId());
+        let position2 = tiTreeReplica.deleteNode(deletedNode2);
+        expect(position2.getRow()).toBe(2);
+        expect(position2.getColumn()).toBe(3);
+
+        expect(tiTree.read()).toBe("a\nb\nc135\nd");
+        expect(tiTreeReplica.read()).toBe("a\nb\nc135\nd");
+
+        let deletedNode3 = tiTreeReplica.delete(2,1);
+        expect(deletedNode3.getId()).toBe(node8.getId());
+        expect(deletedNode3.getValue()).toBe(node8.getValue());
+        let position3 = tiTree.deleteNode(deletedNode3);
+        expect(position3.getRow()).toBe(2);
+        expect(position3.getColumn()).toBe(1);
+
+        expect(tiTree.read()).toBe("a\nb\nc35\nd");
+        expect(tiTreeReplica.read()).toBe("a\nb\nc35\nd");
+    });
 });

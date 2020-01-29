@@ -45,16 +45,19 @@ class TiTree {
             console.debug(LOG_OBJECT + "delete(row:" + row + ", column: " + column + ")");
 
             let startTimestamp;
+            let charsToPass = column;
 
             if (row > 0) {
                 startTimestamp = _newLineArray.getNewLineReference(row-1);
+                charsToPass = column + 1;
             } else {
                 startTimestamp = _rootNodeTimestamp;
             }
 
             //goUpTheTree not possible, because the tail/rightest node is unknown
             let self = this;
-            let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(column));
+            let result =  goDownTheTree(self,startTimestamp,undefined, 0, abortionFunctionCountChars(charsToPass));
+            console.debug(LOG_OBJECT + "goDownTheTree(): {lastNodeTimestamp:" + result.lastNodeTimestamp.toString() + ", passedChars:" + result.passedChars + "}");
 
             let nodeToDelete = this.getNodeFromTimestamp(result.lastNodeTimestamp);
 
@@ -244,6 +247,7 @@ class TiTree {
          * @param {TiTreeNode} node
          */
         this.setTimestampForNode = function (timestamp,node) {
+            if(timestamp === undefined || timestamp === null) throw new Error("Can not add undefined or null timestamp to map");
             console.debug(LOG_OBJECT + "setTimestampForNode(): ", timestamp.toString());
             _timestampsAndNodesMap.set(timestamp.toString(),node);
         };
@@ -285,6 +289,8 @@ class TiTree {
          */
         let goDownTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
 
+            console.debug(LOG_OBJECT + "goDownTheTree(): called with {nodeTimestamp:" + nodeTimestamp.toString() + ", lastVisitedNodeTimestamp:" + lastVisitedNodeTimestamp + ", passedChars:" + passedChars + "}");
+
             let node = object.getNodeFromTimestamp(nodeTimestamp);
 
             if (!node.isTombstone()) {
@@ -301,13 +307,19 @@ class TiTree {
 
             let parentNodeTimestamp = node.getParentNodeTimestamp();
             let childrenTimestamps = node.getChildrenTimestamps();
-            let iteratedOverLastVisitedNode = lastVisitedNodeTimestamp === undefined || lastVisitedNodeTimestamp === parentNodeTimestamp;
+
+            let iteratedOverLastVisitedNode;
+            if (lastVisitedNodeTimestamp === undefined) {
+                iteratedOverLastVisitedNode = true;
+            } else {
+                iteratedOverLastVisitedNode = lastVisitedNodeTimestamp.equals(parentNodeTimestamp);
+            }
 
             for (let i = 0; i < childrenTimestamps.length; i++) {
                 if (iteratedOverLastVisitedNode){
                     return goDownTheTree(object, childrenTimestamps[i], nodeTimestamp, passedChars, abortionFunction);
                 } else {
-                    iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
+                    iteratedOverLastVisitedNode = childrenTimestamps[i].equals(lastVisitedNodeTimestamp);
                 }
             }
 
@@ -337,6 +349,8 @@ class TiTree {
          */
         let goUpTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
 
+            console.debug(LOG_OBJECT + "goUpTheTree(): called with {nodeTimestamp:" + nodeTimestamp.toString() + ", lastVisitedNodeTimestamp:" + lastVisitedNodeTimestamp + ", passedChars:" + passedChars + "}");
+
             let node = object.getNodeFromTimestamp(nodeTimestamp);
             let parentNodeTimestamp = node.getParentNodeTimestamp();
             let parentNode = object.getNodeFromTimestamp(parentNodeTimestamp);
@@ -344,14 +358,14 @@ class TiTree {
             if( (lastVisitedNodeTimestamp !== undefined) && (parentNode !== undefined)) {
                 let childrenTimestamps = parentNode.getChildrenTimestamps();
 
-                let iteratedOverLastVisitedNode = parentNodeTimestamp === lastVisitedNodeTimestamp;
+                let iteratedOverLastVisitedNode = parentNodeTimestamp.equals(lastVisitedNodeTimestamp);
 
                 for (let i = childrenTimestamps.length - 1; i >= 0; i--) {
 
                     if (iteratedOverLastVisitedNode){
                         return goUpTheTree(object, childrenTimestamps[i], nodeTimestamp, passedChars, abortionFunction);
                     } else {
-                        iteratedOverLastVisitedNode = childrenTimestamps[i] === lastVisitedNodeTimestamp;
+                        iteratedOverLastVisitedNode = childrenTimestamps[i].equals(lastVisitedNodeTimestamp);
                     }
                 }
             }

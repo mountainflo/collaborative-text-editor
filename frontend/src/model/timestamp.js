@@ -16,7 +16,11 @@ class Timestamp {
          * @return {boolean}
          */
         this.equals = function (other) {
-            return other.getId() === this.getId() && other.getReplicaId() === this.getReplicaId();
+            if (other === undefined) {
+                return false;
+            } else {
+                return other.getId() === this.getId() && other.getReplicaId() === this.getReplicaId();
+            }
         };
 
         /**
