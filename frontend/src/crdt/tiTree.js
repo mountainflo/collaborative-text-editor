@@ -247,8 +247,10 @@ class TiTree {
          * @param {TiTreeNode} node
          */
         this.setTimestampForNode = function (timestamp,node) {
-            if(timestamp === undefined || timestamp === null) throw new Error("Can not add undefined or null timestamp to map");
-            console.debug(LOG_OBJECT + "setTimestampForNode(): ", timestamp.toString());
+            if(timestamp === undefined || timestamp === null) {
+                throw new Error("Can not add undefined or null timestamp to map");
+            }
+            console.debug(LOG_OBJECT + "setTimestampForNode(): " + timestamp.toString());
             _timestampsAndNodesMap.set(timestamp.toString(),node);
         };
 
@@ -287,7 +289,7 @@ class TiTree {
          * @param {function(TiTree, number, Timestamp): boolean} abortionFunction(obj, passedChars, timestamp)
          * @return {{lastNodeTimestamp: Timestamp, passedChars: number}}
          */
-        let goDownTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction) {
+        let goDownTheTree = function (object,nodeTimestamp,lastVisitedNodeTimestamp, passedChars, abortionFunction, ...args) {
 
             console.debug(LOG_OBJECT + "goDownTheTree(): called with {nodeTimestamp:" + nodeTimestamp.toString() + ", lastVisitedNodeTimestamp:" + lastVisitedNodeTimestamp + ", passedChars:" + passedChars + "}");
 
@@ -301,7 +303,9 @@ class TiTree {
                         passedChars:passedChars
                     };
                 } else {
-                    ++passedChars;
+                    if (args.length === 0) {
+                        ++passedChars;
+                    }
                 }
             }
 
@@ -330,8 +334,8 @@ class TiTree {
                     passedChars:passedChars
                 };
             } else {
-                //TODO ERROR why parentNodeTimestamp
-                return goDownTheTree(object, parentNodeTimestamp, nodeTimestamp, passedChars, abortionFunction);
+                //node has no children call parent again, but do not count the visit of the parent-node again
+                return goDownTheTree(object, parentNodeTimestamp, nodeTimestamp, passedChars, abortionFunction, true);
             }
         };
 
@@ -356,7 +360,7 @@ class TiTree {
             let parentNode = object.getNodeFromTimestamp(parentNodeTimestamp);
 
             if( (lastVisitedNodeTimestamp !== undefined) && (parentNode !== undefined)) {
-                let childrenTimestamps = parentNode.getChildrenTimestamps();
+                let childrenTimestamps = node.getChildrenTimestamps();
 
                 let iteratedOverLastVisitedNode = parentNodeTimestamp.equals(lastVisitedNodeTimestamp);
 

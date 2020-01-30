@@ -445,4 +445,81 @@ describe("TiTree", function () {
         expect(tiTree.read()).toBe("a\nb\nc35\nd");
         expect(tiTreeReplica.read()).toBe("a\nb\nc35\nd");
     });
+
+    it("local delete with up and down through the tree", function () {
+        let tiTree = new TiTree();
+        let node1 = tiTree.insert(0,0,"a",2);
+        let node2 = tiTree.insert(0,1,"\n",2);
+        let node3 = tiTree.insert(1,0,"b",2);
+        let node4 = tiTree.insert(1,1,"\n",2);
+        let node5 = tiTree.insert(2,0,"c",2);
+        let node6 = tiTree.insert(2,1,"\n",2);
+        let node7 = tiTree.insert(3,0,"d",2);
+        let node8 = tiTree.insert(2,1,"1",2);
+        let node9 = tiTree.insert(2,2,"2",2);
+        let node10 = tiTree.insert(2,3,"3",2);
+
+        expect(tiTree.read()).toBe("a\nb\nc123\nd");
+
+        let node11 = tiTree.insert(2,1,"0",2);
+        expect(tiTree.read()).toBe("a\nb\nc0123\nd");
+
+        let deletedNode = tiTree.delete(2,3);   //delete 2
+        expect(deletedNode.getValue()).toBe(node9.getValue());
+        expect(deletedNode.getId()).toBe(node9.getId());
+
+    });
+
+    it("remote delete with up and down through the tree", function () {
+        let tiTree = new TiTree();
+        let node1 = new TiTreeNode(1,null,"a");
+        tiTree.insertNode(TiTreeNode.copyNode(node1));
+        let node2 = new TiTreeNode(1,node1.getTimestamp(),"\n");
+        tiTree.insertNode(TiTreeNode.copyNode(node2));
+        let node3 = new TiTreeNode(1,node2.getTimestamp(),"b");
+        tiTree.insertNode(TiTreeNode.copyNode(node3));
+        let node4 = new TiTreeNode(1,node3.getTimestamp(),"\n");
+        tiTree.insertNode(TiTreeNode.copyNode(node4));
+        let node5 = new TiTreeNode(1,node4.getTimestamp(),"c");
+        tiTree.insertNode(TiTreeNode.copyNode(node5));
+        let node6 = new TiTreeNode(1,node5.getTimestamp(),"\n");
+        tiTree.insertNode(TiTreeNode.copyNode(node6));
+        let node7 = new TiTreeNode(1,node6.getTimestamp(),"d");
+        tiTree.insertNode(TiTreeNode.copyNode(node7));
+        let node8 = new TiTreeNode(1,node7.getTimestamp(),"\n");
+        tiTree.insertNode(TiTreeNode.copyNode(node8));
+        let node9 = new TiTreeNode(1,node8.getTimestamp(),"e");
+        tiTree.insertNode(TiTreeNode.copyNode(node9));
+
+        expect(tiTree.read()).toBe("a\nb\nc\nd\ne");
+
+        let node10 = new TiTreeNode(1,node5.getTimestamp(),"0");
+        tiTree.insertNode(TiTreeNode.copyNode(node10));
+        let node11 = new TiTreeNode(1,node10.getTimestamp(),"1");
+        tiTree.insertNode(TiTreeNode.copyNode(node11));
+        let node12 = new TiTreeNode(1,node11.getTimestamp(),"2");
+        tiTree.insertNode(TiTreeNode.copyNode(node12));
+        let node13 = new TiTreeNode(1,node12.getTimestamp(),"3");
+        tiTree.insertNode(TiTreeNode.copyNode(node13));
+
+        let node14 = new TiTreeNode(1,node5.getTimestamp(),"a");
+        tiTree.insertNode(TiTreeNode.copyNode(node14));
+        let node15 = new TiTreeNode(1,node14.getTimestamp(),"b");
+        tiTree.insertNode(TiTreeNode.copyNode(node15));
+        let node16 = new TiTreeNode(1,node15.getTimestamp(),"c");
+        tiTree.insertNode(TiTreeNode.copyNode(node16));
+        let node17 = new TiTreeNode(1,node16.getTimestamp(),"d");
+        tiTree.insertNode(TiTreeNode.copyNode(node17));
+
+        expect(tiTree.read()).toBe("a\nb\ncabcd0123\nd\ne");
+
+        let nodeToDelete = TiTreeNode.copyNode(node12);
+        nodeToDelete.markAsTombstone();
+
+        let position = tiTree.deleteNode(nodeToDelete);
+        expect(position.getRow()).toBe(2);
+        expect(position.getColumn()).toBe(7);
+
+        expect(tiTree.read()).toBe("a\nb\ncabcd013\nd\ne");
+    });
 });

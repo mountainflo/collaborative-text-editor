@@ -13,15 +13,6 @@ describe("TiTreeNode", function () {
         expect(tiTreeNode.isTombstone()).toBeFalse();
     });
 
-    it("marked as tombstone has no value", function () {
-        let tiTreeNode = new TiTreeNode(null, null, "value");
-
-        tiTreeNode.markAsTombstone();
-
-        expect(tiTreeNode.isTombstone()).toBeTrue();
-        expect(tiTreeNode.getValue()).toBe("");
-    });
-
     it("has initially no children", function () {
         let tiTreeNode = new TiTreeNode(null, null, "value");
 

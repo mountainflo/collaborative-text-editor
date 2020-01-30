@@ -68,7 +68,7 @@ class TiTreeNode {
 
         this.markAsTombstone = function () {
             _tombstone = true;
-            _value = "";
+            //_value = "";
         };
 
         /**
