@@ -387,6 +387,7 @@ class TiTree {
             }
 
             if ((parentNode === undefined)) {
+                console.debug(LOG_OBJECT + "parenNode is undefined");
                 return {
                     lastNodeTimestamp:nodeTimestamp,
                     passedChars:passedChars
