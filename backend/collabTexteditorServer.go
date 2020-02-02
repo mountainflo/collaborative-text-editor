@@ -40,7 +40,7 @@ func (c collabTexteditorService) CreateReplicaId(ctx context.Context, request *p
 
 func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *pb.LocalUpdateRequest) (*pb.LocalUpdateReply, error) {
 
-	fmt.Printf("received local update: %#v from r=%v", request.Node, request.ReplicaId)
+	fmt.Printf("received local update from replicaId=%v", request.ReplicaId)
 
 	c.sendUpdateToSubscribers(request.Node, int(request.ReplicaId))
 
