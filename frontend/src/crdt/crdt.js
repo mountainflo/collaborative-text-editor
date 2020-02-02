@@ -2,11 +2,14 @@ import {TiTree} from "./tiTree";
 import {TiTreeNode} from "./../model/tiTreeNode";
 import {CHANGE_OBJECT_TYPE, ChangeObject} from "./../model/changeObject";
 
+const LOG_OBJECT = "[crdt] ";
+
 class Crdt {
 
     constructor(replicaId) {
         let _tiTree = new TiTree();
         const _REPLICA_ID = replicaId;
+        let _crdtBuffer = new Set();
 
         /*
 
@@ -40,6 +43,54 @@ class Crdt {
 
         /**
          * @param {TiTreeNode} node
+         * @param {function(ChangeObject)} codeMirrorFunction
+         */
+        this.addRemoteNodeToBuffer = function(node, codeMirrorFunction){
+            _crdtBuffer.add(new BufferObject(node,codeMirrorFunction));
+            this.checkNodeBuffer();
+        };
+
+        this.checkNodeBuffer = async function () {
+
+            console.debug(LOG_OBJECT + "checkNodeBuffer(): bufferSize", _crdtBuffer.size);
+
+            let bufferSizeBeforeCheck = _crdtBuffer.size;
+
+            _crdtBuffer.forEach(
+                bufferObject => {
+
+                    console.debug(LOG_OBJECT + "checkNodeBuffer(): bufferObject ", bufferObject.toString());
+
+                    let node = bufferObject.getNode();
+                    let parentNodeTimestamp = node.getParentNodeTimestamp();
+
+                    if (!node.isTombstone()) {
+                        if (parentNodeTimestamp === null || _tiTree.getNodeFromTimestamp(parentNodeTimestamp) !== undefined) {
+                            console.debug(LOG_OBJECT + "checkNodeBuffer(): call remoteInsert()");
+
+                            let codeMirrorFunction = bufferObject.getCallback();
+                            codeMirrorFunction(this.remoteInsert(node));
+                            _crdtBuffer.delete(bufferObject);
+                        }
+                    } else {
+                        if (_tiTree.getNodeFromTimestamp(node.getTimestamp()) !== undefined) {
+                            console.debug(LOG_OBJECT + "checkNodeBuffer(): call remoteDelete()");
+
+                            let codeMirrorFunction = bufferObject.getCallback();
+                            codeMirrorFunction(this.remoteDelete(node));
+                            _crdtBuffer.delete(bufferObject);
+                        }
+                    }
+                }
+            );
+
+            if (bufferSizeBeforeCheck > _crdtBuffer.size && _crdtBuffer.size > 0) {
+                this.checkNodeBuffer();
+            }
+        };
+
+        /**
+         * @param {TiTreeNode} node
          * @return {ChangeObject} position and value of the node
          */
         this.remoteDelete = function (node) {
@@ -58,6 +109,31 @@ class Crdt {
 
     }
 
+}
+
+class BufferObject {
+
+    /**
+     * @param {TiTreeNode} node
+     * @param {function(ChangeObject)} callback
+     */
+    constructor(node, callback) {
+        let _node = node;
+        let _callback = callback;
+
+        this.getNode = function () {
+            return _node;
+        };
+
+        this.getCallback = function () {
+            return _callback;
+        };
+
+        this.toString = function () {
+            return "\"_node\":" + _node.toString() + "," +
+                "\"_callback\"" + _callback + "}";
+        }
+    }
 }
 
 export {Crdt};
