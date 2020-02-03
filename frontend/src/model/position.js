@@ -1,16 +1,17 @@
+let privateProps = new WeakMap();
+
 class Position {
     constructor(row, column) {
-        const _row = row;
-        const _column = column;
-
-        this.getRow = function () {
-            return _row;
-        };
-
-        this.getColumn = function () {
-            return _column;
-        };
+        privateProps.set(this, { row: row, column: column });
     }
+
+    getRow() {
+        return privateProps.get(this).row;
+    };
+
+    getColumn() {
+        return privateProps.get(this).column;
+    };
 }
 
 export {Position};
