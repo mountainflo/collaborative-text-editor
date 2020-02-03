@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	pb "github.com/mountainflo/collaborative-text-editor/collabTexteditorService"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -40,7 +39,7 @@ func (c collabTexteditorService) CreateReplicaId(ctx context.Context, request *p
 
 func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *pb.LocalUpdateRequest) (*pb.LocalUpdateReply, error) {
 
-	fmt.Printf("received local update from replicaId=%v\n", request.ReplicaId)
+	log.Printf("received local update from replicaId=%v\n", request.ReplicaId)
 
 	c.sendUpdateToSubscribers(request.Node, int(request.ReplicaId))
 
