@@ -33,24 +33,24 @@ func (c collabTexteditorService) CreateReplicaId(ctx context.Context, request *p
 	newReplicaId := c.repository.NextFreeReplicaId
 	c.repository.NextFreeReplicaId += 1
 
-	log.Println("Created new replica Id: " + strconv.Itoa(int(newReplicaId)))
+	log.Printf("Created new replica Id: %v\n", newReplicaId)
 
 	return &pb.ReplicaResponse{ReplicaId: newReplicaId}, nil
 }
 
 func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *pb.LocalUpdateRequest) (*pb.LocalUpdateReply, error) {
 
-	fmt.Printf("received local update from replicaId=%v", request.ReplicaId)
+	fmt.Printf("received local update from replicaId=%v\n", request.ReplicaId)
 
 	c.sendUpdateToSubscribers(request.Node, int(request.ReplicaId))
 
-	return &pb.LocalUpdateReply{StatusMessage: "Successfully received local update"}, nil
+	return &pb.LocalUpdateReply{StatusMessage: "Successfully received local update"}, nil //TODO could return *pb.Empty
 }
 
 // Clients subscribe to updates by opening a server-side-stream
 func (c collabTexteditorService) SubscribeForRemoteUpdates(request *pb.RemoteUpdateRequest, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) error {
 
-	log.Println("Client " + strconv.Itoa(int(request.ReplicaId)) + " subscribes for updates")
+	log.Printf("New subscription for remote updates: replica %v\n", request.ReplicaId)
 
 	//TODO new client gets transferred all change events. Go server has to store the event history
 
@@ -67,11 +67,11 @@ func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, str
 	for {
 		select {
 		case <-stream.Context().Done():
-			log.Println("Context of stream closed")
+			log.Printf("Context of stream closed\n")
 			return
 		case remoteUpdateResponse, ok := <-c.repository.Channels[channelId]: // TODO test if element is present. elem, ok = m[key]
 			if !ok {
-				log.Println("Channel is closed")
+				log.Printf("Channel is closed\n")
 				return
 			}
 			if err := stream.Send(remoteUpdateResponse); err != nil {
@@ -93,7 +93,7 @@ func (c collabTexteditorService) createNewChannel(replicaId int) int {
 
 func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, replicaId int) {
 
-	log.Println("send update to subscribers")
+	log.Printf("send update to subscribers\n")
 
 	response := pb.RemoteUpdateResponse{Node: node}
 
@@ -101,7 +101,7 @@ func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, re
 
 		//skip replica, which sends update
 		if channelId != replicaId {
-			log.Println("send update to subscriber: " + strconv.Itoa(channelId))
+			log.Printf("send update to subscriber: %v\n", channelId)
 			channel <- &response
 		}
 	}
