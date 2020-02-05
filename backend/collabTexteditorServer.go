@@ -41,7 +41,7 @@ func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *p
 
 	log.Printf("[replicaId=%v] Received local update\n", request.ReplicaId)
 
-	c.sendUpdateToSubscribers(request.Node, int(request.ReplicaId))
+	c.sendUpdateToSubscribers(request.Node, request.ReplicaId)
 
 	//TODO could return *pb.Empty, but a message has to be sent either way
 	return &pb.LocalUpdateReply{StatusMessage: "Successfully received local update"}, nil
@@ -54,12 +54,12 @@ func (c collabTexteditorService) SubscribeForRemoteUpdates(request *pb.RemoteUpd
 
 	//TODO eventually transfer the complete array in one single response (create new proto-message-type)
 	//TODO send all missed events starting by the event after the last send
-	for i := 0; i < len(c.repository.History); i++ {
+	/*for i := 0; i < len(c.repository.History); i++ {
 		remoteUpdateResponse := c.repository.History[i]
 		if err := stream.Send(remoteUpdateResponse); err != nil {
 			log.Printf(err.Error())
 		}
-	}
+	}*/
 
 	channelId := c.createNewChannel(int(request.ReplicaId))
 
@@ -99,18 +99,18 @@ func (c collabTexteditorService) createNewChannel(replicaId int) int {
 	return replicaId
 }
 
-func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, replicaId int) {
+func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, replicaId int64) {
 
 	log.Printf("Send update to subscribers\n")
 
-	response := pb.RemoteUpdateResponse{Node: node}
+	response := pb.RemoteUpdateResponse{SenderReplicaId: replicaId, Node: node}
 
 	c.repository.History = append(c.repository.History, &response)
 
 	for channelId, channel := range c.repository.Channels {
 
 		//skip replica, which sends update
-		if channelId != replicaId {
+		if channelId != int(replicaId) {
 			log.Printf("[replicaId=%v] Send update to subscriber\n", channelId)
 			channel <- &response
 		}
