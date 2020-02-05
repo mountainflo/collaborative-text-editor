@@ -191,12 +191,13 @@ class Editor {
             }
         }
     }
-
-
 }
 
 function selectHexColor(replicaId){
-    let colors = ['#AA0000', '#00740F', '#170486','#898900','#85003D','#04667A'];
+    let colors = ['#AA0000', '#00740F', '#170486',
+        '#898900','#85003D','#04667A',
+        '#170d3c','#4e0000','#ff0058',
+        '#af4000','#7f3685','#004948'];
     return colors[replicaId % colors.length];
 }
 
