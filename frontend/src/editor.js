@@ -25,6 +25,8 @@ class Editor {
             value: textAreaObj.value
         });
 
+        let _bookmarkMap = new Map();
+
         /**
          * Subscribe for updates. Callback will be executed if
          * user inputs or deletes text.
@@ -66,6 +68,52 @@ class Editor {
 
         this.getValue = function () {
             return _editor.getValue(LINE_SEPARATOR);
+        };
+
+        /**
+         * @param {ChangeObject} changeObject
+         * @param {number} replicaId
+         */
+        this.displayRemoteCursor = function(changeObject, replicaId) {
+
+            let position = changeObject.getPosition();
+            let previousMarkerObj = _bookmarkMap.get(replicaId);
+            let replicaColor;
+
+            if (previousMarkerObj !== undefined){
+                previousMarkerObj.marker.clear();
+                replicaColor = previousMarkerObj.color;
+                _bookmarkMap.delete(replicaId);
+            } else {
+                replicaColor = selectHexColor(replicaId);
+            }
+
+            let row = position.getRow();
+            let column = position.getColumn();
+            if (changeObject.getType() === CHANGE_OBJECT_TYPE.INSERTION) {
+                column += 1;
+                if (changeObject.getValue() === LINE_SEPARATOR) {
+                    row += 1;
+                }
+            }
+
+
+            let cursorPos = {line:row, ch:column};
+            const cursorElement = document.createElement('span');
+            cursorElement.style.borderLeftColor = replicaColor;
+            cursorElement.classList.add('cursorElement');
+
+            const cursorName = document.createTextNode('Replica ' + replicaId);
+            const cursorFlag = document.createElement('span');
+            cursorFlag.classList.add('cursorFlag');
+            cursorFlag.style.backgroundColor = replicaColor;
+            cursorFlag.appendChild(cursorName);
+            cursorElement.appendChild(cursorFlag);
+
+            console.debug(LOG_OBJECT + "displayRemoteCursor(): " + replicaId + " at [row=" + row + ",ch=" + column + "]");
+
+            let marker = _editor.setBookmark(cursorPos, { widget: cursorElement });
+            _bookmarkMap.set(replicaId,{marker:marker, color:replicaColor});
         };
 
         /**
@@ -152,8 +200,14 @@ class Editor {
             }
         }
     }
+}
 
-
+function selectHexColor(replicaId){
+    let colors = ['#AA0000', '#00740F', '#170486',
+        '#898900','#85003D','#04667A',
+        '#170d3c','#4e0000','#ff0058',
+        '#af4000','#7f3685','#004948'];
+    return colors[replicaId % colors.length];
 }
 
 class Iterator {

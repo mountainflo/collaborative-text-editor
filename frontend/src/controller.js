@@ -27,8 +27,9 @@ class Controller {
 
         /**
          * @param {TiTreeNode} node
+         * @param {number} senderReplicaId
          */
-        let handleRemoteUpdateCallback = function (node) {
+        let handleRemoteUpdateCallback = function (node,senderReplicaId) {
 
             console.debug(LOG_OBJECT + "handleRemoteUpdateCallback()", node.toString());
 
@@ -40,6 +41,7 @@ class Controller {
                 } else {
                     codeMirrorEditor.insert(changeObject);
                 }
+                codeMirrorEditor.displayRemoteCursor(changeObject,senderReplicaId);
             });
         };
 

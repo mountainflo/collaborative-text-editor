@@ -28,7 +28,8 @@ message RemoteUpdateRequest {
 }
 
 message RemoteUpdateResponse {
-    TiTreeNode node = 1;
+    int64 senderReplicaId = 1;
+    TiTreeNode node = 2;
 }
 
 message TiTreeNode {

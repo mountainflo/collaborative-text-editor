@@ -295,18 +295,15 @@ class TiTree {
 
             let node = object.getNodeFromTimestamp(nodeTimestamp);
 
-            if (!node.isTombstone()) {
-
+            let visitingNodeForTheFirstTime = args.length === 0;
+            if (!node.isTombstone() && visitingNodeForTheFirstTime) {
                 if (abortionFunction(object,passedChars,nodeTimestamp)) {
                     return {
                         lastNodeTimestamp:nodeTimestamp,
                         passedChars:passedChars
                     };
-                } else {
-                    if (args.length === 0) {
-                        ++passedChars;
-                    }
                 }
+                ++passedChars;
             }
 
             let parentNodeTimestamp = node.getParentNodeTimestamp();
