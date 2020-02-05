@@ -94,7 +94,7 @@ class CollabTexteditorClient {
                 resolve => {
                     stream.on('data',function (response) {
                         let tiTreeNode = protobufNodeToTiTreeNode(response.getNode());
-                        callback(tiTreeNode);
+                        callback(tiTreeNode,response.getSenderreplicaid());
                     });
 
                     stream.on('error', function(err) {
