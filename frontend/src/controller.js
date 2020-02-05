@@ -41,7 +41,7 @@ class Controller {
                 } else {
                     codeMirrorEditor.insert(changeObject);
                 }
-                codeMirrorEditor.displayRemoteCursor(changeObject.getPosition(),senderReplicaId);
+                codeMirrorEditor.displayRemoteCursor(changeObject,senderReplicaId);
             });
         };
 

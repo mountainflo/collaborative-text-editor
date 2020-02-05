@@ -71,13 +71,12 @@ class Editor {
         };
 
         /**
-         * @param {Position} position
+         * @param {ChangeObject} changeObject
          * @param {number} replicaId
          */
-        this.displayRemoteCursor = function(position, replicaId) {
+        this.displayRemoteCursor = function(changeObject, replicaId) {
 
-            console.debug(LOG_OBJECT + "displayRemoteCursor(): " + replicaId + " at [row=" + position.getRow() + ",ch=" + position.getColumn() + "]");
-
+            let position = changeObject.getPosition();
             let previousMarkerObj = _bookmarkMap.get(replicaId);
             let replicaColor;
 
@@ -89,8 +88,17 @@ class Editor {
                 replicaColor = selectHexColor(replicaId);
             }
 
+            let row = position.getRow();
+            let column = position.getColumn();
+            if (changeObject.getType() === CHANGE_OBJECT_TYPE.INSERTION) {
+                column += 1;
+                if (changeObject.getValue() === LINE_SEPARATOR) {
+                    row += 1;
+                }
+            }
 
-            let cursorPos = {line:position.getRow(), ch:position.getColumn() + 1};
+
+            let cursorPos = {line:row, ch:column};
             const cursorElement = document.createElement('span');
             cursorElement.style.borderLeftColor = replicaColor;
             cursorElement.classList.add('cursorElement');
@@ -102,8 +110,9 @@ class Editor {
             cursorFlag.appendChild(cursorName);
             cursorElement.appendChild(cursorFlag);
 
-            let marker = _editor.setBookmark(cursorPos, { widget: cursorElement });
+            console.debug(LOG_OBJECT + "displayRemoteCursor(): " + replicaId + " at [row=" + row + ",ch=" + column + "]");
 
+            let marker = _editor.setBookmark(cursorPos, { widget: cursorElement });
             _bookmarkMap.set(replicaId,{marker:marker, color:replicaColor});
         };
 

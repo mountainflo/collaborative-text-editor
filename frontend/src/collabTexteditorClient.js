@@ -22,9 +22,7 @@ class CollabTexteditorClient {
                 resolve => {
                     _collabTextEditorService.createReplicaId(new Empty(), {}, function (err, response) {
                             if (err) {
-                                console.log(LOG_OBJECT + err.code);
-                                console.log(LOG_OBJECT + err.message);
-                                //reject if error occurs
+                                console.error(LOG_OBJECT + err.message);
                             } else {
                                 let replicaId = response.getReplicaid();
                                 console.log(LOG_OBJECT + "new received replicaId:", replicaId);
@@ -50,8 +48,8 @@ class CollabTexteditorClient {
 
             _collabTextEditorService.sendLocalUpdate(request, {}, function(err, response) {
                 if (err) {
-                    console.log(LOG_OBJECT + err.code);
-                    console.log(LOG_OBJECT + err.message);
+                    console.warn(LOG_OBJECT + err.code);
+                    console.warn(LOG_OBJECT + err.message);
                 } else {
                     console.debug(LOG_OBJECT + "sendLocalUpdate() response message: " + response);
                 }
