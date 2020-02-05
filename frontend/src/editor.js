@@ -25,6 +25,8 @@ class Editor {
             value: textAreaObj.value
         });
 
+        let _bookmarkMap = new Map();
+
         /**
          * Subscribe for updates. Callback will be executed if
          * user inputs or deletes text.
@@ -66,6 +68,43 @@ class Editor {
 
         this.getValue = function () {
             return _editor.getValue(LINE_SEPARATOR);
+        };
+
+        /**
+         * @param {Position} position
+         * @param {number} replicaId
+         */
+        this.displayRemoteCursor = function(position, replicaId) {
+
+            console.debug(LOG_OBJECT + "displayRemoteCursor(): " + replicaId + " at [row=" + position.getRow() + ",ch=" + position.getColumn() + "]");
+
+            let previousMarkerObj = _bookmarkMap.get(replicaId);
+            let replicaColor;
+
+            if (previousMarkerObj !== undefined){
+                previousMarkerObj.marker.clear();
+                replicaColor = previousMarkerObj.color;
+                _bookmarkMap.delete(replicaId);
+            } else {
+                replicaColor = selectHexColor(replicaId);
+            }
+
+
+            let cursorPos = {line:position.getRow(), ch:position.getColumn() + 1};
+            const cursorElement = document.createElement('span');
+            cursorElement.style.borderLeftColor = replicaColor;
+            cursorElement.classList.add('cursorElement');
+
+            const cursorName = document.createTextNode('Replica ' + replicaId);
+            const cursorFlag = document.createElement('span');
+            cursorFlag.classList.add('cursorFlag');
+            cursorFlag.style.backgroundColor = replicaColor;
+            cursorFlag.appendChild(cursorName);
+            cursorElement.appendChild(cursorFlag);
+
+            let marker = _editor.setBookmark(cursorPos, { widget: cursorElement });
+
+            _bookmarkMap.set(replicaId,{marker:marker, color:replicaColor});
         };
 
         /**
@@ -154,6 +193,11 @@ class Editor {
     }
 
 
+}
+
+function selectHexColor(replicaId){
+    let colors = ['#AA0000', '#00740F', '#170486','#898900','#85003D','#04667A'];
+    return colors[replicaId % colors.length];
 }
 
 class Iterator {

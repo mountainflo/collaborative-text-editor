@@ -40,6 +40,7 @@ class Controller {
                 } else {
                     codeMirrorEditor.insert(changeObject);
                 }
+                codeMirrorEditor.displayRemoteCursor(changeObject.getPosition(),node.getReplicaId())
             });
         };
 
