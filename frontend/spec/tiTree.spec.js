@@ -522,4 +522,50 @@ describe("TiTree", function () {
 
         expect(tiTree.read()).toBe("a\nb\ncabcd013\nd\ne");
     });
+
+    it("should delete complete lines with one remote node", function () {
+        let tiTree = new TiTree();
+        let tiTreeReplica = new TiTree();
+
+        let node1 = tiTree.insert(0,0,"0",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node1));
+        let node2 = tiTree.insert(0,1,"0",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node2));
+        let node3 = tiTree.insert(0,2,"\n",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node3));
+        let node4 = tiTree.insert(1,0,"1",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node4));
+        let node5 = tiTree.insert(1,1,"1",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node5));
+        let node6 = tiTree.insert(1,2,"\n",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node6));
+        let node7 = tiTree.insert(2,0,"2",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node7));
+        let node8 = tiTree.insert(2,1,"2",1);
+        tiTreeReplica.insertNode(TiTreeNode.copyNode(node8));
+
+        expect(tiTree.read()).toBe("00\n11\n22");
+        expect(tiTreeReplica.read()).toBe("00\n11\n22");
+
+        let replicaInsertNode = tiTreeReplica.insert(0,2,"A",2);
+        expect(tiTreeReplica.read()).toBe("00A\n11\n22");
+
+        let position = tiTree.insertNode(TiTreeNode.copyNode(replicaInsertNode));
+        expect(position.getRow()).toBe(0);
+        expect(position.getColumn()).toBe(2);
+        expect(tiTree.read()).toBe("00A\n11\n22");
+
+        let deletionPosition = new Position(0,2);
+        let deletedNode1 = tiTree.delete(deletionPosition.getRow(),deletionPosition.getColumn());
+        expect(deletedNode1.getId()).toBe(replicaInsertNode.getId());
+        let deletedNodePosition1 = tiTreeReplica.deleteNode(TiTreeNode.copyNode(deletedNode1));
+        expect(deletedNodePosition1.getColumn()).toBe(deletionPosition.getColumn());
+        expect(deletedNodePosition1.getRow()).toBe(deletionPosition.getRow());
+
+        let deletedNode2 = tiTree.delete(deletionPosition.getRow(),deletionPosition.getColumn());
+        expect(deletedNode2.getId()).toBe(node3.getId());
+        let deletedNodePosition2 = tiTreeReplica.deleteNode(TiTreeNode.copyNode(deletedNode2));
+        expect(deletedNodePosition2.getColumn()).toBe(deletionPosition.getColumn());
+        expect(deletedNodePosition2.getRow()).toBe(deletionPosition.getRow());
+    });
 });
