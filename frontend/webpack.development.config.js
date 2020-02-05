@@ -32,7 +32,11 @@ module.exports = {
                     loader: 'babel-loader',
                     options: {
                         presets: ['@babel/preset-env'],
-                        plugins: ['@babel/plugin-transform-regenerator']
+                        plugins: [
+                            "@babel/plugin-transform-regenerator",
+                            "@babel/plugin-proposal-class-properties",
+                            ["transform-remove-console", { "exclude": [ "error", "warn", "log", "debug"] }]
+                        ]
                     }
                 }
             },

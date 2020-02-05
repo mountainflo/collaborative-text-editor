@@ -2,24 +2,44 @@ syntax = "proto3";
 package collabTexteditorService;
 
 service CollabTexteditorService {
-    rpc SendTextUpdate(TextUpdateRequest) returns (TextUpdateReply);
-
-    rpc SubscribeToServerUpdate(ServerUpdateSubscriptionRequest) returns (stream ServerUpdateSubscriptionResponse);
+    rpc CreateReplicaId(Empty) returns (ReplicaResponse);
+    rpc SendLocalUpdate(LocalUpdateRequest) returns (LocalUpdateReply);
+    rpc SubscribeForRemoteUpdates(RemoteUpdateRequest) returns (stream RemoteUpdateResponse);
 }
 
-message TextUpdateRequest {
-    string textUpdate = 1;
+message Empty {
 }
 
-message TextUpdateReply {
+message ReplicaResponse {
+    int64 replicaId = 1;
+}
+
+message LocalUpdateRequest {
+    TiTreeNode node = 1;
+    int64 replicaId = 2;
+}
+
+message LocalUpdateReply {
     string statusMessage = 1;
 }
 
-message ServerUpdateSubscriptionRequest {
-    int64 clientId = 1;
-    bool subscription = 2;
+message RemoteUpdateRequest {
+    int64 replicaId = 1;
 }
 
-message ServerUpdateSubscriptionResponse {
-    string latestServerContent = 1;
+message RemoteUpdateResponse {
+    TiTreeNode node = 1;
+}
+
+message TiTreeNode {
+    Timestamp timestamp = 1;
+    Timestamp parentTimestamp = 2;
+    string value = 3;
+    bool tombstone = 4;
+    repeated Timestamp childrenTimestamps = 5;
+
+    message Timestamp {
+        int64 replicaId = 1;
+        int64 id = 2;
+    }
 }
