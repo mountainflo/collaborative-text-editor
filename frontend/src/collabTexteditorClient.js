@@ -53,7 +53,7 @@ class CollabTexteditorClient {
                     console.log(LOG_OBJECT + err.code);
                     console.log(LOG_OBJECT + err.message);
                 } else {
-                    console.log(LOG_OBJECT + "sendLocalUpdate response message: " + response);
+                    console.debug(LOG_OBJECT + "sendLocalUpdate() response message: " + response);
                 }
             });
         };

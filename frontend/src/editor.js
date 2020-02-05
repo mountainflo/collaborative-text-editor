@@ -35,25 +35,9 @@ class Editor {
             _editor.on("change", (_, obj) => {
                 console.log(LOG_OBJECT + "\"change\" event fired: ", obj);
 
-                //TODO inserting newline is obj.text=["", ""]
-                //TODO deleting newline is different to
-
-                if (obj.origin === "+input" || obj.origin === "+delete") {
-
-                    let text;
-                    if ((obj.text).length === 2) {
-                        text = "\n"; //inserting newline is obj.text=["", ""]
-                    } else {
-                        text = (obj.text).toString();
-                    }
-
-                    let changeObject = new ChangeObject(
-                        new Position(obj.from.line,obj.from.ch),
-                        text,
-                        obj.origin === "+input" ? CHANGE_OBJECT_TYPE.INSERTION : CHANGE_OBJECT_TYPE.DELETION);
-
-                    //TODO if string contains several chars. Create several changeObjects
-                    callback(changeObject); //async call (remote updates can be delayed)
+                if (obj.origin !== ORIGIN_REMOTE_DELETE && obj.origin !== ORIGIN_REMOTE_INSERT) {
+                    callCallbackForEachChar(callback, obj.removed, obj.from.line, obj.from.ch, CHANGE_OBJECT_TYPE.DELETION);
+                    callCallbackForEachChar(callback, obj.text, obj.from.line, obj.from.ch, CHANGE_OBJECT_TYPE.INSERTION);
                 }
             });
         };
@@ -110,10 +94,88 @@ class Editor {
             let to = {line: secondRowNumber, ch: secondRow.length};
 
             _editor.doc.replaceRange(secondRow,from,to,ORIGIN_REMOTE_DELETE);
+        };
+
+        /**
+         * @param {number} line
+         * @param {number} column
+         * @param {string} text
+         * @param {CHANGE_OBJECT_TYPE} type
+         * @return {ChangeObject}
+         */
+        let createChangeObject = function (line, column, text, type) {
+            return new ChangeObject(new Position(line,column), text, type);
+        };
+
+        /**
+         * @param {function({ChangeObject})} callback callback action to be executed for each char
+         * @param {[string]} array
+         * @param {number} line
+         * @param {number} column
+         * @param {CHANGE_OBJECT_TYPE} type
+         */
+        let callCallbackForEachChar = function (callback, array, line, column, type) {
+            let iterator = new Iterator(array);
+            let result = iterator.next();
+            let _line = line;
+            let _column = column;
+
+            let getNextColumn = () => {
+                if (type === CHANGE_OBJECT_TYPE.DELETION) {
+                    return _column;
+                } else {
+                    return _column++;
+                }
+            };
+
+            let setVarsForNextIteration = () => {
+                if (type !== CHANGE_OBJECT_TYPE.DELETION) {
+                    ++_line;
+                    _column = 0;
+                }
+            };
+
+            while (!result.done) {
+
+                let charArray = (result.value.toString()).split("");
+
+                charArray.forEach(
+                    char => callback(createChangeObject(_line, getNextColumn(), char, type))
+                );
+
+                if (iterator.hasNext()){
+                    callback(createChangeObject(_line, getNextColumn(), "\n", type))
+                }
+
+                result = iterator.next();
+                setVarsForNextIteration();
+            }
         }
     }
 
 
+}
+
+class Iterator {
+    constructor(someArray) {
+        let _nextIndex = 0;
+        let _array = someArray;
+        this.next = function () {
+            if (_nextIndex < _array.length) {
+                return {
+                    value: _array[_nextIndex++],
+                    done: false
+                };
+            } else {
+                return {
+                    done: true
+                };
+            }
+        };
+        this.hasNext = function () {
+            return _nextIndex < _array.length;
+        };
+    }
 }
 
 export {Editor};

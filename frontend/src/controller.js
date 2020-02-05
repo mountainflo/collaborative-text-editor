@@ -5,14 +5,6 @@ import {CHANGE_OBJECT_TYPE} from "./model/changeObject";
 
 const LOG_OBJECT = "[controller] ";
 
-/*
-Tasks of the controller:
- - get new ReplicaId from the server
- - subscribe for remote updates => transfered callback
-   to collabTexteditorClient handles remote insertions/deletions
- - transfer callback to editor => handle local insertions/deletions => send insertions/deletions to the server
-
- */
 class Controller {
 
     /**
@@ -40,13 +32,15 @@ class Controller {
 
             console.debug(LOG_OBJECT + "handleRemoteUpdateCallback()", node.toString());
 
-            if (node.isTombstone()) {
-                let changeObject =_crdt.remoteDelete(node);
-                codeMirrorEditor.delete(changeObject);
-            } else {
-                let changeObject = _crdt.remoteInsert(node);
-                codeMirrorEditor.insert(changeObject);
-            }
+            _crdt.addRemoteNodeToBuffer(node,(changeObject) => {
+
+                console.debug(LOG_OBJECT + "execute CodeMirrorFunction");
+                if (changeObject.getType() === CHANGE_OBJECT_TYPE.DELETION) {
+                    codeMirrorEditor.delete(changeObject);
+                } else {
+                    codeMirrorEditor.insert(changeObject);
+                }
+            });
         };
 
         let subscribeForLocalUpdates = function (editor) {

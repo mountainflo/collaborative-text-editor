@@ -1,5 +1,7 @@
 import {Timestamp} from "./timestamp";
 
+let privateProps = new WeakMap();
+
 class TiTreeNode {
 
     static nextFreeId = 0;  //TODO total number of ids limited to the size of the js-number
@@ -14,96 +16,105 @@ class TiTreeNode {
         }
     }
 
-    constructor(replicaId, parentNodeTimestamp, value, ...args) {
-        let _id;
-        let _tombstone = false;
+    constructor(replicaId, parentNodeTimestamp, value, id=undefined, tombstone=false) {
 
-        if (args.length === 2) {
-            _id = args[0];
-            _tombstone = args[1];
+        let _id;
+        if (id !== undefined) {
+            _id = id;
         } else {
             _id = TiTreeNode.createUniqueId();
         }
 
-        let _replicaId = replicaId;
-        let _timestamp = new Timestamp(_id, _replicaId);
-        let _parentNodeTimestamp = parentNodeTimestamp;
-        let _value = value;
-        let _childrenTimestamps = [];
-
-        this.getReplicaId = function(){
-            return _replicaId;
-        };
-
-        this.getId = function(){
-            return _id;
-        };
-
-        this.getParentNodeTimestamp = function(){
-            return _parentNodeTimestamp;
-        };
-
-        this.setParentNodeTimestamp = function(parentNodeTimestamp){
-            _parentNodeTimestamp = parentNodeTimestamp;
-        };
-
-        this.getValue = function(){
-            return _value;
-        };
-
-        this.isTombstone = function () {
-            return _tombstone;
-        };
-
-        this.getChildrenTimestamps = function () {
-            return _childrenTimestamps;
-        };
-
-        /**
-         * @return {Timestamp}
-         */
-        this.getTimestamp = function () {
-            return _timestamp;
-        };
-
-        this.markAsTombstone = function () {
-            _tombstone = true;
-            //_value = "";
-        };
-
-        /**
-         * Add a new child to the node.
-         * The children timestamps are sorted in descending order
-         * of the timestamps.
-         *
-         * @param {Timestamp} childTimestamp
-         */
-        this.addChildTimestamp = function (childTimestamp) {
-            //TODO is it possible one childTimestamp is inserted two times?
-            _childrenTimestamps.push(childTimestamp);
-            if (_childrenTimestamps.length > 1) {
-                _childrenTimestamps.sort((a, b) => {return a.compareTo(b)});
-            }
-
-        };
-
-        this.toString = function () {
-            let parentTimestamp = "null";
-            if (_parentNodeTimestamp !== null) {
-                parentTimestamp = _parentNodeTimestamp.toString()
-            }
-
-            let value = _value === "\n" ? "\\n" : _value;
-
-            let reducer = (accum, t) => accum + ", " + t.toString();
-
-            return "{" + "\"timestamp\":" + _timestamp.toString() + ","
-                + "\"parentTimestamp\":" + parentTimestamp + ","
-                + "\"value\":\"" + value + "\","
-                + "\"tombstone\":" + _tombstone + ","
-                + "\"childrenTimestamps\":[" + _childrenTimestamps.reduce(reducer, "") + "]}";
-        }
+        privateProps.set(this, {
+            id: _id,
+            replicaId: replicaId,
+            timestamp: new Timestamp(_id, replicaId),
+            parentNodeTimestamp: parentNodeTimestamp,
+            value: value,
+            tombstone: tombstone,
+            childrenTimestamps: []
+        });
     }
+
+    getReplicaId(){
+        return privateProps.get(this).replicaId;
+    };
+
+    getId(){
+        return privateProps.get(this).id;
+    };
+
+    getParentNodeTimestamp(){
+        return privateProps.get(this).parentNodeTimestamp;
+    };
+
+    setParentNodeTimestamp(parentNodeTimestamp){
+        let obj = privateProps.get(this);
+        obj.parentNodeTimestamp = parentNodeTimestamp;
+        privateProps.set(this,obj);
+    };
+
+    getValue(){
+        return privateProps.get(this).value;
+    };
+
+    isTombstone() {
+        return privateProps.get(this).tombstone;
+    };
+
+    getChildrenTimestamps() {
+        return privateProps.get(this).childrenTimestamps;
+    };
+
+    /**
+     * Add a new child to the node.
+     * The children timestamps are sorted in descending order
+     * of the timestamps.
+     *
+     * @param {Timestamp} childTimestamp
+     */
+    addChildTimestamp(childTimestamp) {
+        //TODO is it possible one childTimestamp is inserted two times?
+        let childrenTimestamps = this.getChildrenTimestamps();
+        childrenTimestamps.push(childTimestamp);
+        if (childrenTimestamps.length > 1) {
+            childrenTimestamps.sort((a, b) => {return a.compareTo(b)});
+        }
+
+        let obj = privateProps.get(this);
+        obj.childrenTimestamps = childrenTimestamps;
+        privateProps.set(this,obj);
+    };
+
+    /**
+     * @return {Timestamp}
+     */
+    getTimestamp() {
+        return privateProps.get(this).timestamp;
+    };
+
+    markAsTombstone() {
+        let obj = privateProps.get(this);
+        obj.tombstone = true;
+        privateProps.set(this,obj);
+    };
+
+    toString() {
+        let parentTimestamp = "null";
+        if (this.getParentNodeTimestamp() !== null) {
+            parentTimestamp = this.getParentNodeTimestamp().toString()
+        }
+
+        let value = this.getValue() === "\n" ? "\\n" : this.getValue();
+
+        let reducer = (accum, t) => accum + ", " + t.toString();
+
+        return "{" + "\"timestamp\":" + this.getTimestamp().toString() + ","
+            + "\"parentTimestamp\":" + parentTimestamp + ","
+            + "\"value\":\"" + value + "\","
+            + "\"tombstone\":" + this.isTombstone() + ","
+            + "\"childrenTimestamps\":[" + this.getChildrenTimestamps().reduce(reducer, "") + "]}";
+    };
 
     /**
      * Deep copy of a TiTreeNode
@@ -111,7 +122,7 @@ class TiTreeNode {
      * @param {TiTreeNode} node
      * @return {TiTreeNode}
      */
-    static copyNode = function (node) {
+    static copyNode(node) {
         let parent = node.getParentNodeTimestamp();
 
         let deepCopy = new TiTreeNode(
