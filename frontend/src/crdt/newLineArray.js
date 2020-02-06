@@ -1,53 +1,55 @@
-const LOG_OBJECT = "[NewLineArray] ";
+const LOG_OBJECT = '[NewLineArray] ';
 
 class NewLineArray {
+  constructor() {
+    let _newLineTimestampsReferences = [];
 
-    constructor() {
-        let _newLineTimestampsReferences = [];
+    this.addNewLineReference = function(timestamp, row) {
+      console.debug(LOG_OBJECT + 'addNewLineReference()', timestamp.toString(), row);
 
-        this.addNewLineReference = function(timestamp, row){
+      if (row > _newLineTimestampsReferences.length) {
+        throw new Error('row number is to high!');
+      } else if (row === _newLineTimestampsReferences.length) {
+        _newLineTimestampsReferences.push(timestamp);
+      } else if (row === 0) {
+        _newLineTimestampsReferences.unshift(timestamp);
+      } else {
+        const tail = _newLineTimestampsReferences.splice(row,
+            _newLineTimestampsReferences.length - row);
 
-            console.debug(LOG_OBJECT + "addNewLineReference()", timestamp.toString(), row);
+        _newLineTimestampsReferences.push(timestamp);
+        _newLineTimestampsReferences = _newLineTimestampsReferences.concat(tail);
+      }
 
-            if (row > _newLineTimestampsReferences.length) {
-                throw new Error("row number is to high!");
-            } else if (row === _newLineTimestampsReferences.length) {
-                _newLineTimestampsReferences.push(timestamp);
-            } else if (row === 0) {
-                _newLineTimestampsReferences.unshift(timestamp);
-            } else {
-                let tail = _newLineTimestampsReferences.splice(row, _newLineTimestampsReferences.length - row);
+      console.debug(LOG_OBJECT + 'addNewLineReference(): array changed to: ',
+          _newLineTimestampsReferences.toString());
+    };
 
-                _newLineTimestampsReferences.push(timestamp);
-                _newLineTimestampsReferences = _newLineTimestampsReferences.concat(tail);
-            }
+    this.removeNewLineReference = function(row) {
+      _newLineTimestampsReferences.splice(row, 1);
+    };
 
-            console.debug(LOG_OBJECT + "addNewLineReference(): array changed to: ", _newLineTimestampsReferences.toString());
-        };
+    this.removeNewLineReferenceByTimestamp = function(timestamp) {
+      const row = this.getNewLineReferenceByTimestamp(timestamp);
+      this.removeNewLineReference(row);
+    };
 
-        this.removeNewLineReference = function (row) {
-            _newLineTimestampsReferences.splice(row,1);
-        };
+    this.getNewLineReference = function(row) {
+      return _newLineTimestampsReferences[row];
+    };
 
-        this.removeNewLineReferenceByTimestamp = function (timestamp) {
-            let row = this.getNewLineReferenceByTimestamp(timestamp);
-            this.removeNewLineReference(row);
-        };
+    /**
+     * @param {Timestamp} timestamp
+     * @return {number} a node or "-1" if nothing found otherwise
+     */
+    this.getNewLineReferenceByTimestamp = function(timestamp) {
+      return _newLineTimestampsReferences.findIndex((elem) => elem.equals(timestamp));
+    };
 
-        this.getNewLineReference = function (row) {
-            return _newLineTimestampsReferences[row];
-        };
-
-        this.getNewLineReferenceByTimestamp = function (timestamp) {
-            return _newLineTimestampsReferences.findIndex(elem => elem.equals(timestamp));
-        };
-
-        this.length = function(){
-            return _newLineTimestampsReferences.length;
-        };
-
-    }
-
+    this.length = function() {
+      return _newLineTimestampsReferences.length;
+    };
+  }
 }
 
 export {NewLineArray};

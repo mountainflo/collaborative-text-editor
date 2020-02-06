@@ -1,34 +1,34 @@
 const CHANGE_OBJECT_TYPE = Object.freeze({
-    DELETION: 0,
-    INSERTION: 1
+  DELETION: 0,
+  INSERTION: 1,
 });
 
-let privateProps = new WeakMap();
+const privateProps = new WeakMap();
 
 class ChangeObject {
-    constructor(position, value, CHANGE_OBJECT_TYPE) {
-        privateProps.set(this, { position: position, value: value, type: CHANGE_OBJECT_TYPE });
-    }
+  constructor(position, value, CHANGE_OBJECT_TYPE) {
+    privateProps.set(this, {position: position, value: value, type: CHANGE_OBJECT_TYPE});
+  }
 
-    getRow() {
-        return this.getPosition().getRow();
-    };
+  getRow() {
+    return this.getPosition().getRow();
+  };
 
-    getColumn() {
-        return this.getPosition().getColumn();
-    };
+  getColumn() {
+    return this.getPosition().getColumn();
+  };
 
-    getPosition() {
-        return privateProps.get(this).position;
-    };
+  getPosition() {
+    return privateProps.get(this).position;
+  };
 
-    getValue() {
-        return privateProps.get(this).value;
-    };
+  getValue() {
+    return privateProps.get(this).value;
+  };
 
-    getType() {
-        return privateProps.get(this).type;
-    }
+  getType() {
+    return privateProps.get(this).type;
+  }
 }
 
-export {ChangeObject,CHANGE_OBJECT_TYPE};
+export {ChangeObject, CHANGE_OBJECT_TYPE};

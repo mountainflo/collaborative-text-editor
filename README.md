@@ -36,6 +36,14 @@ go get -u github.com/golang/protobuf/protoc-gen-go
 protoc -I collabTexteditorService/ collabTexteditorService/collabTexteditorService.proto --go_out=plugins=grpc:collabTexteditorService
 ```
 
+### Compiling proto files for js
+
+```sh
+protoc -I collabTexteditorService collabTexteditorService/collabTexteditorService.proto \
+--js_out=import_style=commonjs:./frontend/src \
+--grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
+```
+
 ### Debugging with docker
 
 To open the console of a specific container run:
@@ -50,16 +58,7 @@ The following command gives you a list of status of all containers:
 docker-compose ps
 ```
 
-### Compiling proto files for js
-
-```sh
-protoc -I collabTexteditorService collabTexteditorService/collabTexteditorService.proto \
---js_out=import_style=commonjs:./frontend/src \
---grpc-web_out=import_style=commonjs,mode=grpcwebtext:./frontend/src
-```
-
-<!-- TODO rename to bundling js files -->
-### Compile js library and create main.js
+### Bundling and building js-Frontend
 
 ```sh
 npm install
