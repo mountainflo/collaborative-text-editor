@@ -69,14 +69,94 @@ proto.collabTexteditorService.CollabTexteditorServicePromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.collabTexteditorService.Empty,
- *   !proto.collabTexteditorService.ReplicaResponse>}
+ *   !proto.collabTexteditorService.JoinSessionRequest,
+ *   !proto.collabTexteditorService.JoinSessionResponse>}
  */
-const methodDescriptor_CollabTexteditorService_CreateReplicaId = new grpc.web.MethodDescriptor(
-  '/collabTexteditorService.CollabTexteditorService/CreateReplicaId',
+const methodDescriptor_CollabTexteditorService_JoinSession = new grpc.web.MethodDescriptor(
+  '/collabTexteditorService.CollabTexteditorService/JoinSession',
+  grpc.web.MethodType.UNARY,
+  proto.collabTexteditorService.JoinSessionRequest,
+  proto.collabTexteditorService.JoinSessionResponse,
+  /**
+   * @param {!proto.collabTexteditorService.JoinSessionRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.collabTexteditorService.JoinSessionResponse.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.collabTexteditorService.JoinSessionRequest,
+ *   !proto.collabTexteditorService.JoinSessionResponse>}
+ */
+const methodInfo_CollabTexteditorService_JoinSession = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.collabTexteditorService.JoinSessionResponse,
+  /**
+   * @param {!proto.collabTexteditorService.JoinSessionRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.collabTexteditorService.JoinSessionResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.collabTexteditorService.JoinSessionRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.collabTexteditorService.JoinSessionResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.collabTexteditorService.JoinSessionResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.collabTexteditorService.CollabTexteditorServiceClient.prototype.joinSession =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/collabTexteditorService.CollabTexteditorService/JoinSession',
+      request,
+      metadata || {},
+      methodDescriptor_CollabTexteditorService_JoinSession,
+      callback);
+};
+
+
+/**
+ * @param {!proto.collabTexteditorService.JoinSessionRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.collabTexteditorService.JoinSessionResponse>}
+ *     A native promise that resolves to the response
+ */
+proto.collabTexteditorService.CollabTexteditorServicePromiseClient.prototype.joinSession =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/collabTexteditorService.CollabTexteditorService/JoinSession',
+      request,
+      metadata || {},
+      methodDescriptor_CollabTexteditorService_JoinSession);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.collabTexteditorService.Empty,
+ *   !proto.collabTexteditorService.SessionResponse>}
+ */
+const methodDescriptor_CollabTexteditorService_CreateSessionId = new grpc.web.MethodDescriptor(
+  '/collabTexteditorService.CollabTexteditorService/CreateSessionId',
   grpc.web.MethodType.UNARY,
   proto.collabTexteditorService.Empty,
-  proto.collabTexteditorService.ReplicaResponse,
+  proto.collabTexteditorService.SessionResponse,
   /**
    * @param {!proto.collabTexteditorService.Empty} request
    * @return {!Uint8Array}
@@ -84,7 +164,7 @@ const methodDescriptor_CollabTexteditorService_CreateReplicaId = new grpc.web.Me
   function(request) {
     return request.serializeBinary();
   },
-  proto.collabTexteditorService.ReplicaResponse.deserializeBinary
+  proto.collabTexteditorService.SessionResponse.deserializeBinary
 );
 
 
@@ -92,10 +172,10 @@ const methodDescriptor_CollabTexteditorService_CreateReplicaId = new grpc.web.Me
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.collabTexteditorService.Empty,
- *   !proto.collabTexteditorService.ReplicaResponse>}
+ *   !proto.collabTexteditorService.SessionResponse>}
  */
-const methodInfo_CollabTexteditorService_CreateReplicaId = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.collabTexteditorService.ReplicaResponse,
+const methodInfo_CollabTexteditorService_CreateSessionId = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.collabTexteditorService.SessionResponse,
   /**
    * @param {!proto.collabTexteditorService.Empty} request
    * @return {!Uint8Array}
@@ -103,7 +183,7 @@ const methodInfo_CollabTexteditorService_CreateReplicaId = new grpc.web.Abstract
   function(request) {
     return request.serializeBinary();
   },
-  proto.collabTexteditorService.ReplicaResponse.deserializeBinary
+  proto.collabTexteditorService.SessionResponse.deserializeBinary
 );
 
 
@@ -112,18 +192,18 @@ const methodInfo_CollabTexteditorService_CreateReplicaId = new grpc.web.Abstract
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.collabTexteditorService.ReplicaResponse)}
+ * @param {function(?grpc.web.Error, ?proto.collabTexteditorService.SessionResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.collabTexteditorService.ReplicaResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.collabTexteditorService.SessionResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.collabTexteditorService.CollabTexteditorServiceClient.prototype.createReplicaId =
+proto.collabTexteditorService.CollabTexteditorServiceClient.prototype.createSessionId =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/collabTexteditorService.CollabTexteditorService/CreateReplicaId',
+      '/collabTexteditorService.CollabTexteditorService/CreateSessionId',
       request,
       metadata || {},
-      methodDescriptor_CollabTexteditorService_CreateReplicaId,
+      methodDescriptor_CollabTexteditorService_CreateSessionId,
       callback);
 };
 
@@ -133,16 +213,16 @@ proto.collabTexteditorService.CollabTexteditorServiceClient.prototype.createRepl
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.collabTexteditorService.ReplicaResponse>}
+ * @return {!Promise<!proto.collabTexteditorService.SessionResponse>}
  *     A native promise that resolves to the response
  */
-proto.collabTexteditorService.CollabTexteditorServicePromiseClient.prototype.createReplicaId =
+proto.collabTexteditorService.CollabTexteditorServicePromiseClient.prototype.createSessionId =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/collabTexteditorService.CollabTexteditorService/CreateReplicaId',
+      '/collabTexteditorService.CollabTexteditorService/CreateSessionId',
       request,
       metadata || {},
-      methodDescriptor_CollabTexteditorService_CreateReplicaId);
+      methodDescriptor_CollabTexteditorService_CreateSessionId);
 };
 
 

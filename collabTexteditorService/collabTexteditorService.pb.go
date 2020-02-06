@@ -55,39 +55,125 @@ func (m *Empty) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Empty proto.InternalMessageInfo
 
-type ReplicaResponse struct {
+type SessionResponse struct {
+	SessionId            string   `protobuf:"bytes,1,opt,name=sessionId,proto3" json:"sessionId,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SessionResponse) Reset()         { *m = SessionResponse{} }
+func (m *SessionResponse) String() string { return proto.CompactTextString(m) }
+func (*SessionResponse) ProtoMessage()    {}
+func (*SessionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{1}
+}
+
+func (m *SessionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SessionResponse.Unmarshal(m, b)
+}
+func (m *SessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SessionResponse.Marshal(b, m, deterministic)
+}
+func (m *SessionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SessionResponse.Merge(m, src)
+}
+func (m *SessionResponse) XXX_Size() int {
+	return xxx_messageInfo_SessionResponse.Size(m)
+}
+func (m *SessionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SessionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SessionResponse proto.InternalMessageInfo
+
+func (m *SessionResponse) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
+type JoinSessionRequest struct {
+	SessionId            string   `protobuf:"bytes,1,opt,name=sessionId,proto3" json:"sessionId,omitempty"`
+	NickName             string   `protobuf:"bytes,2,opt,name=nickName,proto3" json:"nickName,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *JoinSessionRequest) Reset()         { *m = JoinSessionRequest{} }
+func (m *JoinSessionRequest) String() string { return proto.CompactTextString(m) }
+func (*JoinSessionRequest) ProtoMessage()    {}
+func (*JoinSessionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{2}
+}
+
+func (m *JoinSessionRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JoinSessionRequest.Unmarshal(m, b)
+}
+func (m *JoinSessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JoinSessionRequest.Marshal(b, m, deterministic)
+}
+func (m *JoinSessionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JoinSessionRequest.Merge(m, src)
+}
+func (m *JoinSessionRequest) XXX_Size() int {
+	return xxx_messageInfo_JoinSessionRequest.Size(m)
+}
+func (m *JoinSessionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_JoinSessionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_JoinSessionRequest proto.InternalMessageInfo
+
+func (m *JoinSessionRequest) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
+func (m *JoinSessionRequest) GetNickName() string {
+	if m != nil {
+		return m.NickName
+	}
+	return ""
+}
+
+type JoinSessionResponse struct {
 	ReplicaId            int64    `protobuf:"varint,1,opt,name=replicaId,proto3" json:"replicaId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ReplicaResponse) Reset()         { *m = ReplicaResponse{} }
-func (m *ReplicaResponse) String() string { return proto.CompactTextString(m) }
-func (*ReplicaResponse) ProtoMessage()    {}
-func (*ReplicaResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{1}
+func (m *JoinSessionResponse) Reset()         { *m = JoinSessionResponse{} }
+func (m *JoinSessionResponse) String() string { return proto.CompactTextString(m) }
+func (*JoinSessionResponse) ProtoMessage()    {}
+func (*JoinSessionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_1d586bc6f59f1daa, []int{3}
 }
 
-func (m *ReplicaResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ReplicaResponse.Unmarshal(m, b)
+func (m *JoinSessionResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_JoinSessionResponse.Unmarshal(m, b)
 }
-func (m *ReplicaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ReplicaResponse.Marshal(b, m, deterministic)
+func (m *JoinSessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_JoinSessionResponse.Marshal(b, m, deterministic)
 }
-func (m *ReplicaResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReplicaResponse.Merge(m, src)
+func (m *JoinSessionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JoinSessionResponse.Merge(m, src)
 }
-func (m *ReplicaResponse) XXX_Size() int {
-	return xxx_messageInfo_ReplicaResponse.Size(m)
+func (m *JoinSessionResponse) XXX_Size() int {
+	return xxx_messageInfo_JoinSessionResponse.Size(m)
 }
-func (m *ReplicaResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReplicaResponse.DiscardUnknown(m)
+func (m *JoinSessionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_JoinSessionResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ReplicaResponse proto.InternalMessageInfo
+var xxx_messageInfo_JoinSessionResponse proto.InternalMessageInfo
 
-func (m *ReplicaResponse) GetReplicaId() int64 {
+func (m *JoinSessionResponse) GetReplicaId() int64 {
 	if m != nil {
 		return m.ReplicaId
 	}
@@ -97,6 +183,7 @@ func (m *ReplicaResponse) GetReplicaId() int64 {
 type LocalUpdateRequest struct {
 	Node                 *TiTreeNode `protobuf:"bytes,1,opt,name=node,proto3" json:"node,omitempty"`
 	ReplicaId            int64       `protobuf:"varint,2,opt,name=replicaId,proto3" json:"replicaId,omitempty"`
+	SessionId            string      `protobuf:"bytes,3,opt,name=sessionId,proto3" json:"sessionId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -106,7 +193,7 @@ func (m *LocalUpdateRequest) Reset()         { *m = LocalUpdateRequest{} }
 func (m *LocalUpdateRequest) String() string { return proto.CompactTextString(m) }
 func (*LocalUpdateRequest) ProtoMessage()    {}
 func (*LocalUpdateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{2}
+	return fileDescriptor_1d586bc6f59f1daa, []int{4}
 }
 
 func (m *LocalUpdateRequest) XXX_Unmarshal(b []byte) error {
@@ -141,6 +228,13 @@ func (m *LocalUpdateRequest) GetReplicaId() int64 {
 	return 0
 }
 
+func (m *LocalUpdateRequest) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
 type LocalUpdateReply struct {
 	StatusMessage        string   `protobuf:"bytes,1,opt,name=statusMessage,proto3" json:"statusMessage,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -152,7 +246,7 @@ func (m *LocalUpdateReply) Reset()         { *m = LocalUpdateReply{} }
 func (m *LocalUpdateReply) String() string { return proto.CompactTextString(m) }
 func (*LocalUpdateReply) ProtoMessage()    {}
 func (*LocalUpdateReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{3}
+	return fileDescriptor_1d586bc6f59f1daa, []int{5}
 }
 
 func (m *LocalUpdateReply) XXX_Unmarshal(b []byte) error {
@@ -182,6 +276,7 @@ func (m *LocalUpdateReply) GetStatusMessage() string {
 
 type RemoteUpdateRequest struct {
 	ReplicaId            int64    `protobuf:"varint,1,opt,name=replicaId,proto3" json:"replicaId,omitempty"`
+	SessionId            string   `protobuf:"bytes,2,opt,name=sessionId,proto3" json:"sessionId,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -191,7 +286,7 @@ func (m *RemoteUpdateRequest) Reset()         { *m = RemoteUpdateRequest{} }
 func (m *RemoteUpdateRequest) String() string { return proto.CompactTextString(m) }
 func (*RemoteUpdateRequest) ProtoMessage()    {}
 func (*RemoteUpdateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{4}
+	return fileDescriptor_1d586bc6f59f1daa, []int{6}
 }
 
 func (m *RemoteUpdateRequest) XXX_Unmarshal(b []byte) error {
@@ -219,9 +314,17 @@ func (m *RemoteUpdateRequest) GetReplicaId() int64 {
 	return 0
 }
 
+func (m *RemoteUpdateRequest) GetSessionId() string {
+	if m != nil {
+		return m.SessionId
+	}
+	return ""
+}
+
 type RemoteUpdateResponse struct {
 	SenderReplicaId      int64       `protobuf:"varint,1,opt,name=senderReplicaId,proto3" json:"senderReplicaId,omitempty"`
 	Node                 *TiTreeNode `protobuf:"bytes,2,opt,name=node,proto3" json:"node,omitempty"`
+	Nickname             string      `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -231,7 +334,7 @@ func (m *RemoteUpdateResponse) Reset()         { *m = RemoteUpdateResponse{} }
 func (m *RemoteUpdateResponse) String() string { return proto.CompactTextString(m) }
 func (*RemoteUpdateResponse) ProtoMessage()    {}
 func (*RemoteUpdateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{5}
+	return fileDescriptor_1d586bc6f59f1daa, []int{7}
 }
 
 func (m *RemoteUpdateResponse) XXX_Unmarshal(b []byte) error {
@@ -266,6 +369,13 @@ func (m *RemoteUpdateResponse) GetNode() *TiTreeNode {
 	return nil
 }
 
+func (m *RemoteUpdateResponse) GetNickname() string {
+	if m != nil {
+		return m.Nickname
+	}
+	return ""
+}
+
 type TiTreeNode struct {
 	Timestamp            *TiTreeNode_Timestamp   `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	ParentTimestamp      *TiTreeNode_Timestamp   `protobuf:"bytes,2,opt,name=parentTimestamp,proto3" json:"parentTimestamp,omitempty"`
@@ -281,7 +391,7 @@ func (m *TiTreeNode) Reset()         { *m = TiTreeNode{} }
 func (m *TiTreeNode) String() string { return proto.CompactTextString(m) }
 func (*TiTreeNode) ProtoMessage()    {}
 func (*TiTreeNode) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{6}
+	return fileDescriptor_1d586bc6f59f1daa, []int{8}
 }
 
 func (m *TiTreeNode) XXX_Unmarshal(b []byte) error {
@@ -349,7 +459,7 @@ func (m *TiTreeNode_Timestamp) Reset()         { *m = TiTreeNode_Timestamp{} }
 func (m *TiTreeNode_Timestamp) String() string { return proto.CompactTextString(m) }
 func (*TiTreeNode_Timestamp) ProtoMessage()    {}
 func (*TiTreeNode_Timestamp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_1d586bc6f59f1daa, []int{6, 0}
+	return fileDescriptor_1d586bc6f59f1daa, []int{8, 0}
 }
 
 func (m *TiTreeNode_Timestamp) XXX_Unmarshal(b []byte) error {
@@ -386,7 +496,9 @@ func (m *TiTreeNode_Timestamp) GetId() int64 {
 
 func init() {
 	proto.RegisterType((*Empty)(nil), "collabTexteditorService.Empty")
-	proto.RegisterType((*ReplicaResponse)(nil), "collabTexteditorService.ReplicaResponse")
+	proto.RegisterType((*SessionResponse)(nil), "collabTexteditorService.SessionResponse")
+	proto.RegisterType((*JoinSessionRequest)(nil), "collabTexteditorService.JoinSessionRequest")
+	proto.RegisterType((*JoinSessionResponse)(nil), "collabTexteditorService.JoinSessionResponse")
 	proto.RegisterType((*LocalUpdateRequest)(nil), "collabTexteditorService.LocalUpdateRequest")
 	proto.RegisterType((*LocalUpdateReply)(nil), "collabTexteditorService.LocalUpdateReply")
 	proto.RegisterType((*RemoteUpdateRequest)(nil), "collabTexteditorService.RemoteUpdateRequest")
@@ -398,35 +510,39 @@ func init() {
 func init() { proto.RegisterFile("collabTexteditorService.proto", fileDescriptor_1d586bc6f59f1daa) }
 
 var fileDescriptor_1d586bc6f59f1daa = []byte{
-	// 433 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0x4d, 0x6f, 0xd4, 0x30,
-	0x10, 0x55, 0x92, 0x2e, 0x90, 0x41, 0x10, 0x64, 0x2a, 0x35, 0x44, 0x80, 0x56, 0x81, 0x43, 0x10,
-	0x74, 0x41, 0xed, 0x01, 0x38, 0x57, 0x20, 0x21, 0x3e, 0x0e, 0xde, 0x20, 0x0e, 0x88, 0x83, 0x13,
-	0x8f, 0xc0, 0x22, 0x89, 0x8d, 0xed, 0x54, 0x2c, 0x27, 0xfe, 0x28, 0xff, 0x05, 0x35, 0x49, 0x37,
-	0x4d, 0xda, 0xac, 0x76, 0x8f, 0x79, 0x9e, 0x37, 0xf3, 0xfc, 0x3c, 0x2f, 0xf0, 0x20, 0x97, 0x45,
-	0xc1, 0xb2, 0x14, 0x7f, 0x5b, 0xe4, 0xc2, 0x4a, 0xbd, 0x44, 0x7d, 0x2a, 0x72, 0x5c, 0x28, 0x2d,
-	0xad, 0x24, 0x07, 0x13, 0xc7, 0xf1, 0x75, 0x98, 0xbd, 0x29, 0x95, 0x5d, 0xc5, 0xcf, 0x21, 0xa0,
-	0xa8, 0x0a, 0x91, 0x33, 0x8a, 0x46, 0xc9, 0xca, 0x20, 0xb9, 0x0f, 0xbe, 0x6e, 0xa1, 0x77, 0x3c,
-	0x74, 0xe6, 0x4e, 0xe2, 0xd1, 0x1e, 0x88, 0x7f, 0x02, 0xf9, 0x20, 0x73, 0x56, 0x7c, 0x56, 0x9c,
-	0x59, 0xa4, 0xf8, 0xab, 0x46, 0x63, 0xc9, 0x4b, 0xd8, 0xab, 0x24, 0xc7, 0xa6, 0xfc, 0xe6, 0xd1,
-	0xa3, 0xc5, 0x94, 0xac, 0x54, 0xa4, 0x1a, 0xf1, 0x93, 0xe4, 0x48, 0x1b, 0xc2, 0x70, 0x98, 0x3b,
-	0x1e, 0xf6, 0x0a, 0xee, 0x0c, 0x86, 0xa9, 0x62, 0x45, 0x1e, 0xc3, 0x2d, 0x63, 0x99, 0xad, 0xcd,
-	0x47, 0x34, 0x86, 0x7d, 0x6f, 0x67, 0xfa, 0x74, 0x08, 0xc6, 0xc7, 0x70, 0x97, 0x62, 0x29, 0x2d,
-	0x0e, 0x75, 0x6e, 0xbe, 0xdb, 0x0a, 0xf6, 0x87, 0xa4, 0xce, 0x91, 0x04, 0x02, 0x83, 0x15, 0x47,
-	0x4d, 0x47, 0xdc, 0x31, 0xbc, 0xf6, 0xc1, 0xdd, 0xd1, 0x87, 0xf8, 0xaf, 0x07, 0xd0, 0x83, 0xe4,
-	0x3d, 0xf8, 0x56, 0x94, 0x68, 0x2c, 0x2b, 0x55, 0x67, 0xea, 0xe1, 0x16, 0xcd, 0x16, 0xe9, 0x39,
-	0x89, 0xf6, 0x7c, 0xf2, 0x05, 0x02, 0xc5, 0x34, 0x56, 0x76, 0x7d, 0xda, 0xe9, 0xdb, 0xb1, 0xe5,
-	0xb8, 0x0b, 0xd9, 0x87, 0xd9, 0x29, 0x2b, 0x6a, 0x0c, 0xbd, 0xe6, 0x09, 0xda, 0x8f, 0x33, 0x8f,
-	0xad, 0x2c, 0x33, 0x63, 0x65, 0x85, 0xe1, 0xde, 0xdc, 0x49, 0x6e, 0xd0, 0x1e, 0x20, 0xdf, 0x80,
-	0xe4, 0x3f, 0x44, 0xc1, 0x35, 0x56, 0xeb, 0x46, 0x26, 0x9c, 0xcd, 0xbd, 0xdd, 0xf5, 0x5c, 0xd1,
-	0x28, 0x7a, 0x0d, 0x7e, 0xaf, 0x6f, 0xe3, 0x6b, 0x93, 0xdb, 0xe0, 0x8a, 0xf3, 0x9d, 0x73, 0x05,
-	0x3f, 0xfa, 0xe7, 0xc2, 0xc1, 0xc9, 0xd5, 0xf3, 0xc9, 0x57, 0x08, 0x4e, 0x34, 0x76, 0x3b, 0xd8,
-	0xd2, 0x1f, 0x4e, 0x8a, 0x6d, 0x92, 0x15, 0x25, 0x93, 0xe7, 0xe3, 0xc0, 0x09, 0x08, 0x96, 0x58,
-	0xf1, 0x0b, 0x9b, 0x4e, 0x9e, 0x4e, 0x92, 0x2f, 0x87, 0x2f, 0x7a, 0xb2, 0x5d, 0xf1, 0x59, 0x78,
-	0xfe, 0xc0, 0xbd, 0x65, 0x9d, 0x99, 0x5c, 0x8b, 0x0c, 0xdf, 0x4a, 0x7d, 0x71, 0xdb, 0x0d, 0x79,
-	0xb6, 0x41, 0xf1, 0xa5, 0x28, 0x45, 0x87, 0x5b, 0x56, 0xb7, 0x97, 0x7c, 0xe1, 0x64, 0xd7, 0x9a,
-	0x7f, 0xd2, 0xf1, 0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x71, 0x9d, 0x66, 0xa9, 0xb4, 0x04, 0x00,
-	0x00,
+	// 512 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x54, 0xcd, 0x6e, 0xd3, 0x40,
+	0x10, 0x96, 0xed, 0x06, 0x9a, 0xa9, 0x20, 0x68, 0x5b, 0xa9, 0xc1, 0x02, 0x14, 0x19, 0x0e, 0x41,
+	0xd0, 0x80, 0xda, 0x03, 0x70, 0xae, 0x40, 0xe2, 0x2f, 0x12, 0x4e, 0x10, 0x07, 0xc4, 0x61, 0xed,
+	0x1d, 0xd1, 0x15, 0xf6, 0xae, 0xd9, 0xdd, 0x54, 0x94, 0x13, 0x57, 0x1e, 0x80, 0x67, 0xe2, 0xb5,
+	0x2a, 0x3b, 0x8e, 0x9d, 0x75, 0xe2, 0x28, 0x39, 0xee, 0xfc, 0x7c, 0xf3, 0xcd, 0x37, 0x3b, 0x03,
+	0xf7, 0x63, 0x99, 0x24, 0x34, 0x9a, 0xe2, 0x2f, 0x83, 0x8c, 0x1b, 0xa9, 0x26, 0xa8, 0x2e, 0x79,
+	0x8c, 0xa3, 0x4c, 0x49, 0x23, 0xc9, 0x71, 0x8b, 0x3b, 0xb8, 0x09, 0x9d, 0xd7, 0x69, 0x66, 0xae,
+	0x82, 0x67, 0xd0, 0x9b, 0xa0, 0xd6, 0x5c, 0x8a, 0x10, 0x75, 0x26, 0x85, 0x46, 0x72, 0x0f, 0xba,
+	0x7a, 0x6e, 0x7a, 0xcb, 0xfa, 0xce, 0xc0, 0x19, 0x76, 0xc3, 0xda, 0x10, 0x8c, 0x81, 0xbc, 0x93,
+	0x5c, 0x54, 0x49, 0x3f, 0x67, 0xa8, 0xcd, 0xe6, 0x1c, 0xe2, 0xc3, 0xbe, 0xe0, 0xf1, 0x8f, 0x31,
+	0x4d, 0xb1, 0xef, 0x16, 0xce, 0xea, 0x1d, 0x9c, 0xc1, 0xa1, 0x85, 0x57, 0x93, 0x50, 0x98, 0x25,
+	0x3c, 0xa6, 0x25, 0xa0, 0x17, 0xd6, 0x86, 0xe0, 0xaf, 0x03, 0xe4, 0x83, 0x8c, 0x69, 0xf2, 0x39,
+	0x63, 0xd4, 0xe0, 0x82, 0xc5, 0x0b, 0xd8, 0x13, 0x92, 0x61, 0x11, 0x7f, 0x70, 0xfa, 0x70, 0xd4,
+	0x26, 0xce, 0x94, 0x4f, 0x15, 0xe2, 0x58, 0x32, 0x0c, 0x8b, 0x04, 0xbb, 0x9a, 0xdb, 0xa8, 0x66,
+	0x37, 0xe7, 0x35, 0x05, 0x79, 0x09, 0x77, 0x2c, 0x2a, 0x59, 0x72, 0x45, 0x1e, 0xc1, 0x2d, 0x6d,
+	0xa8, 0x99, 0xe9, 0x8f, 0xa8, 0x35, 0xfd, 0x8e, 0xa5, 0x24, 0xb6, 0x31, 0xf8, 0x04, 0x87, 0x21,
+	0xa6, 0xd2, 0xa0, 0xdd, 0xc5, 0xc6, 0xd6, 0x6d, 0x32, 0x6e, 0x93, 0xcc, 0x3f, 0x07, 0x8e, 0x6c,
+	0xcc, 0x52, 0xcf, 0x21, 0xf4, 0x34, 0x0a, 0x86, 0x2a, 0x6c, 0x40, 0x37, 0xcd, 0x95, 0x88, 0xee,
+	0xae, 0x22, 0x96, 0x53, 0x16, 0xf9, 0x94, 0xbd, 0x7a, 0xca, 0xf9, 0x3b, 0xf8, 0xe3, 0x01, 0xd4,
+	0x09, 0xe4, 0x3d, 0x74, 0x0d, 0x4f, 0x51, 0x1b, 0x9a, 0x66, 0xe5, 0xb4, 0x4e, 0xb6, 0x28, 0x34,
+	0x9a, 0x2e, 0x92, 0xc2, 0x3a, 0x9f, 0x7c, 0x81, 0x5e, 0x46, 0x15, 0x0a, 0x53, 0x79, 0x4b, 0xee,
+	0x3b, 0x42, 0x36, 0x51, 0xc8, 0x11, 0x74, 0x2e, 0x69, 0x32, 0x5b, 0x74, 0x33, 0x7f, 0xe4, 0x03,
+	0x30, 0x32, 0x8d, 0xb4, 0x91, 0x02, 0xfb, 0x7b, 0x03, 0x67, 0xb8, 0x1f, 0xd6, 0x06, 0xf2, 0x0d,
+	0x48, 0x7c, 0xc1, 0x13, 0xa6, 0x50, 0x54, 0x40, 0xba, 0xdf, 0x19, 0x78, 0xbb, 0xf3, 0x59, 0x03,
+	0xe4, 0xbf, 0x82, 0x6e, 0xcd, 0x6f, 0xf3, 0x47, 0xb9, 0x0d, 0x2e, 0x5f, 0x7c, 0x66, 0x97, 0xb3,
+	0xd3, 0xff, 0x1e, 0x1c, 0x9f, 0xaf, 0xaf, 0x4f, 0x2e, 0xe0, 0x60, 0x69, 0x09, 0xc9, 0x93, 0x56,
+	0xa2, 0xab, 0xab, 0xef, 0x3f, 0xdd, 0x2e, 0xb8, 0xfc, 0x87, 0x5f, 0xa1, 0x77, 0xae, 0x90, 0x1a,
+	0x9c, 0x54, 0xd7, 0xe1, 0x41, 0x2b, 0x40, 0x71, 0xa2, 0xfc, 0x61, 0xab, 0xbf, 0x09, 0xce, 0xf3,
+	0x63, 0x26, 0xd8, 0xd2, 0x3a, 0x6e, 0x68, 0x65, 0xf5, 0x7e, 0xf8, 0x8f, 0xb7, 0x0b, 0xce, 0x37,
+	0xfc, 0x37, 0xdc, 0x9d, 0xcc, 0x22, 0x1d, 0x2b, 0x1e, 0xe1, 0x1b, 0xa9, 0x96, 0x77, 0x4e, 0x93,
+	0x76, 0x49, 0xd6, 0xec, 0xbb, 0x7f, 0xb2, 0x65, 0xf4, 0xbc, 0xc9, 0xe7, 0x4e, 0x74, 0xa3, 0x38,
+	0xee, 0x67, 0xd7, 0x01, 0x00, 0x00, 0xff, 0xff, 0xeb, 0x90, 0x14, 0x20, 0xfd, 0x05, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -441,7 +557,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CollabTexteditorServiceClient interface {
-	CreateReplicaId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ReplicaResponse, error)
+	JoinSession(ctx context.Context, in *JoinSessionRequest, opts ...grpc.CallOption) (*JoinSessionResponse, error)
+	CreateSessionId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SessionResponse, error)
 	SendLocalUpdate(ctx context.Context, in *LocalUpdateRequest, opts ...grpc.CallOption) (*LocalUpdateReply, error)
 	SubscribeForRemoteUpdates(ctx context.Context, in *RemoteUpdateRequest, opts ...grpc.CallOption) (CollabTexteditorService_SubscribeForRemoteUpdatesClient, error)
 }
@@ -454,9 +571,18 @@ func NewCollabTexteditorServiceClient(cc *grpc.ClientConn) CollabTexteditorServi
 	return &collabTexteditorServiceClient{cc}
 }
 
-func (c *collabTexteditorServiceClient) CreateReplicaId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ReplicaResponse, error) {
-	out := new(ReplicaResponse)
-	err := c.cc.Invoke(ctx, "/collabTexteditorService.CollabTexteditorService/CreateReplicaId", in, out, opts...)
+func (c *collabTexteditorServiceClient) JoinSession(ctx context.Context, in *JoinSessionRequest, opts ...grpc.CallOption) (*JoinSessionResponse, error) {
+	out := new(JoinSessionResponse)
+	err := c.cc.Invoke(ctx, "/collabTexteditorService.CollabTexteditorService/JoinSession", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *collabTexteditorServiceClient) CreateSessionId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*SessionResponse, error) {
+	out := new(SessionResponse)
+	err := c.cc.Invoke(ctx, "/collabTexteditorService.CollabTexteditorService/CreateSessionId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -506,7 +632,8 @@ func (x *collabTexteditorServiceSubscribeForRemoteUpdatesClient) Recv() (*Remote
 
 // CollabTexteditorServiceServer is the server API for CollabTexteditorService service.
 type CollabTexteditorServiceServer interface {
-	CreateReplicaId(context.Context, *Empty) (*ReplicaResponse, error)
+	JoinSession(context.Context, *JoinSessionRequest) (*JoinSessionResponse, error)
+	CreateSessionId(context.Context, *Empty) (*SessionResponse, error)
 	SendLocalUpdate(context.Context, *LocalUpdateRequest) (*LocalUpdateReply, error)
 	SubscribeForRemoteUpdates(*RemoteUpdateRequest, CollabTexteditorService_SubscribeForRemoteUpdatesServer) error
 }
@@ -515,8 +642,11 @@ type CollabTexteditorServiceServer interface {
 type UnimplementedCollabTexteditorServiceServer struct {
 }
 
-func (*UnimplementedCollabTexteditorServiceServer) CreateReplicaId(ctx context.Context, req *Empty) (*ReplicaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateReplicaId not implemented")
+func (*UnimplementedCollabTexteditorServiceServer) JoinSession(ctx context.Context, req *JoinSessionRequest) (*JoinSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method JoinSession not implemented")
+}
+func (*UnimplementedCollabTexteditorServiceServer) CreateSessionId(ctx context.Context, req *Empty) (*SessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSessionId not implemented")
 }
 func (*UnimplementedCollabTexteditorServiceServer) SendLocalUpdate(ctx context.Context, req *LocalUpdateRequest) (*LocalUpdateReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendLocalUpdate not implemented")
@@ -529,20 +659,38 @@ func RegisterCollabTexteditorServiceServer(s *grpc.Server, srv CollabTexteditorS
 	s.RegisterService(&_CollabTexteditorService_serviceDesc, srv)
 }
 
-func _CollabTexteditorService_CreateReplicaId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CollabTexteditorService_JoinSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinSessionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CollabTexteditorServiceServer).JoinSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/collabTexteditorService.CollabTexteditorService/JoinSession",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CollabTexteditorServiceServer).JoinSession(ctx, req.(*JoinSessionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CollabTexteditorService_CreateSessionId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CollabTexteditorServiceServer).CreateReplicaId(ctx, in)
+		return srv.(CollabTexteditorServiceServer).CreateSessionId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/collabTexteditorService.CollabTexteditorService/CreateReplicaId",
+		FullMethod: "/collabTexteditorService.CollabTexteditorService/CreateSessionId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CollabTexteditorServiceServer).CreateReplicaId(ctx, req.(*Empty))
+		return srv.(CollabTexteditorServiceServer).CreateSessionId(ctx, req.(*Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -591,8 +739,12 @@ var _CollabTexteditorService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*CollabTexteditorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateReplicaId",
-			Handler:    _CollabTexteditorService_CreateReplicaId_Handler,
+			MethodName: "JoinSession",
+			Handler:    _CollabTexteditorService_JoinSession_Handler,
+		},
+		{
+			MethodName: "CreateSessionId",
+			Handler:    _CollabTexteditorService_CreateSessionId_Handler,
 		},
 		{
 			MethodName: "SendLocalUpdate",

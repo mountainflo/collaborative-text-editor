@@ -24,8 +24,9 @@ class Controller {
     /**
      * @param {TiTreeNode} node
      * @param {number} senderReplicaId
+     * @param {string} nickName
      */
-    const handleRemoteUpdateCallback = function(node, senderReplicaId) {
+    const handleRemoteUpdateCallback = function(node, senderReplicaId, nickName) {
       console.debug(LOG_OBJECT + 'handleRemoteUpdateCallback()', node.toString());
 
       _crdt.addRemoteNodeToBuffer(node, (changeObject) => {
@@ -35,7 +36,7 @@ class Controller {
         } else {
           codeMirrorEditor.insert(changeObject);
         }
-        codeMirrorEditor.displayRemoteCursor(changeObject, senderReplicaId);
+        codeMirrorEditor.displayRemoteCursor(changeObject, senderReplicaId, nickName);
       });
     };
 

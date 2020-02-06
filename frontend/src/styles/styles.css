@@ -4,6 +4,11 @@ body {
     font-family: sans-serif;
 }
 
+/* Code Mirror */
+
+#collabEditor {
+    display: none;
+}
 .CodeMirror
 {
     line-height:1.8em;
@@ -24,4 +29,12 @@ body {
     top: -0.5em;
     padding: 0.1em;
     margin-left: -2px;
+}
+
+/* UI */
+
+#sessionInfo {
+    position: absolute;
+    right: 1em;
+    top: 1em;
 }

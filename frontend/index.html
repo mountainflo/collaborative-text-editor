@@ -8,8 +8,22 @@
 <body>
 <div>
     <p>Collaborative Text Editor</p>
+    <p id="sessionInfo"></p>
 
-    <p>
+    <div id="sessionSelection">
+        <form>
+            <label>Session Id:
+                <input type="text" id="sessionId" name="sessionId">
+            </label>
+            <label>Nick Name:
+                <input type="text" id="nickName" name="nickName">
+            </label>
+            <button type="button" id="joinSession">Join Session</button>
+            <button type="button" id="createSession">Create New Session</button>
+        </form>
+    </div>
+
+    <p id="collabEditor">
         <textarea id="editorTextArea"></textarea>
     </p>
 

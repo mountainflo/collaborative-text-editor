@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/base32"
 	pb "github.com/mountainflo/collaborative-text-editor/collabTexteditorService"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -20,28 +22,56 @@ type collabTexteditorService struct {
 }
 
 type Repository struct {
-	NextFreeReplicaId int64
-	Channels          map[int]chan *pb.RemoteUpdateResponse
+	Sessions map[string]*Session
+}
+
+type Session struct {
+	NextFreeReplicaId int
+	Replicas          map[int]*Replica
 	History           []*pb.RemoteUpdateResponse
 }
 
-// Process unary calls with TextUpdateRequest.
-// Each subscriber gets the new text.
-func (c collabTexteditorService) CreateReplicaId(ctx context.Context, request *pb.Empty) (*pb.ReplicaResponse, error) {
+type Replica struct {
+	ReplicaId int
+	NickName  string
+	Channel   chan *pb.RemoteUpdateResponse
+}
 
-	newReplicaId := c.repository.NextFreeReplicaId
-	c.repository.NextFreeReplicaId += 1
+func (c collabTexteditorService) CreateSessionId(ctx context.Context, request *pb.Empty) (*pb.SessionResponse, error) {
 
-	log.Printf("[replicaId=%v] Created new replica id\n", newReplicaId)
+	sessionId := getUniqueSessionToken(10)
 
-	return &pb.ReplicaResponse{ReplicaId: newReplicaId}, nil
+	//TODO delete session if not used for a specific time period
+	c.repository.Sessions[sessionId] = &Session{
+		NextFreeReplicaId: 0,
+		Replicas:          make(map[int]*Replica),
+		History:           []*pb.RemoteUpdateResponse{},
+	}
+
+	return &pb.SessionResponse{SessionId: sessionId}, nil
+}
+
+func (c collabTexteditorService) JoinSession(ctx context.Context, request *pb.JoinSessionRequest) (*pb.JoinSessionResponse, error) {
+
+	session := c.repository.Sessions[request.SessionId]
+	newReplicaId := session.NextFreeReplicaId
+	session.NextFreeReplicaId += 1
+
+	session.Replicas[newReplicaId] = &Replica{
+		ReplicaId: newReplicaId,
+		NickName:  request.NickName,
+	}
+
+	log.Printf("[sessionId=%v] replica %v joined the session\n", request.SessionId, newReplicaId)
+
+	return &pb.JoinSessionResponse{ReplicaId: int64(newReplicaId)}, nil
 }
 
 func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *pb.LocalUpdateRequest) (*pb.LocalUpdateReply, error) {
 
-	log.Printf("[replicaId=%v] Received local update\n", request.ReplicaId)
+	log.Printf("[sessionId=%v] replica %v sent local update\n", request.SessionId, request.ReplicaId)
 
-	c.sendUpdateToSubscribers(request.Node, request.ReplicaId)
+	c.sendUpdateToSubscribers(request.Node, request.SessionId, int(request.ReplicaId))
 
 	//TODO could return *pb.Empty, but a message has to be sent either way
 	return &pb.LocalUpdateReply{StatusMessage: "Successfully received local update"}, nil
@@ -50,36 +80,43 @@ func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *p
 // Clients subscribe to updates by opening a server-side-stream
 func (c collabTexteditorService) SubscribeForRemoteUpdates(request *pb.RemoteUpdateRequest, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) error {
 
-	log.Printf("[replicaId=%v] New subscription for remote updates\n", request.ReplicaId)
+	replicaId := int(request.ReplicaId)
 
-	//TODO eventually transfer the complete array in one single response (create new proto-message-type)
-	//TODO send all missed events starting by the event after the last send
-	/*for i := 0; i < len(c.repository.History); i++ {
-		remoteUpdateResponse := c.repository.History[i]
+	log.Printf("[sessionId=%v] replica %v subscribes for remote updates\n", request.SessionId, replicaId)
+
+	history := c.repository.Sessions[request.SessionId].History
+
+	for _, remoteUpdateResponse := range history {
 		if err := stream.Send(remoteUpdateResponse); err != nil {
 			log.Printf(err.Error())
 		}
-	}*/
+	}
 
-	channelId := c.createNewChannel(int(request.ReplicaId))
+	c.createNewChannel(request.SessionId, replicaId)
 
-	c.forwardChannelEventsToStream(channelId, stream) // func returns only if stream/channel is closed or an error occurs
+	c.forwardChannelEventsToStream(request.SessionId, replicaId, stream) // func returns only if stream/channel is closed or an error occurs
 
-	delete(c.repository.Channels, channelId)
+	//remove replica from session, if all replicas have left the session then remove the session
+	delete(c.repository.Sessions[request.SessionId].Replicas, replicaId)
+
+	if len(c.repository.Sessions) == 0 {
+		log.Printf("[sessionId=%v] closing session\n", request.SessionId)
+		delete(c.repository.Sessions, request.SessionId)
+	}
 
 	return nil
 }
 
-func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) {
+func (c collabTexteditorService) forwardChannelEventsToStream(sessionId string, replicaId int, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) {
 	for {
 		select {
 		case <-stream.Context().Done():
-			log.Printf("[channelId=%v] Context of stream closed\n", channelId)
+			log.Printf("[sessionId=%v] [replicaId=%v] Context of stream closed\n", sessionId, replicaId)
 			//TODO save channelId with last remoteUpdateResponse. Tag last send response in history with channelId
 			return
-		case remoteUpdateResponse, ok := <-c.repository.Channels[channelId]:
+		case remoteUpdateResponse, ok := <-c.repository.Sessions[sessionId].Replicas[replicaId].Channel:
 			if !ok {
-				log.Printf("[channelId=%v] Channel closed\n", channelId)
+				log.Printf("[sessionId=%v] [replicaId=%v] Channel closed\n", sessionId, replicaId)
 				return
 			}
 			if err := stream.Send(remoteUpdateResponse); err != nil {
@@ -90,40 +127,47 @@ func (c collabTexteditorService) forwardChannelEventsToStream(channelId int, str
 	}
 }
 
-func (c collabTexteditorService) createNewChannel(replicaId int) int {
+func (c collabTexteditorService) createNewChannel(sessionId string, replicaId int) {
 
 	channel := make(chan *pb.RemoteUpdateResponse)
 
-	c.repository.Channels[replicaId] = channel
+	c.repository.Sessions[sessionId].Replicas[replicaId].Channel = channel
 
-	return replicaId
 }
 
-func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, replicaId int64) {
+func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, sessionId string, replicaId int) {
 
-	log.Printf("Send update to subscribers\n")
+	log.Printf("[sessionId=%v] Send update to subscribers\n", sessionId)
 
-	response := pb.RemoteUpdateResponse{SenderReplicaId: replicaId, Node: node}
+	session := c.repository.Sessions[sessionId]
 
-	c.repository.History = append(c.repository.History, &response)
+	nickName := session.Replicas[replicaId].NickName
+	response := pb.RemoteUpdateResponse{SenderReplicaId: int64(replicaId), Node: node, Nickname: nickName}
+	session.History = append(session.History, &response)
 
-	for channelId, channel := range c.repository.Channels {
-
+	for _, replica := range session.Replicas {
 		//skip replica, which sends update
-		if channelId != int(replicaId) {
-			log.Printf("[replicaId=%v] Send update to subscriber\n", channelId)
-			channel <- &response
+		if replica.ReplicaId != int(replicaId) {
+			replica.Channel <- &response
 		}
 	}
+}
 
+func getUniqueSessionToken(length int) string {
+	randomBytes := make([]byte, 32)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		panic(err)
+	}
+	return base32.StdEncoding.EncodeToString(randomBytes)[:length]
 }
 
 func main() {
 
 	log.Println("Starting go server ...")
 
-	textStorage := &Repository{NextFreeReplicaId: 0, Channels: make(map[int]chan *pb.RemoteUpdateResponse)}
-	repository := &collabTexteditorService{textStorage}
+	serverData := &Repository{Sessions: make(map[string]*Session)}
+	repository := &collabTexteditorService{serverData}
 
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
@@ -154,9 +198,10 @@ func main() {
 	log.Println("Gracefully stopping the go server ...")
 
 	// Graceful shutdown. Close SubscriberStreams before by closing open channels
-	for channelId, channel := range repository.repository.Channels {
-
-		log.Printf("[channelId=%v] Close channel", channelId)
-		close(channel)
+	for sessionId, session := range repository.repository.Sessions {
+		log.Printf("[sessionId=%v] Close channel", sessionId)
+		for _, replica := range session.Replicas {
+			close(replica.Channel)
+		}
 	}
 }
