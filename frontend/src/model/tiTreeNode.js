@@ -72,7 +72,6 @@ class TiTreeNode {
      * @param {Timestamp} childTimestamp
      */
     addChildTimestamp(childTimestamp) {
-      // TODO is it possible one childTimestamp is inserted two times?
       const childrenTimestamps = this.getChildrenTimestamps();
       childrenTimestamps.push(childTimestamp);
       if (childrenTimestamps.length > 1) {
