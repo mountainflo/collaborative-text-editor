@@ -4,7 +4,7 @@ import {CollabTexteditorClient} from './collabTexteditorClient';
 import {Editor} from './editor';
 import {addButtonListener, displaySessionInfosForTheUser} from './ui';
 
-import './styles/styles.css';
+import './styles/styles.scss';
 import {Controller} from './controller';
 
 const LOG_OBJECT = '[main] ';
