@@ -7,19 +7,45 @@
 </head>
 <body>
 <div>
-    <p>Collaborative Text Editor</p>
-    <p id="sessionInfo"></p>
+    <div id="header">
+        <p>Collaborative Text Editor</p>
+    </div>
+    <div id="userSessionInfo">
+        <p>Session Id: <span id="sessionIdForUser"></span></p>
+        <p>Nick Name: <span id="nickNameForUser"></span></p>
+    </div>
 
     <div id="sessionSelection">
+        <p class="description">Develop code or edit text files together with your team in real-time</p>
+        <button type="button" id="selectJoinSessionButton">Join Session</button>&emsp;
+        <button type="button" id="selectCreateSessionButton">Create New Session</button>
+    </div>
+
+    <div id="joinSession">
         <form>
-            <label>Session Id:
-                <input type="text" id="sessionId" name="sessionId">
-            </label>
-            <label>Nick Name:
-                <input type="text" id="nickName" name="nickName">
-            </label>
-            <button type="button" id="joinSession">Join Session</button>
-            <button type="button" id="createSession">Create New Session</button>
+            <p>
+                <label>Session Id:
+                    <input type="text" id="sessionId" name="sessionId">
+                </label>
+            </p>
+            <p>
+                <label>Nick Name:
+                    <input type="text" id="joinSessionNickName" name="nickName">
+                </label>
+            </p>
+            <button type="button" id="goBackFromJoin">Back</button>&emsp;
+            <button type="button" id="joinSessionButton">Join Session</button>
+        </form>
+    </div>
+    <div id="createSession">
+        <form>
+            <p>
+                <label>Nick Name:
+                    <input type="text" id="createSessionNickName" name="nickName">
+                </label>
+            </p>
+            <button type="button" id="goBackFromCreate">Back</button>&emsp;
+            <button type="button" id="createSessionButton">Create New Session</button>
         </form>
     </div>
 

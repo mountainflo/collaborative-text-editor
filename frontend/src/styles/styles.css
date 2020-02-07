@@ -1,7 +1,8 @@
 body {
-    background: #333;
+    background: #333333;
     color: white;
     font-family: sans-serif;
+    margin:0;
 }
 
 /* Code Mirror */
@@ -33,8 +34,58 @@ body {
 
 /* UI */
 
-#sessionInfo {
+#header {
+    width: 100%;
+    background-color: #1c1c1c;
+    padding: 0.25em 1em;
+    margin-bottom: 2em;
+}
+
+#header > p {
+    color: white;
+}
+#userSessionInfo {
     position: absolute;
+    font-size: 0.8em;
     right: 1em;
-    top: 1em;
+    top: 1.6em;
+    color: #ff430f;
+    display: none;
+    margin:0;
+}
+
+#userSessionInfo > p {
+    margin: 0;
+}
+
+#joinSession {
+    display: none;
+    text-align: center;
+}
+
+#createSession {
+    display: none;
+    text-align: center;
+}
+
+#sessionSelection {
+    text-align: center;
+}
+
+.description {
+    font-size: 0.8em;
+}
+
+button {
+    background-color: #ff430f;
+    border:0;
+    color: #1c1c1c;
+    padding: 0.5em;
+}
+
+label {
+    background-color: #be350d;
+    border: 0;
+    color: #1c1c1c;
+    padding: 0.5em;
 }
