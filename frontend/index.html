@@ -8,7 +8,7 @@
 <body>
 <div>
     <div id="header">
-        <p>Collaborative Text Editor</p>
+        <p><a href="./">Collaborative Text Editor</a></p>
     </div>
     <div id="userSessionInfo">
         <p>Session Id: <span id="sessionIdForUser"></span></p>
@@ -16,9 +16,12 @@
     </div>
 
     <div id="sessionSelection">
+        <h1>Collaborative Text Editor</h1>
         <p class="description">Develop code or edit text files together with your team in real-time</p>
-        <button type="button" id="selectJoinSessionButton">Join Session</button>&emsp;
-        <button type="button" id="selectCreateSessionButton">Create New Session</button>
+        <p class="buttons">
+            <button type="button" id="selectJoinSessionButton">Join Session</button>&emsp;
+            <button type="button" id="selectCreateSessionButton">Create New Session</button>
+        </p>
     </div>
 
     <div id="joinSession">
@@ -33,8 +36,10 @@
                     <input type="text" id="joinSessionNickName" name="nickName">
                 </label>
             </p>
-            <button type="button" id="goBackFromJoin">Back</button>&emsp;
-            <button type="button" id="joinSessionButton">Join Session</button>
+            <p class="buttons">
+                <button type="button" id="goBackFromJoin">Back</button>&emsp;
+                <button type="button" id="joinSessionButton">Join Session</button>
+            </p>
         </form>
     </div>
     <div id="createSession">
@@ -44,14 +49,17 @@
                     <input type="text" id="createSessionNickName" name="nickName">
                 </label>
             </p>
-            <button type="button" id="goBackFromCreate">Back</button>&emsp;
-            <button type="button" id="createSessionButton">Create New Session</button>
+            <p class="buttons">
+                <button type="button" id="goBackFromCreate">Back</button>&emsp;
+                <button type="button" id="createSessionButton">Create New Session</button>
+            </p>
         </form>
     </div>
 
-    <p id="collabEditor">
-        <textarea id="editorTextArea"></textarea>
-    </p>
+    <div id="collabEditor">
+        <p class="shareHint">Share the session id to collaborate with other users</p>
+        <p><textarea id="editorTextArea"></textarea></p>
+    </div>
 
 </div>
 </body>

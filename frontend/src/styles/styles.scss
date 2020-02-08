@@ -1,10 +1,13 @@
 $orange: #ff430f;
 $darkOrange: #be350d;
-$black: #1c1c1c;
+$dark: #1c1c1c;
+$grey: #959595;
+$bodyBackgroundColor: #333333;
+$bright: #FFFFFF;
 
 body {
-  background: #333333;
-  color: white;
+  background: $dark;
+  color: $bright;
   font-family: sans-serif;
   margin: 0;
 }
@@ -13,6 +16,15 @@ body {
 
 #collabEditor {
   display: none;
+  margin-top: 2em;
+  padding: 0 1em;
+}
+
+.shareHint {
+  font-size: 0.8em;
+  color: $grey;
+  text-align: center;
+  margin:0;
 }
 
 .CodeMirror {
@@ -40,14 +52,16 @@ body {
 
 #header {
   width: 100%;
-  background-color: $black;
+  background-color: #000000;
   padding: 0.25em 1em;
-  margin-bottom: 2em;
-}
-
-#header {
   p {
     color: white;
+    font-weight: bold;
+  }
+
+  a {
+    color: white;
+    text-decoration-line: none;
   }
 }
 
@@ -55,19 +69,25 @@ body {
   position: absolute;
   font-size: 0.8em;
   right: 1em;
-  top: 1.6em;
+  top: 1.2em;
   color: $orange;
   display: none;
   margin: 0;
 
   p {
     margin: 0;
+    color: $grey;
+
+    span {
+      color: $orange;
+    }
   }
 }
 
 %centeredMenu {
   text-align: center;
-
+  margin-top: 8em;
+  padding: 0 2em;
 }
 
 #joinSession {
@@ -82,22 +102,52 @@ body {
 
 #sessionSelection {
   @extend %centeredMenu;
+  h1 {
+    color: $bright;
+  }
+  .description {
+    color: $grey;
+    font-size: 3em;
+    line-height: 1.1em;
+    margin:0;
+  }
 }
 
-.description {
-  font-size: 0.8em;
+%formBasics {
+  text-align: center;
+  color: $bright;
+  padding: 0 2em;
+  font-size: 1em;
+}
+
+%formElements {
+  border-radius: 5px;
+  border: 0;
+}
+
+.buttons {
+  margin-top:2em;
 }
 
 button {
+  @extend %formBasics;
+  @extend %formElements;
   background-color: $orange;
-  border: 0;
-  color: $black;
-  padding: 0.5em;
+  color: $dark;
+  padding: 0.5em 1em;
 }
 
 label {
-  background-color: $darkOrange;
+  @extend %formBasics;
+  padding: 0.5em;
+  border-bottom-color: $bright;
+  border-bottom-width: 0.25em;
+  border-bottom-style: solid;
+}
+
+input {
+  @extend %formBasics;
+  background-color: $dark;
   border: 0;
-  color: $black;
   padding: 0.5em;
 }
