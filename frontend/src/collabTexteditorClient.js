@@ -47,7 +47,7 @@ class CollabTexteditorClient {
     this.joinSession = async function(sessionId, nickName) {
       _sessionId = sessionId;
 
-      console.debug(LOG_OBJECT + nickName + ' is joining session', sessionId);
+      console.debug(LOG_OBJECT + nickName + ' tries to join session', sessionId);
 
       return new Promise(
           (resolve) => {
@@ -58,6 +58,7 @@ class CollabTexteditorClient {
             _collabTextEditorService.joinSession(request, {}, function(err, response) {
               if (err) {
                 console.error(LOG_OBJECT + err.message);
+                resolve(-1);
               } else {
                 const replicaId = response.getReplicaid();
                 console.log(LOG_OBJECT + 'joined session and received replicaId:', replicaId);

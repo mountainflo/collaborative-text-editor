@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rand"
 	"encoding/base32"
+	"errors"
 	pb "github.com/mountainflo/collaborative-text-editor/collabTexteditorService"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -53,18 +54,22 @@ func (c collabTexteditorService) CreateSessionId(ctx context.Context, request *p
 
 func (c collabTexteditorService) JoinSession(ctx context.Context, request *pb.JoinSessionRequest) (*pb.JoinSessionResponse, error) {
 
-	session := c.repository.Sessions[request.SessionId]
-	newReplicaId := session.NextFreeReplicaId
-	session.NextFreeReplicaId += 1
+	session, ok := c.repository.Sessions[request.SessionId]
 
-	session.Replicas[newReplicaId] = &Replica{
-		ReplicaId: newReplicaId,
-		NickName:  request.NickName,
+	if ok {
+		newReplicaId := session.NextFreeReplicaId
+		session.NextFreeReplicaId += 1
+
+		session.Replicas[newReplicaId] = &Replica{
+			ReplicaId: newReplicaId,
+			NickName:  request.NickName,
+		}
+
+		return &pb.JoinSessionResponse{ReplicaId: int64(newReplicaId)}, nil
+	} else {
+		log.Printf("[sessionId=%v] session id does not exist\n", request.SessionId)
+		return nil, errors.New("session id does not exist")
 	}
-
-	log.Printf("[sessionId=%v] replica %v joined the session\n", request.SessionId, newReplicaId)
-
-	return &pb.JoinSessionResponse{ReplicaId: int64(newReplicaId)}, nil
 }
 
 func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *pb.LocalUpdateRequest) (*pb.LocalUpdateReply, error) {

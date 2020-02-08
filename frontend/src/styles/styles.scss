@@ -95,6 +95,12 @@ body {
   display: none;
 }
 
+#sessionError {
+  color: red;
+  display: none;
+  font-size: 0.8em;
+}
+
 #createSession {
   @extend %centeredMenu;
   display: none;
