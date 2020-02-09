@@ -1,0 +1,159 @@
+$orange: #ff430f;
+$darkOrange: #be350d;
+$dark: #1c1c1c;
+$grey: #959595;
+$bodyBackgroundColor: #333333;
+$bright: #FFFFFF;
+
+body {
+  background: $dark;
+  color: $bright;
+  font-family: sans-serif;
+  margin: 0;
+}
+
+/* Code Mirror */
+
+#collabEditor {
+  display: none;
+  margin-top: 2em;
+  padding: 0 1em;
+}
+
+.shareHint {
+  font-size: 0.8em;
+  color: $grey;
+  text-align: center;
+  margin:0;
+}
+
+.CodeMirror {
+  line-height: 1.8em;
+}
+
+.cursorElement {
+  border-left-style: solid;
+  border-left-width: 2px;
+  padding: 0;
+  z-index: 0;
+}
+
+.cursorFlag {
+  font-family: sans-serif;
+  font-size: 0.6em;
+  line-height: 1em;
+  position: absolute;
+  top: -0.5em;
+  padding: 0.1em;
+  margin-left: -2px;
+}
+
+/* UI */
+
+#header {
+  width: 100%;
+  background-color: #000000;
+  padding: 0.25em 1em;
+  p {
+    color: white;
+    font-weight: bold;
+  }
+
+  a {
+    color: white;
+    text-decoration-line: none;
+  }
+}
+
+#userSessionInfo {
+  position: absolute;
+  font-size: 0.8em;
+  right: 1em;
+  top: 1.2em;
+  color: $orange;
+  display: none;
+  margin: 0;
+
+  p {
+    margin: 0;
+    color: $grey;
+
+    span {
+      color: $orange;
+    }
+  }
+}
+
+%centeredMenu {
+  text-align: center;
+  margin-top: 8em;
+  padding: 0 2em;
+}
+
+#joinSession {
+  @extend %centeredMenu;
+  display: none;
+}
+
+#sessionError {
+  color: red;
+  display: none;
+  font-size: 0.8em;
+}
+
+#createSession {
+  @extend %centeredMenu;
+  display: none;
+}
+
+#sessionSelection {
+  @extend %centeredMenu;
+  h1 {
+    color: $bright;
+  }
+  .description {
+    color: $grey;
+    font-size: 3em;
+    line-height: 1.1em;
+    margin:0;
+  }
+}
+
+%formBasics {
+  text-align: center;
+  color: $bright;
+  padding: 0 2em;
+  font-size: 1em;
+}
+
+%formElements {
+  border-radius: 5px;
+  border: 0;
+}
+
+.buttons {
+  margin-top:2em;
+}
+
+button {
+  @extend %formBasics;
+  @extend %formElements;
+  background-color: $orange;
+  color: $dark;
+  padding: 0.5em 1em;
+}
+
+label {
+  @extend %formBasics;
+  padding: 0.5em;
+  border-bottom-color: $bright;
+  border-bottom-width: 0.25em;
+  border-bottom-style: solid;
+}
+
+input {
+  @extend %formBasics;
+  background-color: $dark;
+  border: 0;
+  padding: 0.5em;
+}

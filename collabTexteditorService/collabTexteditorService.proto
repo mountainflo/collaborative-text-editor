@@ -2,7 +2,8 @@ syntax = "proto3";
 package collabTexteditorService;
 
 service CollabTexteditorService {
-    rpc CreateReplicaId(Empty) returns (ReplicaResponse);
+    rpc JoinSession(JoinSessionRequest) returns (JoinSessionResponse);
+    rpc CreateSessionId(Empty) returns (SessionResponse);
     rpc SendLocalUpdate(LocalUpdateRequest) returns (LocalUpdateReply);
     rpc SubscribeForRemoteUpdates(RemoteUpdateRequest) returns (stream RemoteUpdateResponse);
 }
@@ -10,13 +11,23 @@ service CollabTexteditorService {
 message Empty {
 }
 
-message ReplicaResponse {
+message SessionResponse {
+    string sessionId = 1;
+}
+
+message JoinSessionRequest {
+    string sessionId = 1;
+    string nickName = 2;
+}
+
+message JoinSessionResponse {
     int64 replicaId = 1;
 }
 
 message LocalUpdateRequest {
     TiTreeNode node = 1;
     int64 replicaId = 2;
+    string sessionId = 3;
 }
 
 message LocalUpdateReply {
@@ -25,11 +36,13 @@ message LocalUpdateReply {
 
 message RemoteUpdateRequest {
     int64 replicaId = 1;
+    string sessionId = 2;
 }
 
 message RemoteUpdateResponse {
     int64 senderReplicaId = 1;
     TiTreeNode node = 2;
+    string nickname = 3;
 }
 
 message TiTreeNode {

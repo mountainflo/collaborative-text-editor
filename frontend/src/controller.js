@@ -24,20 +24,26 @@ class Controller {
     /**
      * @param {TiTreeNode} node
      * @param {number} senderReplicaId
+     * @param {string} nickName
      */
-    const handleRemoteUpdateCallback = function(node, senderReplicaId) {
-      console.debug(LOG_OBJECT + 'handleRemoteUpdateCallback()', node.toString());
-
-      _crdt.addRemoteNodeToBuffer(node, (changeObject) => {
-        console.debug(LOG_OBJECT + 'execute CodeMirrorFunction');
-        if (changeObject.getType() === CHANGE_OBJECT_TYPE.DELETION) {
-          codeMirrorEditor.delete(changeObject);
-        } else {
-          codeMirrorEditor.insert(changeObject);
-        }
-        codeMirrorEditor.displayRemoteCursor(changeObject, senderReplicaId);
-      });
+    const handleRemoteUpdateCallback = function(node, senderReplicaId, nickName) {
+      if (node !== undefined) {
+        console.debug(LOG_OBJECT + 'handleRemoteUpdateCallback()', node.toString(), nickName);
+        _crdt.addRemoteNodeToBuffer(node, (changeObject) => {
+          console.debug(LOG_OBJECT + 'execute CodeMirrorFunction');
+          if (changeObject.getType() === CHANGE_OBJECT_TYPE.DELETION) {
+            codeMirrorEditor.delete(changeObject);
+          } else {
+            codeMirrorEditor.insert(changeObject);
+          }
+          codeMirrorEditor.displayRemoteCursor(changeObject, senderReplicaId, nickName);
+        });
+      } else {
+        console.debug(LOG_OBJECT + 'handleRemoteUpdateCallback(): replica left the session. Remove remote cursor', senderReplicaId, nickName);
+        codeMirrorEditor.removeRemoteCursor(senderReplicaId);
+      }
     };
+
 
     const subscribeForLocalUpdates = function(editor) {
       editor.subscribeForUpdates(handleLocalUpdateCallback);

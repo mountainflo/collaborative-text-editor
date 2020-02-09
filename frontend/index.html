@@ -7,11 +7,60 @@
 </head>
 <body>
 <div>
-    <p>Collaborative Text Editor</p>
+    <div id="header">
+        <p><a href="./">Collaborative Text Editor</a></p>
+    </div>
+    <div id="userSessionInfo">
+        <p>Session Id: <span id="sessionIdForUser"></span></p>
+        <p>Nick Name: <span id="nickNameForUser"></span></p>
+    </div>
 
-    <p>
-        <textarea id="editorTextArea"></textarea>
-    </p>
+    <div id="sessionSelection">
+        <h1>Collaborative Text Editor</h1>
+        <p class="description">Develop code or edit text files together with your team in real-time</p>
+        <p class="buttons">
+            <button type="button" id="selectJoinSessionButton">Join Session</button>&emsp;
+            <button type="button" id="selectCreateSessionButton">Create New Session</button>
+        </p>
+    </div>
+
+    <div id="joinSession">
+        <form>
+            <p id="sessionError">Wrong session id. The id does not exist.</p>
+            <p>
+                <label>Session Id:
+                    <input type="text" id="sessionId" name="sessionId">
+                </label>
+            </p>
+            <p>
+                <label>Nick Name:
+                    <input type="text" id="joinSessionNickName" name="nickName">
+                </label>
+            </p>
+            <p class="buttons">
+                <button type="button" id="goBackFromJoin">Back</button>&emsp;
+                <button type="button" id="joinSessionButton">Join Session</button>
+            </p>
+        </form>
+    </div>
+    <div id="createSession">
+        <form>
+            <p>
+                <label>Nick Name:
+                    <input type="text" id="createSessionNickName" name="nickName">
+                </label>
+            </p>
+            <p class="buttons">
+                <button type="button" id="goBackFromCreate">Back</button>&emsp;
+                <button type="button" id="createSessionButton">Create New Session</button>
+            </p>
+        </form>
+    </div>
+
+    <div id="collabEditor">
+        <p class="shareHint">Share the session id to collaborate with other users</p>
+        <p><textarea id="editorTextArea"></textarea></p>
+    </div>
 
 </div>
 </body>
