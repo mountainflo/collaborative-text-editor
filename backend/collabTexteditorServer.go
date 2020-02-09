@@ -76,9 +76,17 @@ func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *p
 
 	log.Printf("[sessionId=%v] replica %v sent local update\n", request.SessionId, request.ReplicaId)
 
-	c.sendUpdateToSubscribers(request.Node, request.SessionId, int(request.ReplicaId))
+	session, ok := c.repository.Sessions[request.SessionId]
 
-	//TODO could return *pb.Empty, but a message has to be sent either way
+	if !ok {
+		log.Printf("[sessionId=%v] can not send updates to none existing session\n", request.SessionId)
+		return &pb.LocalUpdateReply{StatusMessage: "Can not send updates to none existing session"}, nil
+	}
+
+	replicaId := int(request.ReplicaId)
+	nickName := session.Replicas[replicaId].NickName
+	c.sendUpdateToSubscribers(request.Node, request.SessionId, replicaId, nickName)
+
 	return &pb.LocalUpdateReply{StatusMessage: "Successfully received local update"}, nil
 }
 
@@ -86,10 +94,25 @@ func (c collabTexteditorService) SendLocalUpdate(ctx context.Context, request *p
 func (c collabTexteditorService) SubscribeForRemoteUpdates(request *pb.RemoteUpdateRequest, stream pb.CollabTexteditorService_SubscribeForRemoteUpdatesServer) error {
 
 	replicaId := int(request.ReplicaId)
+	sessions := c.repository.Sessions
+	session := sessions[request.SessionId]
 
 	log.Printf("[sessionId=%v] replica %v subscribes for remote updates\n", request.SessionId, replicaId)
 
-	history := c.repository.Sessions[request.SessionId].History
+	if _, ok := sessions[request.SessionId]; !ok {
+		log.Printf("[sessionId=%v] replica %v subscribes to updates of session id which does not exist\n", request.SessionId, replicaId)
+		return errors.New("session id " + request.SessionId + " does not exist")
+	}
+	if _, ok := session.Replicas[replicaId]; !ok {
+		log.Printf("[sessionId=%v] replica %v does not exist in this session\n", request.SessionId, replicaId)
+		return errors.New("replica does not exist in this session. Before subscribing for updates, you have to join the session")
+	}
+	if session.Replicas[replicaId].Channel != nil {
+		log.Printf("[sessionId=%v] replica %v does already exists in this session\n", request.SessionId, replicaId)
+		return errors.New("replica does already exists in this session. It has already subscribed for updates")
+	}
+
+	history := session.History
 
 	for _, remoteUpdateResponse := range history {
 		if err := stream.Send(remoteUpdateResponse); err != nil {
@@ -102,11 +125,14 @@ func (c collabTexteditorService) SubscribeForRemoteUpdates(request *pb.RemoteUpd
 	c.forwardChannelEventsToStream(request.SessionId, replicaId, stream) // func returns only if stream/channel is closed or an error occurs
 
 	//remove replica from session, if all replicas have left the session then remove the session
-	delete(c.repository.Sessions[request.SessionId].Replicas, replicaId)
+	nickName := session.Replicas[replicaId].NickName
+	delete(session.Replicas, replicaId)
 
-	if len(c.repository.Sessions) == 0 {
+	if len(session.Replicas) == 0 {
 		log.Printf("[sessionId=%v] closing session\n", request.SessionId)
 		delete(c.repository.Sessions, request.SessionId)
+	} else {
+		c.notifyOtherThatReplicaHasLeft(request.SessionId, int(request.ReplicaId), nickName)
 	}
 
 	return nil
@@ -140,19 +166,27 @@ func (c collabTexteditorService) createNewChannel(sessionId string, replicaId in
 
 }
 
-func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, sessionId string, replicaId int) {
+func (c collabTexteditorService) notifyOtherThatReplicaHasLeft(sessionId string, replicaId int, nickName string) {
+	c.sendUpdateToSubscribers(nil, sessionId, replicaId, nickName)
+}
+
+func (c collabTexteditorService) sendUpdateToSubscribers(node *pb.TiTreeNode, sessionId string, replicaId int, nickName string) {
 
 	log.Printf("[sessionId=%v] Send update to subscribers\n", sessionId)
 
-	session := c.repository.Sessions[sessionId]
+	session, ok := c.repository.Sessions[sessionId]
 
-	nickName := session.Replicas[replicaId].NickName
+	if !ok {
+		log.Printf("[sessionId=%v] can not send updates to none existing session\n", sessionId)
+		return
+	}
+
 	response := pb.RemoteUpdateResponse{SenderReplicaId: int64(replicaId), Node: node, Nickname: nickName}
 	session.History = append(session.History, &response)
 
 	for _, replica := range session.Replicas {
 		//skip replica, which sends update
-		if replica.ReplicaId != int(replicaId) {
+		if replica.ReplicaId != replicaId {
 			replica.Channel <- &response
 		}
 	}

@@ -57,7 +57,7 @@ class CollabTexteditorClient {
 
             _collabTextEditorService.joinSession(request, {}, function(err, response) {
               if (err) {
-                console.error(LOG_OBJECT + err.message);
+                console.warn(LOG_OBJECT + err.message);
                 resolve(-1);
               } else {
                 const replicaId = response.getReplicaid();
@@ -120,7 +120,7 @@ class CollabTexteditorClient {
 
         await listenForUpdates(stream, callback).then(
             function(error) {
-              console.log(LOG_OBJECT + error);
+              console.warn(LOG_OBJECT + error);
             },
         );
 
@@ -133,8 +133,11 @@ class CollabTexteditorClient {
       return new Promise(
           (resolve) => {
             stream.on('data', function(response) {
-              const tiTreeNode = protobufNodeToTiTreeNode(response.getNode());
-              callback(tiTreeNode, response.getSenderreplicaid(), response.getNickname());
+              let node = response.getNode();
+              if (node !== undefined) {
+                node = protobufNodeToTiTreeNode(node);
+              }
+              callback(node, response.getSenderreplicaid(), response.getNickname());
             });
 
             stream.on('error', function(err) {

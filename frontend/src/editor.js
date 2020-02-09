@@ -90,9 +90,8 @@ class Editor {
       let replicaColor;
 
       if (previousMarkerObj !== undefined) {
-        previousMarkerObj.marker.clear();
         replicaColor = previousMarkerObj.color;
-        _bookmarkMap.delete(senderReplicaId);
+        this.removeRemoteCursor(senderReplicaId);
       } else {
         replicaColor = selectHexColor(senderReplicaId);
       }
@@ -105,7 +104,6 @@ class Editor {
           row += 1;
         }
       }
-
 
       const cursorPos = {line: row, ch: column};
       const cursorElement = document.createElement('span');
@@ -123,6 +121,16 @@ class Editor {
 
       const marker = _editor.setBookmark(cursorPos, {widget: cursorElement});
       _bookmarkMap.set(senderReplicaId, {marker: marker, color: replicaColor});
+    };
+
+    this.removeRemoteCursor = function(senderReplicaId) {
+      const cursor = _bookmarkMap.get(senderReplicaId);
+      if (cursor !== undefined) {
+        cursor.marker.clear();
+        _bookmarkMap.delete(senderReplicaId);
+        return true;
+      }
+      return false;
     };
 
     /**
