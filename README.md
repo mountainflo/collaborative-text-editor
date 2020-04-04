@@ -1,11 +1,11 @@
-# collaborative-text-editor [![Build Status](https://travis-ci.com/mountainflo/collaborative-text-editor.svg?token=4zw9EzexndWUV9DTxZpz&branch=master)](https://travis-ci.com/mountainflo/collaborative-text-editor)
+# Collaborative Realtime Texteditor [![Build Status](https://travis-ci.com/mountainflo/collaborative-text-editor.svg?token=4zw9EzexndWUV9DTxZpz&branch=master)](https://travis-ci.com/mountainflo/collaborative-text-editor)
 
-Collaborative realtime texteditor with gRPC using RGAs (Replicated Growable Arrays) as datastructure.
+Collaborative realtime texteditor with gRPC using RGAs (Replicated Growable Arrays).
 
 ![Screenshoot Collaborative Texteditor](documentation/collab-texteditor-browser.png)
 
-With the collaborative realtime texteditor several user can edit documents together in realtime.
-Via remote-cursor the current editing position of the other users is always visible.
+With the collaborative realtime texteditor several users can edit documents together in realtime.
+Via Remote-Cursors the current editing position of the other users is always visible.
 
 The implementation of the collaborative realtime editor is using a variant of RGAs (Replicated Growable Arrays).
 The RGA-protocol is implemented as Timestamped Insertion Tree (TI Tree) and guarantees "Eventual Consistency".
@@ -14,7 +14,7 @@ For more details about the implementation see: [documentation.md](documentation/
 
 ## Running the project
 
-The project is built with docker-compose. Before getting started you have to install ```docker-compose```
+The project is built with docker-compose. Before getting started you have to install ```docker-compose```.
 
 You can start the ```production```-configuration with the following docker-compose command:
 
